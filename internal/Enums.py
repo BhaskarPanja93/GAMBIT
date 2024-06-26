@@ -5,3 +5,7 @@ class RequiredFiles(Enum):
     webServerRequired = [
         r"internal\_webserver_worker.py"
     ]
+
+class FormPurposes(Enum):
+    register = "register"
+    login = "login"
