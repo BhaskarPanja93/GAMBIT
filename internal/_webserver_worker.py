@@ -14,7 +14,7 @@ def sendRegister(viewerObj: BaseViewer):
             {viewerObj.addCSRF(FormPurposes.register.value)}
             <label for="songName">Register:</label><br>
             <input type="text" id="songName" name="songName"><br><br>
-            <button type="submit">Play Song</button>
+            <button type="submit">Register</button>
         </form>"""
     viewerObj.queueTurboAction(registerHTML, "register", viewerObj.turboApp.methods.update)
 
@@ -24,9 +24,9 @@ def sendLogin(viewerObj: BaseViewer):
             {viewerObj.addCSRF(FormPurposes.login.value)}
             <label for="songName">Login:</label><br>
             <input type="text" id="songName" name="songName"><br><br>
-            <button type="submit">Play Song</button>
+            <button type="submit">Login</button>
         </form>"""
-    viewerObj.queueTurboAction(registerHTML, "register", viewerObj.turboApp.methods.update)
+    viewerObj.queueTurboAction(registerHTML, "login", viewerObj.turboApp.methods.update)
 
 
 def newVisitorCallback(viewerObj: BaseViewer):
