@@ -1,10 +1,23 @@
-from enum import Enum
+from pathlib import Path
+
+
+from internal.SecretEnums import *
+
+
+for location in HostDetails.possibleFolderLocation.value:
+    if Path(location).is_dir():
+        folderLocation = location
+        break
+else:
+    input("Project directory not found in SecretEnum...")
+
 
 class RequiredFiles(Enum):
-    webServerRunnable = r"internal\_webserver_worker.py"
+    webServerRunnable = str(Path(folderLocation, r"internal\_webserver_worker.py"))
     webServerRequired = [
-        r"internal\_webserver_worker.py"
+        str(Path(folderLocation, r"internal\_webserver_worker.py"))
     ]
+
 
 class FormPurposes(Enum):
     register = "register"
@@ -14,6 +27,7 @@ class FormPurposes(Enum):
 class Routes(Enum):
     homePageRoute = "/test"
     WSRoute = f"{homePageRoute}_ws"
+
 
 class WebsiteRelated(Enum):
     appName = "Test"
