@@ -17,3 +17,4 @@ class Routes(Enum):
 
 class WebsiteRelated(Enum):
     appName = "Test"
+    title = "Study Well"

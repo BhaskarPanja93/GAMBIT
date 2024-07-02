@@ -52,7 +52,7 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 
 extraHeads = ""
 
-baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, WebsiteRelated.appName.value, Routes.homePageRoute.value, Routes.WSRoute.value, ServerSecrets.fernetKey.value, extraHeads, "Study Well", False)
+baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, WebsiteRelated.appName.value, Routes.homePageRoute.value, Routes.WSRoute.value, ServerSecrets.fernetKey.value, extraHeads, WebsiteRelated.title.value, False)
 
 print(f"http://127.0.0.1:{ServerSecrets.portToUse.value}{Routes.homePageRoute.value}")
 WSGIServer(('0.0.0.0', ServerSecrets.portToUse.value,), baseApp, log=None).serve_forever()
