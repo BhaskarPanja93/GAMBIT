@@ -9,3 +9,12 @@ class RequiredFiles(Enum):
 class FormPurposes(Enum):
     register = "register"
     login = "login"
+
+
+class Routes(Enum):
+    homePageRoute = "/test"
+    WSRoute = f"{homePageRoute}_ws"
+
+class WebsiteRelated(Enum):
+    appName = "Test"
+    title = "Study Well"
