@@ -25,7 +25,7 @@ class FormPurposes(Enum):
 
 
 class Routes(Enum):
-    homePageRoute = "/test"
+    homePageRoute = "/better-education"
     WSRoute = f"{homePageRoute}_ws"
 
 

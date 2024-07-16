@@ -4,7 +4,7 @@ from autoReRun import Runner
 
 toRun = {RequiredFiles.webServerRunnable.value: []}
 toCheck = RequiredFiles.webServerRequired.value
-interval = 2
+interval = 0.5
 
 
 Runner(toRun, toCheck, interval).start()
