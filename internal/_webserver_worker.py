@@ -196,6 +196,11 @@ def registerPage(viewerObj: BaseViewer):
 def testPage(viewerObj: BaseViewer):
     testingpage = f"""
     <div id="app" class="w-full max-w-xs">
+    
+    
+    <button type="button" id="viewlogin"class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">View Login</button>    
+    <button type="button" id="hideButton"class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" onclick="hideLogin()">Hide</button>    
+    
         <div id="loginForm">
             <h2 class="font-bold text-lg mb-4">Login</h2>
             <input type="text" placeholder="Username" class="border p-2 w-full mb-4">
@@ -225,6 +230,36 @@ def testPage(viewerObj: BaseViewer):
 
         showLogin();
     </script>
+    
+    <style>
+    .fade-in {{
+      animation: fadeIn 1s ease-in-out forwards;
+    }}
+    @keyframes fadeIn {{
+      from {{
+        opacity: 0;
+      }}
+      to {{
+        opacity: 1;
+      }}
+    }}
+  </style>
+  
+    <script>
+    const showDivBtn = document.getElementById('viewlogin');
+    const animatedDiv = document.getElementById('loginForm');
+
+    showDivBtn.addEventListener('click', () => {{
+      animatedDiv.classList.remove('hidden');
+      animatedDiv.classList.add('fade-in');
+    }});
+  </script>
+  
+  <script>
+    function hideLogin() {{
+    document.getElementById('loginForm').style.display = 'none';
+    }}
+  </script>
     """
 
     viewerObj.queueTurboAction(testingpage, "testPage", viewerObj.turboApp.methods.update)
@@ -234,6 +269,7 @@ def testPage(viewerObj: BaseViewer):
 def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"testPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
+    testPage(viewerObj)
     navBar(viewerObj)
     homePage(viewerObj)
     # sendRegister(viewerObj)
@@ -255,9 +291,8 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 
 
 extraHeads = """<script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
             """
-bodyBase = """<body class=""><div id="mainDiv"><div></body>"""
+bodyBase = """<body class="bg-gray-100 flex items-center justify-center h-screen"><div id="mainDiv"><div></body>"""
 
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, WebsiteRelated.appName.value,
                                Routes.homePageRoute.value, Routes.WSRoute.value, ServerSecrets.fernetKey.value,
