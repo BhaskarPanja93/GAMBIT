@@ -15,7 +15,8 @@ else:
 class RequiredFiles(Enum):
     webServerRunnable = str(Path(folderLocation, r"internal\_webserver_worker.py"))
     webServerRequired = [
-        str(Path(folderLocation, r"internal\_webserver_worker.py"))
+        str(Path(folderLocation, r"internal\_webserver_worker.py")),
+        str(Path(folderLocation, r"run_webserver.py"))
     ]
 
 

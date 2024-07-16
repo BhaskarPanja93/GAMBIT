@@ -4,8 +4,7 @@ monkey.patch_all()
 
 from gevent.pywsgi import WSGIServer
 from dynamicWebsite import *
-
-from internal.SecretEnums import *
+updatePackage()
 from internal.Enums import *
 
 
@@ -258,10 +257,11 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 extraHeads = """<script src="https://cdn.tailwindcss.com"></script>
     <script src="https://https://cdnjs.cloudflare.com/ajax/libs/flowbite/2.2.1/flowbite.min.js"></script>
             """
+bodyBase = """<body class=""><div id="mainDiv"><div></body>"""
 
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, WebsiteRelated.appName.value,
                                Routes.homePageRoute.value, Routes.WSRoute.value, ServerSecrets.fernetKey.value,
-                               extraHeads, WebsiteRelated.title.value, False)
+                               extraHeads, bodyBase, WebsiteRelated.title.value, False)
 
 print(f"http://127.0.0.1:{ServerSecrets.portToUse.value}{Routes.homePageRoute.value}")
 WSGIServer(('0.0.0.0', ServerSecrets.portToUse.value,), baseApp, log=None).serve_forever()
