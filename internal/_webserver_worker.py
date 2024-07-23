@@ -295,8 +295,8 @@ extraHeads = """<script src="https://cdn.tailwindcss.com"></script>
 bodyBase = """<body class="bg-gray-100 flex items-center justify-center h-screen"><div id="mainDiv"><div></body>"""
 
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, WebsiteRelated.appName.value,
-                               Routes.homePageRoute.value, Routes.WSRoute.value, ServerSecrets.fernetKey.value,
+                               Routes.webHomePage.value, Routes.webWS.value, ServerSecrets.webFernetKey.value,
                                extraHeads, bodyBase, WebsiteRelated.title.value, False)
 
-print(f"http://127.0.0.1:{ServerSecrets.portToUse.value}{Routes.homePageRoute.value}")
-WSGIServer(('0.0.0.0', ServerSecrets.portToUse.value,), baseApp, log=None).serve_forever()
+print(f"http://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
+WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None).serve_forever()

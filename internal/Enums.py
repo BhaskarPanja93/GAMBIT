@@ -1,6 +1,5 @@
 from pathlib import Path
 
-
 from internal.SecretEnums import *
 
 
@@ -26,10 +25,11 @@ class FormPurposes(Enum):
 
 
 class Routes(Enum):
-    homePageRoute = "/better-education"
-    WSRoute = f"{homePageRoute}_ws"
+    webHomePage = "/better-education"
+    webWS = f"{webHomePage}_ws"
 
 
 class WebsiteRelated(Enum):
-    appName = "Test"
+    appName = "Gambit"
     title = "Study Well"
+
