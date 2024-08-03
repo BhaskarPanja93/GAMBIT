@@ -38,3 +38,12 @@ class Routes(Enum):
 class WebsiteRelated(Enum):
     appName = "Gambit"
     title = "Study Well"
+
+
+class CDNFileType(Enum):
+    font = "font"
+
+
+class Fonts(Enum):
+    GothamBlack = f"/{Routes.cdnFileContent.value}?type={CDNFileType.font.value}?name=GothamBlack.ttf"
+
