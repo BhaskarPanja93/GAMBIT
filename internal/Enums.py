@@ -26,10 +26,15 @@ class FormPurposes(Enum):
 
 class Routes(Enum):
     webHomePage = "/better-education"
-    webWS = f"{webHomePage}_ws"
+    webWS = f"{webHomePage}-ws"
+    cdnMemoryContent = f"{webHomePage}-content-cache"
+    cdnFileContent = f"{webHomePage}-content-raw"
+    connCheck = f"{webHomePage}-conn-check"
+    connChange = f"{webHomePage}-conn-check"
+    connCreate = f"{webHomePage}-conn-create"
+    connDestroy = f"{webHomePage}-conn-destroy"
 
 
 class WebsiteRelated(Enum):
     appName = "Gambit"
     title = "Study Well"
-
