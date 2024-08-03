@@ -75,16 +75,6 @@ def navBar(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(navigation_bar, "navBar", viewerObj.turboApp.methods.update)
 
 
-def homePage(viewerObj: BaseViewer):
-    navBar(viewerObj)
-    homePageHTML = f"""
-    
-    
-    
-    """
-    viewerObj.queueTurboAction(homePageHTML, "homePage", viewerObj.turboApp.methods.update)
-
-
 def loginPage(viewerObj: BaseViewer):
     login = f"""  
     
