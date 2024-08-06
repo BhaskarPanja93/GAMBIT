@@ -29,5 +29,5 @@ def _destroyConn():
     return ""
 
 
-print(f"CDN: http://127.0.0.1:{ServerSecrets.webPort.value}")
-WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), connectionApp, log=None).serve_forever()
+print(f"CONN: http://127.0.0.1:{ServerSecrets.connectionPort.value}")
+WSGIServer(('0.0.0.0', ServerSecrets.connectionPort.value,), connectionApp, log=None).serve_forever()

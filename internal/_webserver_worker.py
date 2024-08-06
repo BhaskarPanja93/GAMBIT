@@ -229,7 +229,7 @@ def loginInput(viewerObj: BaseViewer):
     
     '''
 
-    viewerObj, queueTurboAction(loginInput, "login", viewerObj.turboApp.methods.update)
+    viewerObj.queueTurboAction(loginInput, "login", viewerObj.turboApp.methods.update)
 
 
 
@@ -241,7 +241,7 @@ def registerInput(viewerObj: BaseViewer):
     
     '''
 
-    viewerObj, queueTurboAction(registerInput, "register", viewerObj.turboApp.methods.update)
+    viewerObj.queueTurboAction(registerInput, "register", viewerObj.turboApp.methods.update)
 
 
 def testPage(viewerObj: BaseViewer):
