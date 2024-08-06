@@ -21,7 +21,7 @@ def _fileContent():
     fileType = request.args.get("type").strip()
     fileName = request.args.get("name").strip()
     if fileType == CDNFileType.font.value:
-         return send_from_directory(folderLocation+"/static", fileName, as_attachment=True)
+         return send_from_directory(folderLocation+"/static/font", fileName, as_attachment=True)
 
 
 print(f"CDN: http://127.0.0.1:{ServerSecrets.webPort.value}")
