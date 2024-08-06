@@ -68,140 +68,180 @@ def navBar(viewerObj: BaseViewer):
     </div>
   </div>
     </nav>
-    
-    
     """
 
     viewerObj.queueTurboAction(navigation_bar, "navBar", viewerObj.turboApp.methods.update)
 
 
-def loginPage(viewerObj: BaseViewer):
-    login = f"""  
-    
-    <nav class="bg-neutral-300">
-        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-            <div class="relative flex items-center justify-between h-16">
-                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="#" class="text-white text-2xl">Gambit</a>
-                    </div>
-                    <div class="hidden sm:block sm:ml-6">
-                        <div class="flex space-x-4">
-                            <a href="#" class="text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
-                            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="hidden sm:block sm:ml-6">
-                    <div class="flex space
-                    -x-4">
-                        <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
-                        <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav> 
-    """
-
-    viewerObj.queueTurboAction(login, "loginPage", viewerObj.turboApp.methods.update)
-
-
-def registerPage(viewerObj: BaseViewer):
-    registration = f"""
-    
-    <nav class="bg-neutral-300">
-        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-            <div class="relative flex items-center justify-between h-16">
-                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="#" class="text-white text-2xl">Study Well</a>
-                    </div>
-                    <div class="hidden sm:block sm:ml-6">
-                        <div class="flex space
-                        -x-4">
-                            <a href="#" class="text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
-                            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-                        </div>
-                    </div>
-                </div>
-                <div class="hidden sm:block sm:ml-6">
-                    <div class="flex space
-                    -x-4">
-                        <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
-                        <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
-                    </div>
-                </div>
-            </div>
-        </div>
-    </nav> 
-    """
-
-    viewerObj.queueTurboAction(registration, "registerPage", viewerObj.turboApp.methods.update)
-
-
+# def loginPage(viewerObj: BaseViewer):
+#     login = f"""
+#
+#     <nav class="bg-neutral-300">
+#         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+#             <div class="relative flex items-center justify-between h-16">
+#                 <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+#                     <div class="flex-shrink-0 flex items-center">
+#                         <a href="#" class="text-white text-2xl">Gambit</a>
+#                     </div>
+#                     <div class="hidden sm:block sm:ml-6">
+#                         <div class="flex space-x-4">
+#                             <a href="#" class="text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
+#                             <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
+#                             <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+#                         </div>
+#                     </div>
+#                 </div>
+#                 <div class="hidden sm:block sm:ml-6">
+#                     <div class="flex space
+#                     -x-4">
+#                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
+#                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
+#                     </div>
+#                 </div>
+#             </div>
+#         </div>
+#     </nav>
+#     """
+#
+#     viewerObj.queueTurboAction(login, "loginPage", viewerObj.turboApp.methods.update)
+#
+#
+# def registerPage(viewerObj: BaseViewer):
+#     registration = f"""
+#
+#     <nav class="bg-neutral-300">
+#         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
+#             <div class="relative flex items-center justify-between h-16">
+#                 <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
+#                     <div class="flex-shrink-0 flex items-center">
+#                         <a href="#" class="text-white text-2xl">Study Well</a>
+#                     </div>
+#                     <div class="hidden sm:block sm:ml-6">
+#                         <div class="flex space
+#                         -x-4">
+#                             <a href="#" class="text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
+#                             <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
+#                             <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
+#                         </div>
+#                     </div>
+#                 </div>
+#                 <div class="hidden sm:block sm:ml-6">
+#                     <div class="flex space
+#                     -x-4">
+#                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
+#                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
+#                     </div>
+#                 </div>
+#             </div>
+#         </div>
+#     </nav>
+#     """
+#
+#     viewerObj.queueTurboAction(registration, "registerPage", viewerObj.turboApp.methods.update)
 
 
 def homePage(viewerObj: BaseViewer):
     home = f"""
-    <div class="px-4 mx-auto max-w-7xl sm:px-6">
+<div class="px-12 w-full sm:px-12">
     <div class="relative pt-6 pb-16 sm:pb-24">
         <nav class="relative flex items-center justify-between sm:h-10 md:justify-center" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-                <div class="flex items-center justify-between w-full md:w-auto">
-                    <a href="#"><span class="sr-only">Company Name</span>
-                        <img class="w-auto h-8 sm:h-10" src="https://www.svgrepo.com/show/448244/pack.svg" loading="lazy" width="202" height="40">
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
+                    <a href="#">
+                        <span class="sr-only">Gambit - All in One Education</span>
+                        <img class="w-auto h-14 sm:h-18" src="https://www.svgrepo.com/show/448244/pack.svg" loading="lazy" width="202" height="80">
                     </a>
                     <div class="flex items-center -mr-2 md:hidden">
-                        <button class="inline-flex items-center justify-center p-2 text-gray-400 bg-gray-50 rounded-md hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-50"  type="button" aria-expanded="false">
-                            <span class="sr-only">Open main menu</span>
-                            <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="2" stroke="currentColor" aria-hidden="true" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M4 6h16M4 12h16M4 18h16"></path>
-                            </svg>
+                        <button class="inline-flex items-center justify-center p-2 text-blue-700 bg-yellow-700 rounded-lg hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-50"  type="button" aria-expanded="false">
                         </button>
                     </div>
                 </div>
             </div>
             <div class="hidden md:flex md:space-x-10 list-none">
-                <li>
-                    <a href="#" class="text-base font-normal text-gray-500 list-none hover:text-gray-900"
-                        target="">Pricing</a>
-                </li>
-                <li>
-                    <a href="#" class="text-base font-normal text-gray-500 list-none hover:text-gray-900"
-                        target="">Gallary
-                    </a>
-                </li>
-                <li>
-                    <a href="#" class="text-base font-normal text-gray-500 list-none hover:text-gray-900"
-                        target="_blank">Blog
-                    </a>
-                </li>
+                <p class="text-3xl text-white font-bold">THE ALL IN ONE PLATFORM </p>
             </div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
-                <div class="inline-flex rounded-full shadow">   
-                    <div href="#"
-                        class="inline-flex items-center px-14 py-3 text-base text-gray-900 bg-white border border-transparent rounded-full cursor-pointer font-bold text-2xl hover:bg-gray-50 ">
-                        GO
-                    </div>
+                <div class="py-4 inline-flex rounded-full shadow">   
+                    <button class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-yellow-300 border border-transparent rounded-3xl cursor-pointer hover:bg-gray-100 font-bold">
+                        REGISTER
+                    </button>
                 </div>
             </div>
         </nav>
+        
+        <div id="imageBackground" class=" py-12 relative image-container w-full">
+        <!-- Image -->
+        <img src="static/images/background-image.jpg" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
+        <button class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-blue-700 text-white font-bold text-4xl rounded-full p-12">START LEARNING</button>
+        <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full">
+            All Your Education Needs In One</p>
+        
+        </div>
     </div>
 </div>
+
 """
 
     viewerObj.queueTurboAction(home, "homePage", viewerObj.turboApp.methods.update)
+
+
 def loginRegisterPage(viewerObj: BaseViewer):
+    homePage(viewerObj)
     loginRegister = f"""
-    
-    
-    
+        
+        <div class="flex items-center justify-stretch min-h-screen grid grid-cols-2 gap-8 px-6 py-6 place-content-stretch h-64">
+        
+        
+            <button class="rounded-lg bg-blue-700 flex items-center justify-center h-96">
+                <p class="text-white font-bold text-4xl">Login</p>
+            </button>
+        
+            <button class="rounded-lg bg-yellow-700 flex items-center justify-center h-96">
+                <p class="text-white font-bold text-4xl">Register</p>
+            </button>   
+        </div>
+            
     """
 
-    return
+    viewerObj.queueTurboAction(loginRegister, "loginRegisterPage", viewerObj.turboApp.methods.update)
+
+
+def loginInput(viewerObj: BaseViewer):
+    login = f'''
+    
+    <div class="flex items-center justify-stretch min-h-screen grid grid-cols-2 gap-8 px-6 py-6 place-content-stretch h-64">
+        <input> </input>
+        
+        
+    
+    </div>
+    
+    
+        <div class="flex justify-center rounded-lg text-sm:d ">
+            
+        </div>
+    
+    </div>
+    
+    
+    
+    
+    
+    '''
+
+    viewerObj, queueTurboAction(loginInput, "login", viewerObj.turboApp.methods.update)
+
+
+
+def registerInput(viewerObj: BaseViewer):
+    register = f'''
+    
+    <div class="flex items-center justify-stretch min-h-screen grid grid-cols-2 gap-8 px-6 py-6 place-content-stretch h-64">
+    <div?
+    
+    '''
+
+    viewerObj, queueTurboAction(registerInput, "register", viewerObj.turboApp.methods.update)
 
 
 def testPage(viewerObj: BaseViewer):
@@ -271,13 +311,14 @@ def testPage(viewerObj: BaseViewer):
 
 
 def newVisitorCallback(viewerObj: BaseViewer):
-    initial = "<div id=\"homePage\"></div>"
+    initial = "<div id=\"loginRegisterPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
-    testPage(viewerObj)
-    navBar(viewerObj)
-    homePage(viewerObj)
+
+    loginRegisterPage(viewerObj)
+    # loginInput(viewerObj)
     # sendRegister(viewerObj)
     # sendLogin(viewerObj)
+    # homePage(viewerObj)
 
 
 def formSubmitCallback(viewerObj: BaseViewer, form: dict):
@@ -294,15 +335,9 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
         print("Disconnected: ", viewerObj.viewerID)
 
 
-extraHeads = """
-<style>
-@font-face { 
-    font-family: Gotham; 
-    src: url('JUNEBUG.TTF'); 
-    } 
-    
-    </style>
-<script src="https://cdn.tailwindcss.com"></script>"""
+extraHeads = f"""
+<script src="https://cdn.tailwindcss.com"></script>
+"""
 bodyBase = """<body class="bg-slate-700"><div id="mainDiv"><div></body>"""
 
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, WebsiteRelated.appName.value,
