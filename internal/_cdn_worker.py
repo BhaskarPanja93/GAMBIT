@@ -1,15 +1,17 @@
 from gevent import monkey
 
-from internal.Enums import Routes
-
 monkey.patch_all()
+
 
 from gevent.pywsgi import WSGIServer
 from flask import Flask, request, send_from_directory
 
+
 from Enums import *
 
+
 CDNApp = Flask("CDN")
+
 
 @CDNApp.get(Routes.cdnMemoryContent.value)
 def _memContent():
@@ -22,7 +24,17 @@ def _fileContent():
     fileName = request.args.get("name").strip()
     if fileType == CDNFileType.font.value:
          return send_from_directory(folderLocation+"/static/font", fileName, as_attachment=True)
+    elif fileType == CDNFileType.image.value:
+        return send_from_directory(folderLocation + "/static/image", fileName, as_attachment=True)
+    elif fileType == CDNFileType.video.value:
+        return send_from_directory(folderLocation + "/static/video", fileName, as_attachment=True)
+    elif fileType == CDNFileType.html.value:
+        return send_from_directory(folderLocation + "/static/html", fileName, as_attachment=True)
+    elif fileType == CDNFileType.css.value:
+        return send_from_directory(folderLocation + "/static/css", fileName, as_attachment=True)
+    elif fileType == CDNFileType.js.value:
+        return send_from_directory(folderLocation + "/static/js", fileName, as_attachment=True)
 
 
-print(f"CDN: http://127.0.0.1:{ServerSecrets.webPort.value}")
-WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), CDNApp, log=None).serve_forever()
+print(f"CDN: http://127.0.0.1:{ServerSecrets.cdnPort.value}")
+WSGIServer(('0.0.0.0', ServerSecrets.cdnPort.value,), CDNApp, log=None).serve_forever()
