@@ -42,15 +42,13 @@ class FormPurposes(Enum):
 class Routes(Enum):
     webHomePage = "/better-education"
     webWS = f"{webHomePage}-ws"
-    cdnMemoryContent = f"{webHomePage}-content-cache"
-    cdnFileContent = f"{webHomePage}-content-raw"
-    connCheck = f"{webHomePage}-conn-check"
-    connChange = f"{webHomePage}-conn-check"
-    connCreate = f"{webHomePage}-conn-create"
-    connDestroy = f"{webHomePage}-conn-destroy"
+    internalConnection = f"{webHomePage}-conn"
+    cdnMemoryContent = f"{webHomePage}-cdn-mem"
+    cdnLiveContent = f"{webHomePage}-cdn-live"
+    cdnFileContent = f"{webHomePage}-cdn-file"
 
 
-class WebsiteRelated(Enum):
+class CoreValues(Enum):
     appName = "Gambit"
     title = "Study Well"
 

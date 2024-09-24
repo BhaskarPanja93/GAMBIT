@@ -18,6 +18,11 @@ def _memContent():
     return ""
 
 
+@CDNApp.get(Routes.cdnLiveContent.value)
+def _liveContent():
+    return ""
+
+
 @CDNApp.get(Routes.cdnFileContent.value)
 def _fileContent():
     fileType = request.args.get("type").strip()
