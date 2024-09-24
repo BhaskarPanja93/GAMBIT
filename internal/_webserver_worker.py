@@ -102,10 +102,7 @@ def navBar(viewerObj: BaseViewer):
 #         </div>
 #     </nav>
 #     """
-#
 #     viewerObj.queueTurboAction(login, "loginPage", viewerObj.turboApp.methods.update)
-#
-#
 # def registerPage(viewerObj: BaseViewer):
 #     registration = f"""
 #
@@ -136,7 +133,6 @@ def navBar(viewerObj: BaseViewer):
 #         </div>
 #     </nav>
 #     """
-#
 #     viewerObj.queueTurboAction(registration, "registerPage", viewerObj.turboApp.methods.update)
 
 
@@ -187,61 +183,80 @@ def homePage(viewerObj: BaseViewer):
 
 def loginRegisterPage(viewerObj: BaseViewer):
     homePage(viewerObj)
+
     loginRegister = f"""
         
         <div class="flex items-center justify-stretch min-h-screen grid grid-cols-2 gap-8 px-6 py-6 place-content-stretch h-64">
+            <div id="loginDiv" class="rounded-lg bg-blue-700 flex items-center justify-center h-96">
+                <button id="loginButton" class="rounded-lg bg-blue-700 flex items-center justify-center h-96 w-full">
+                    <p class="text-white font-bold text-4xl">Login</p>
+                </button>
+                    
+                <div id="loginFormContainer" class="hidden rounded-lg bg-blue-700 flex items-center justify-center h-96">
+                    <form onsubmit="return submitLogin(this)">
+                        <input type="text" class="py-3 px-5 block w-full border-gray-200 rounded-full text-xl focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" name="username" placeholder="Username" >
+                        <br>
+                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-xl focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" type="password" name="password" placeholder="Password" >
+                        <br>
+                        <button type="submit" class="bg-white text-blue-700 font-bold p-6 rounded">Submit</button>
+                    </form>
+                </div>
+            </div>
         
-        
-            <button class="rounded-lg bg-blue-700 flex items-center justify-center h-96">
-                <p class="text-white font-bold text-4xl">Login</p>
-            </button>
-        
-            <button class="rounded-lg bg-yellow-700 flex items-center justify-center h-96">
-                <p class="text-white font-bold text-4xl">Register</p>
-            </button>   
-        </div>
+            <div id="registerDiv" class="rounded-lg bg-yellow-700 flex items-center justify-center h-96">
+                <button id="registerButton" class="rounded-lg bg-yellow-700 flex items-center justify-center h-96 w-full">
+                    <p class="text-white font-bold text-4xl">Register</p>
+                </button> 
+                
             
+                <div id="registerFormContainer" class="hidden rounded-lg bg-yellow-700 flex items-center justify-center h-96">
+                    <form onsubmit="return submitRegister(this)">
+                        <input type="text" class="py-3 px-4 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" name="username" placeholder="Username" >
+                        
+                        <input type="text" class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" name="email" placeholder="Email" >
+                        
+                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" type="password" name="password" placeholder="Password" >
+                        
+                        
+                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" type="password" name="confirm_password" placeholder="Confirm Password" >
+                        
+                        <button type="submit" class="bg-white text-blue-700 font-bold p-6 rounded">Submit</button>
+                    </form>
+                </div> 
+            </div> 
+        </div>
+        
+        
+    <script>
+            document.getElementById('loginButton').addEventListener('click', function() {{
+            document.getElementById('loginFormContainer').classList.remove('hidden');
+            document.getElementById('loginButton').classList.add('hidden');
+        }});   
+        
+        
+        
+            document.getElementById('registerButton').addEventListener('click', function() {{
+            document.getElementById('registerFormContainer').classList.remove('hidden');
+            document.getElementById('registerButton').classList.add('hidden');
+        }});    
+    </script>
+        
     """
 
     viewerObj.queueTurboAction(loginRegister, "loginRegisterPage", viewerObj.turboApp.methods.update)
 
-
-def loginInput(viewerObj: BaseViewer):
-    login = f'''
-    
-    <div class="flex items-center justify-stretch min-h-screen grid grid-cols-2 gap-8 px-6 py-6 place-content-stretch h-64">
-        <input> </input>
-        
-        
-    
-    </div>
-    
-    
-        <div class="flex justify-center rounded-lg text-sm:d ">
-            
-        </div>
-    
-    </div>
-    
-    
-    
-    
-    
-    '''
-
-    viewerObj.queueTurboAction(loginInput, "login", viewerObj.turboApp.methods.update)
+    loginInputForm = f"""
 
 
 
-def registerInput(viewerObj: BaseViewer):
-    register = f'''
-    
-    <div class="flex items-center justify-stretch min-h-screen grid grid-cols-2 gap-8 px-6 py-6 place-content-stretch h-64">
-    <div?
-    
-    '''
+    """
 
-    viewerObj.queueTurboAction(registerInput, "register", viewerObj.turboApp.methods.update)
+    # viewerObj.queueTurboAction(loginInputForm, "loginRegisterPage", viewerObj.turboApp.methods.update)
+
+    registerInputForm = f"""
+    
+    """
+    # viewerObj.queueTurboAction(registerInput, "registerDiv", viewerObj.turboApp.methods.update)
 
 
 def testPage(viewerObj: BaseViewer):
@@ -310,11 +325,120 @@ def testPage(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(testingpage, "testPage", viewerObj.turboApp.methods.update)
 
 
+def quizPage(viewerObj: BaseViewer):
+    quiz = f"""
+<div class="bg-orange-700 flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
+
+    
+    <div id="teamDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+        <div>HEALTH POINTS</div>
+        <div class="flex justify-center w-full h-12 my-8">
+            <div class="flex items-center w-5/6 h-full bg-gray-200 rounded-full dark:bg-gray-700">
+                <div class="bg-red-600 text-2xl h-12 font-medium text-blue-100 text-center leading-none rounded-full flex items-center justify-center"
+                   style="width: 99%">
+                  99% <3
+                </div>
+            </div>
+        </div>
+        
+        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
+            <div class="flex items-center gap-4">
+                <div class="font-medium dark:text-white">
+                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 1</div>
+                </div>
+            </div>
+        </div>        
+        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
+            <div class="flex items-center gap-4">
+                <div class="font-medium dark:text-white">
+                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 2</div>
+                </div>
+            </div>
+        </div>
+        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
+            <div class="flex items-center gap-4">
+                <div class="font-medium dark:text-white">
+                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 3</div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <div id="quizDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
+        
+        <div class="text-white font-bold text-2xl h-1/3 p-4 m-4" id="test">
+            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae risus efficitur quam imperdiet sagittis. Suspendisse rutrum iaculis lectus sit amet maximus. Integer tincidunt in arcu vitae condimentum. Nunc porta ex elit, eget sollicitudin tellus pharetra quis. Ut laoreet, enim maximus dapibus ullamcorper, arcu leo scelerisque quam, a vulputate ligula turpis eu dolor. Proin sem sem, elementum ut nulla nec, fermentum fringilla libero. Maecenas eu facilisis erat, vitae iaculis orci. Donec volutpat enim vitae leo convallis hendrerit. 
+        
+        </div>
+        
+        <div class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6"> 
+            <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
+                <div id="option0" class="text-white font-bold text-2xl">Button 1</div>
+            </button>
+            <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
+                <div id="option1" class="text-white font-bold text-2xl">Button 2</div>
+            </button>
+            <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
+                <div id="option2" class="text-white font-bold text-2xl">Button 3</div>
+            </button>
+            <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
+                <div id="option3" class="text-white font-bold text-2xl">Button 4</div>
+            </button>
+        </div>
+    </div>
+    
+<div id="opponentDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+    <div>HEALTH POINTS</div>
+    <div class="flex justify-center w-full h-12 my-8">
+        <div class="flex items-center w-5/6 h-full bg-gray-200 rounded-full dark:bg-gray-700">
+            <div class="bg-red-600 text-2xl h-12 font-medium text-blue-100 text-center leading-none rounded-full flex items-center justify-center"
+               style="width: 45%">
+              45% <3
+            </div>
+        </div>
+    </div>
+    
+    <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
+            <div class="flex items-center gap-4">
+                <div class="font-medium dark:text-white">
+                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 1</div>
+                </div>
+            </div>
+        </div>        
+        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
+            <div class="flex items-center gap-4">
+                <div class="font-medium dark:text-white">
+                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 2</div>
+                </div>
+            </div>
+        </div>
+        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
+            <div class="flex items-center gap-4">
+                <div class="font-medium dark:text-white">
+                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 3</div>
+                </div>
+            </div>
+        </div>
+
+</div>
+</div>
+"""
+
+    viewerObj.queueTurboAction(quiz, "quizPage", viewerObj.turboApp.methods.update)
+
+
 def newVisitorCallback(viewerObj: BaseViewer):
-    initial = "<div id=\"loginRegisterPage\"></div>"
+    initial = "<div id=\"quizPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
 
-    loginRegisterPage(viewerObj)
+    # loginRegisterPage(viewerObj)
+    quizPage(viewerObj)
     # loginInput(viewerObj)
     # sendRegister(viewerObj)
     # sendLogin(viewerObj)
