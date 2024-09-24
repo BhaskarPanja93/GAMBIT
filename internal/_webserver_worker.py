@@ -445,6 +445,10 @@ def newVisitorCallback(viewerObj: BaseViewer):
     # homePage(viewerObj)
 
 
+def visitorLeftCallback(viewerObj: BaseViewer):
+    print("Visitor Left: ", viewerObj.viewerID)
+
+
 def formSubmitCallback(viewerObj: BaseViewer, form: dict):
     if form is not None:
         purpose = form.pop("PURPOSE")
@@ -455,15 +459,13 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
         elif purpose == FormPurposes.login.value:
             print(form)
 
-    else:
-        print("Disconnected: ", viewerObj.viewerID)
 
 
 extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
 bodyBase = """<body class="bg-slate-700"><div id="mainDiv"><div></body>"""
 
 
-baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, CoreValues.appName.value,
+baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
                                Routes.webHomePage.value, Routes.webWS.value, ServerSecrets.webFernetKey.value,
                                extraHeads, bodyBase, CoreValues.title.value, False)
 
