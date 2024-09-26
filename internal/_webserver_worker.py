@@ -413,7 +413,7 @@ def quizPage(viewerObj: BaseViewer):
 
         <div class="text-white font-bold text-2xl p-4">Select an option</div>
 
-        <form id="quiz-form" action="your-server-endpoint" method="POST" style="display:none;">
+        <form id="quiz-form" action="#" method="POST" style="display:none;">
             <input type="radio" id="op0" name="quiz-item" value="HTML">
             <input type="radio" id="op1" name="quiz-item" value="HTML">
             <input type="radio" id="op2" name="quiz-item" value="HTML">
