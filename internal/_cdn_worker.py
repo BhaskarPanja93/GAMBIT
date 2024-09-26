@@ -25,8 +25,9 @@ def _liveContent():
 
 @CDNApp.get(Routes.cdnFileContent.value)
 def _fileContent():
-    fileType = request.args.get("type").strip()
-    fileName = request.args.get("name").strip()
+    fileType = request.args.get("type", "").strip()
+    fileName = request.args.get("name", "").strip()
+    print(request.url, fileType, fileName)
     if fileType == CDNFileType.font.value:
          return send_from_directory(folderLocation+"/static/font", fileName, as_attachment=True)
     elif fileType == CDNFileType.image.value:
@@ -39,7 +40,7 @@ def _fileContent():
         return send_from_directory(folderLocation + "/static/css", fileName, as_attachment=True)
     elif fileType == CDNFileType.js.value:
         return send_from_directory(folderLocation + "/static/js", fileName, as_attachment=True)
-
+    return ""
 
 print(f"CDN: http://127.0.0.1:{ServerSecrets.cdnPort.value}")
 WSGIServer(('0.0.0.0', ServerSecrets.cdnPort.value,), CDNApp, log=None).serve_forever()

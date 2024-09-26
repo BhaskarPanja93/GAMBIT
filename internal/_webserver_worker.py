@@ -1,3 +1,4 @@
+from flask import redirect, request
 from gevent import monkey
 
 monkey.patch_all()
@@ -167,7 +168,7 @@ def homePage(viewerObj: BaseViewer):
 
         <div id="imageBackground" class=" py-12 relative image-container w-full">
         <!-- Image -->
-        <img src="static/images/background-image.jpg" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
+        <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
         <button class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-blue-700 text-white font-bold text-4xl rounded-full p-12">START LEARNING</button>
         <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full">
             All Your Education Needs In One</p>
@@ -361,7 +362,7 @@ def quizPage(viewerObj: BaseViewer):
 
 
         <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
             <div class="flex items-center gap-4">
                 <div class="font-medium dark:text-white">
                     <div class="text-white text-bold text-xl m-4">Player 1</div>
@@ -371,7 +372,7 @@ def quizPage(viewerObj: BaseViewer):
             </div>
         </div>
         <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
             <div class="flex items-center gap-4">
                 <div class="font-medium dark:text-white">
                     <div class="text-white text-bold text-xl m-4">Player 1</div>
@@ -381,7 +382,7 @@ def quizPage(viewerObj: BaseViewer):
             </div>
         </div>
         <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
             <div class="flex items-center gap-4">
                 <div class="font-medium dark:text-white">
                     <div class="text-white text-bold text-xl m-4">Player 1</div>
@@ -451,10 +452,9 @@ def quizPage(viewerObj: BaseViewer):
                 </div>
             </div>
         </div>
-        </div>
 
         <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
             <div class="flex items-center gap-4">
                 <div class="font-medium dark:text-white">
                     <div class="text-white text-bold text-xl m-4">Player 1</div>
@@ -464,7 +464,7 @@ def quizPage(viewerObj: BaseViewer):
             </div>
         </div>
         <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
             <div class="flex items-center gap-4">
                 <div class="font-medium dark:text-white">
                     <div class="text-white text-bold text-xl m-4">Player 1</div>
@@ -474,7 +474,7 @@ def quizPage(viewerObj: BaseViewer):
             </div>
         </div>
         <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
             <div class="flex items-center gap-4">
                 <div class="font-medium dark:text-white">
                     <div class="text-white text-bold text-xl m-4">Player 1</div>
@@ -524,10 +524,14 @@ baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLe
                                Routes.webHomePage.value, Routes.webWS.value, ServerSecrets.webFernetKey.value,
                                extraHeads, bodyBase, CoreValues.title.value, False)
 
-
 @baseApp.get(Routes.internalConnection.value)
 def _internalConn():
     return ""
+
+
+@baseApp.errorhandler(404)
+def not_found(e):
+    return redirect(f"http://127.0.0.1:{ServerSecrets.cdnPort.value}/{request.url.replace(request.root_url, '')}")
 
 
 print(f"http://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
