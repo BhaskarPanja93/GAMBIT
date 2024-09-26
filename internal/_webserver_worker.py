@@ -6,7 +6,7 @@ monkey.patch_all()
 from gevent.pywsgi import WSGIServer
 from dynamicWebsite import *
 
-updatePackage()
+# updatePackage()
 from internal.Enums import *
 
 
@@ -412,21 +412,28 @@ def quizPage(viewerObj: BaseViewer):
 
 
         <div class="text-white font-bold text-2xl p-4">Select an option</div>
-
-        <div class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6">
-            <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
-                <div id="option0" class="text-white font-bold text-2xl">Button 1</div>
-            </button>
-            <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
-                <div id="option1" class="text-white font-bold text-2xl">Button 2</div>
-            </button>
-            <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
-                <div id="option2" class="text-white font-bold text-2xl">Button 3</div>
-            </button>
-            <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
-                <div id="option3" class="text-white font-bold text-2xl">Button 4</div>
-            </button>
-        </div>
+        <form style = "display:none;" action="#" method="GET">
+            <input type="radio" id="op0" name="quiz-item" value="HTML">
+            <input type="radio" id="op1" name="quiz-item" value="HTML">
+            <input type="radio" id="op2" name="quiz-item" value="HTML">
+            <input type="radio" id="op3" name="quiz-item" value="HTML">
+        </form>
+        
+        
+            <div id = "option-group" class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6">
+                <div class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
+                    <div id="option0"  class=" text-white font-bold text-2xl" >Button 1</div>
+                </div>
+                <div class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
+                    <div id="option1" class="text-white font-bold text-2xl">Button 2</div>
+                </div>
+                <div class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
+                    <div id="option2" class="text-white font-bold text-2xl">Button 3</div>
+                </div>
+                <div class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
+                    <div id="option3" class="text-white font-bold text-2xl">Button 4</div>
+                </div>
+            </div>
     </div>
 
     <div id="teamBDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
@@ -580,18 +587,18 @@ def quizEndPage(viewerObj: BaseViewer):
             <div class="text-white font-bold text-2xl p-4">Select an option</div>
 
             <div class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6">
-                # <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
+                # <div class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
                 #     <div id="option0" class="text-white font-bold text-2xl">Button 1</div>
-                # </button>
-                # <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
+                # </div>
+                # <div class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
                 #     <div id="option1" class="text-white font-bold text-2xl">Button 2</div>
-                # </button>
-                # <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
+                # </div>
+                # <div class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
                 #     <div id="option2" class="text-white font-bold text-2xl">Button 3</div>
-                # </button>
-                # <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
+                # </div>
+                # <div class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
                 #     <div id="option3" class="text-white font-bold text-2xl">Button 4</div>
-                # </button>
+                # </div>
             </div>
         </div>
 
@@ -659,13 +666,15 @@ def quizEndPage(viewerObj: BaseViewer):
     """
 
     viewerObj.queueTurboAction(quizEnd, "quizEndPage", viewerObj.turboApp.methods.update)
+
+
 def newVisitorCallback(viewerObj: BaseViewer):
-    initial = "<div id=\"quizEndPage\"></div>"
+    initial = "<div id=\"quizPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
 
     # loginRegisterPage(viewerObj)
-    # quizPage(viewerObj)
-    quizEndPage(viewerObj)
+    quizPage(viewerObj)
+    # quizEndPage(viewerObj)
     # loginInput(viewerObj)
     # sendRegister(viewerObj)
     # sendLogin(viewerObj)
@@ -688,8 +697,10 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 
 
 
-extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
-bodyBase = """<body class="bg-slate-700"><div id="mainDiv"><div></body>"""
+extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>
+<link rel = "stylesheet" href = "{Routes.cdnFileContent.value}?type={CDNFileType.css.value}&name=style.css">
+<script src="{Routes.cdnFileContent.value}?type={CDNFileType.js.value}&name=app.js"> </script> """
+bodyBase = """<body  class="bg-slate-700"><div id="mainDiv"><div></body>"""
 
 
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
