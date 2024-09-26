@@ -413,27 +413,33 @@ def quizPage(viewerObj: BaseViewer):
 
         <div class="text-white font-bold text-2xl p-4">Select an option</div>
 
-        <form id="quiz-form" action="#" method="POST" style="display:none;">
-            <input type="radio" id="op0" name="quiz-item" value="HTML">
-            <input type="radio" id="op1" name="quiz-item" value="HTML">
-            <input type="radio" id="op2" name="quiz-item" value="HTML">
-            <input type="radio" id="op3" name="quiz-item" value="HTML">
-        </form>
-        
         <div id="option-group" class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6">
-            <div class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
+        <form onsubmit="return submit_ws(this)">
+        {viewerObj.addCSRF("submit")}
+            <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
                 <div id="option0" class="text-white font-bold text-2xl">Button 1</div>
-            </div>
-            <div class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
+            </button>
+        </form>
+        <form onsubmit="return submit_ws(this)">
+        {viewerObj.addCSRF("submit")}
+            <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
                 <div id="option1" class="text-white font-bold text-2xl">Button 2</div>
-            </div>
-            <div class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
+            </button>
+        </form>
+        <form onsubmit="return submit_ws(this)">
+        {viewerObj.addCSRF("submit")}
+            <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
                 <div id="option2" class="text-white font-bold text-2xl">Button 3</div>
-            </div>
-            <div class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
+            </button>
+        </form>
+        <form onsubmit="return submit_ws(this)">
+        {viewerObj.addCSRF("submit")}
+            <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
                 <div id="option3" class="text-white font-bold text-2xl">Button 4</div>
-            </div>
-        </div>
+            </button>
+        </form>
+</div>
+
     <div id="teamBDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
         <div class="flex flex-col items-center">
             <div>HEALTH POINTS</div>
