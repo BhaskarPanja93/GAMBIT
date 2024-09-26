@@ -517,7 +517,10 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             print(form)
 
 
-extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
+extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>
+<link rel = "stylesheet" href = "/static/css/styles.css">
+<script src="{Routes.cdnFileContent.value}?type={CDNFileType.js.value}?name=app.js/> """
+
 bodyBase = """<body class="bg-slate-700"><div id="mainDiv"><div></body>"""
 
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
