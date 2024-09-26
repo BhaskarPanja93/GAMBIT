@@ -328,105 +328,147 @@ def testPage(viewerObj: BaseViewer):
 def quizPage(viewerObj: BaseViewer):
     quiz = f"""
 <div class="bg-orange-700 flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
-
-
     <div id="teamDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
-        <div>HEALTH POINTS</div>
-        <div class="flex justify-center w-full h-12 my-8">
-            <div class="flex items-center w-5/6 h-full bg-gray-200 rounded-full dark:bg-gray-700">
-                <div class="bg-red-600 text-2xl h-12 font-medium text-blue-100 text-center leading-none rounded-full flex items-center justify-center"
-                   style="width: 99%">
-                  99% <3
+        <div class="flex flex-col items-center">
+            <div>HEALTH POINTS</div>
+            <div class="relative size-40 flex items-center justify-center">
+                <svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background Circle (Gauge) -->
+                    <circle cx="18" cy="18" r="16" fill="none"
+                            class="stroke-current text-green-200 dark:text-neutral-700"
+                            stroke-width="1" stroke-dasharray="75 100" stroke-linecap="round"></circle>
+
+                    <!-- Gauge Progress -->
+                    <circle cx="18" cy="18" r="16" fill="none" class="stroke-current text-green-500 dark:text-green-500"
+                            stroke-width="2" stroke-dasharray="25 100" stroke-linecap="round"></circle>
+                </svg>
+
+                <!-- Value Text -->
+                <div class="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <span class="text-4xl font-bold text-green-600 dark:text-green-500">25</span>
+                    <span class="text-green-600 dark:text-green-500 block">Score</span>
                 </div>
             </div>
         </div>
 
+
         <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
+            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
             <div class="flex items-center gap-4">
                 <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 1</div>
-                </div>
-            </div>
-        </div>        
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 2</div>
+                    <div class="text-white text-bold text-xl m-4">Player 1</div>
+                    <div class="text-white text-bold text-xl m-4">Correct</div>
+                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
                 </div>
             </div>
         </div>
         <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
+            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
             <div class="flex items-center gap-4">
                 <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 3</div>
+                    <div class="text-white text-bold text-xl m-4">Player 1</div>
+                    <div class="text-white text-bold text-xl m-4">Correct</div>
+                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
+                </div>
+            </div>
+        </div>
+        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <div class="flex items-center gap-4">
+                <div class="font-medium dark:text-white">
+                    <div class="text-white text-bold text-xl m-4">Player 1</div>
+                    <div class="text-white text-bold text-xl m-4">Correct</div>
+                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
                 </div>
             </div>
         </div>
     </div>
 
-    <div id="quizDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
-
-        <div class="text-white font-bold text-2xl h-1/3 p-4 m-4" id="test">
-            Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae risus efficitur quam imperdiet sagittis. Suspendisse rutrum iaculis lectus sit amet maximus. Integer tincidunt in arcu vitae condimentum. Nunc porta ex elit, eget sollicitudin tellus pharetra quis. Ut laoreet, enim maximus dapibus ullamcorper, arcu leo scelerisque quam, a vulputate ligula turpis eu dolor. Proin sem sem, elementum ut nulla nec, fermentum fringilla libero. Maecenas eu facilisis erat, vitae iaculis orci. Donec volutpat enim vitae leo convallis hendrerit. 
-
+        <div id="quizDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
+                <div class="rounded-lg px-2 mx-6 bg-blue-100 text-green font-bold text-2xl p-4">
+                    <div class="text-black font-bold text-2xl h-1/3 p-4 m-4" id="test">
+                        Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae risus efficitur quam imperdiet
+                        sagittis. Suspendisse rutrum iaculis lectus sit amet maximus. Integer tincidunt in arcu vitae condimentum.
+                        Nunc porta ex elit, eget sollicitudin tellus pharetra quis. Ut laoreet, enim maximus dapibus ullamcorper,
+                        arcu leo scelerisque quam, a vulputate ligula turpis eu dolor. Proin sem sem, elementum ut nulla nec,
+                        fermentum fringilla libero. Maecenas eu facilisis erat, vitae iaculis orci. Donec volutpat enim vitae leo
+                        convallis hendrerit.
+                    </div>  
+                </div>
+    
+            
+            <div class="text-white font-bold text-2xl p-4">Select an option</div>
+                   
+            <div class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6">
+                <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
+                    <div id="option0" class="text-white font-bold text-2xl">Button 1</div>
+                </button>
+                <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
+                    <div id="option1" class="text-white font-bold text-2xl">Button 2</div>
+                </button>
+                <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
+                    <div id="option2" class="text-white font-bold text-2xl">Button 3</div>
+                </button>
+                <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
+                    <div id="option3" class="text-white font-bold text-2xl">Button 4</div>
+                </button>
+            </div>
         </div>
 
-        <div class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6"> 
-            <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
-                <div id="option0" class="text-white font-bold text-2xl">Button 1</div>
-            </button>
-            <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
-                <div id="option1" class="text-white font-bold text-2xl">Button 2</div>
-            </button>
-            <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
-                <div id="option2" class="text-white font-bold text-2xl">Button 3</div>
-            </button>
-            <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
-                <div id="option3" class="text-white font-bold text-2xl">Button 4</div>
-            </button>
+    <div id="opponentDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+        <div class="flex flex-col items-center">
+            <div>HEALTH POINTS</div>
+            <div class="relative size-40 flex items-center justify-center">
+                <svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                    <!-- Background Circle (Gauge) -->
+                    <circle cx="18" cy="18" r="16" fill="none"
+                            class="stroke-current text-green-200 dark:text-neutral-700"
+                            stroke-width="1" stroke-dasharray="75 100" stroke-linecap="round"></circle>
+
+                    <!-- Gauge Progress -->
+                    <circle cx="18" cy="18" r="16" fill="none" class="stroke-current text-green-500 dark:text-green-500"
+                            stroke-width="2" stroke-dasharray="25 100" stroke-linecap="round"></circle>
+                </svg>
+
+                <!-- Value Text -->
+                <div class="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
+                    <span class="text-4xl font-bold text-green-600 dark:text-green-500">25</span>
+                    <span class="text-green-600 dark:text-green-500 block">Score</span>
+                </div>
+            </div>
+        </div>
+
+        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <div class="flex items-center gap-4">
+                <div class="font-medium dark:text-white">
+                    <div class="text-white text-bold text-xl m-4">Player 1</div>
+                    <div class="text-white text-bold text-xl m-4">Correct</div>
+                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
+                </div>
+            </div>
+        </div>
+        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <div class="flex items-center gap-4">
+                <div class="font-medium dark:text-white">
+                    <div class="text-white text-bold text-xl m-4">Player 1</div>
+                    <div class="text-white text-bold text-xl m-4">Correct</div>
+                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
+                </div>
+            </div>
+        </div>
+        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+            <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <div class="flex items-center gap-4">
+                <div class="font-medium dark:text-white">
+                    <div class="text-white text-bold text-xl m-4">Player 1</div>
+                    <div class="text-white text-bold text-xl m-4">Correct</div>
+                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
+                </div>
+            </div>
         </div>
     </div>
-
-<div id="opponentDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
-    <div>HEALTH POINTS</div>
-    <div class="flex justify-center w-full h-12 my-8">
-        <div class="flex items-center w-5/6 h-full bg-gray-200 rounded-full dark:bg-gray-700">
-            <div class="bg-red-600 text-2xl h-12 font-medium text-blue-100 text-center leading-none rounded-full flex items-center justify-center"
-               style="width: 45%">
-              45% <3
-            </div>
-        </div>
-    </div>
-
-    <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 1</div>
-                </div>
-            </div>
-        </div>        
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 2</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="rounded w-36 h-36" src="/docs/images/people/profile-picture-5.jpg" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-2xl h-1/3 p-4 m-4">Player 3</div>
-                </div>
-            </div>
-        </div>
-
-</div>
 </div>
 """
 
