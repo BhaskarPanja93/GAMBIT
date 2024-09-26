@@ -328,24 +328,32 @@ def testPage(viewerObj: BaseViewer):
 def quizPage(viewerObj: BaseViewer):
     quiz = f"""
 <div class="bg-orange-700 flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
+    
     <div id="teamDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
         <div class="flex flex-col items-center">
             <div>HEALTH POINTS</div>
             <div class="relative size-40 flex items-center justify-center">
+                
+                    
+            <div id="AHealthBar">
                 <svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
                     <!-- Background Circle (Gauge) -->
                     <circle cx="18" cy="18" r="16" fill="none"
                             class="stroke-current text-green-200 dark:text-neutral-700"
                             stroke-width="1" stroke-dasharray="75 100" stroke-linecap="round"></circle>
-
+            
                     <!-- Gauge Progress -->
                     <circle cx="18" cy="18" r="16" fill="none" class="stroke-current text-green-500 dark:text-green-500"
-                            stroke-width="2" stroke-dasharray="25 100" stroke-linecap="round"></circle>
+                            stroke-width="2" stroke-dasharray="15 100" stroke-linecap="round"></circle>
                 </svg>
+            </div>
+                
 
                 <!-- Value Text -->
                 <div class="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                    <span class="text-4xl font-bold text-green-600 dark:text-green-500">25</span>
+                    <span class="text-4xl font-bold text-green-600 dark:text-green-500">
+                        <div id="AHealthBarText">25</div>
+                        </span>
                     <span class="text-green-600 dark:text-green-500 block">Score</span>
                 </div>
             </div>
@@ -386,7 +394,7 @@ def quizPage(viewerObj: BaseViewer):
 
         <div id="quizDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
                 <div class="rounded-lg px-2 mx-6 bg-blue-100 text-green font-bold text-2xl p-4">
-                    <div class="text-black font-bold text-2xl h-1/3 p-4 m-4" id="test">
+                    <div class="text-black font-bold text-2xl h-1/3 p-4 m-4" id="questionText">
                         Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae risus efficitur quam imperdiet
                         sagittis. Suspendisse rutrum iaculis lectus sit amet maximus. Integer tincidunt in arcu vitae condimentum.
                         Nunc porta ex elit, eget sollicitudin tellus pharetra quis. Ut laoreet, enim maximus dapibus ullamcorper,
@@ -419,23 +427,30 @@ def quizPage(viewerObj: BaseViewer):
         <div class="flex flex-col items-center">
             <div>HEALTH POINTS</div>
             <div class="relative size-40 flex items-center justify-center">
+                 
+            <div id="BHealthBar">
                 <svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
                     <!-- Background Circle (Gauge) -->
                     <circle cx="18" cy="18" r="16" fill="none"
                             class="stroke-current text-green-200 dark:text-neutral-700"
                             stroke-width="1" stroke-dasharray="75 100" stroke-linecap="round"></circle>
-
+            
                     <!-- Gauge Progress -->
                     <circle cx="18" cy="18" r="16" fill="none" class="stroke-current text-green-500 dark:text-green-500"
-                            stroke-width="2" stroke-dasharray="25 100" stroke-linecap="round"></circle>
+                            stroke-width="2" stroke-dasharray="15 100" stroke-linecap="round"></circle>
                 </svg>
+            </div>
+                
 
                 <!-- Value Text -->
                 <div class="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                    <span class="text-4xl font-bold text-green-600 dark:text-green-500">25</span>
+                    <span class="text-4xl font-bold text-green-600 dark:text-green-500">
+                        <div id="BHealthBarText">25</div>
+                        </span>
                     <span class="text-green-600 dark:text-green-500 block">Score</span>
                 </div>
             </div>
+        </div>
         </div>
 
         <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
@@ -502,18 +517,16 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             print(form)
 
 
-
 extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
 bodyBase = """<body class="bg-slate-700"><div id="mainDiv"><div></body>"""
-
 
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
                                Routes.webHomePage.value, Routes.webWS.value, ServerSecrets.webFernetKey.value,
                                extraHeads, bodyBase, CoreValues.title.value, False)
 
+
 @baseApp.get(Routes.internalConnection.value)
 def _internalConn():
-
     return ""
 
 
