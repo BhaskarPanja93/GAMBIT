@@ -504,155 +504,93 @@ def quizEndPage(viewerObj: BaseViewer):
 
         <div id="teamADiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
             <div class="flex flex-col items-center">
-                <div>Leaderboard</div>
+                <div class="my-4 text-bold underline text-gray text-3xl font-bold">Leaderboard</div>
             </div>
 
-            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                <img class="mx-6 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-l">Player 1</div>
-                        <div class="text-white text-bold text-l m-1">Correct</div>
-                        <div class="text-white text-bold text-l m-1">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                <img class="mx-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-l m-1">Player 1</div>
-                        <div class="text-white text-bold text-l m-1">Correct</div>
-                        <div class="text-white text-bold text-l m-1">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                <img class="mx-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-l m-1">Player 1</div>
-                        <div class="text-white text-bold text-l m-1">Correct</div>
-                        <div class="text-white text-bold text-l m-1">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                <img class="mx-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-l m-1">Player 1</div>
-                        <div class="text-white text-bold text-l m-1">Correct</div>
-                        <div class="text-white text-bold text-l m-1">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                <img class="mx-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-l m-1">Player 1</div>
-                        <div class="text-white text-bold text-l m-1">Correct</div>
-                        <div class="text-white text-bold text-l m-1">Incorrect</div>
-                    </div>
+            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+                <div class="font-medium text-bold text-3xl dark:text-white">1</div>
+                <img class="mr-12 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 1</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 100</div>
                 </div>
             </div>
             
-        </div>
-
-        <div id="quizEndDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
-            <div class="rounded-lg px-2 mx-6 bg-blue-100 text-green font-bold text-2xl p-4">
-                <div class="text-black font-bold text-2xl h-1/3 p-4 m-4" id="questionText">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae risus efficitur quam imperdiet
-                    sagittis. Suspendisse rutrum iaculis lectus sit amet maximus. Integer tincidunt in arcu vitae
-                    condimentum.
-                    Nunc porta ex elit, eget sollicitudin tellus pharetra quis. Ut laoreet, enim maximus dapibus
-                    ullamcorper,
-                    arcu leo scelerisque quam, a vulputate ligula turpis eu dolor. Proin sem sem, elementum ut nulla nec,
-                    fermentum fringilla libero. Maecenas eu facilisis erat, vitae iaculis orci. Donec volutpat enim vitae
-                    leo
-                    convallis hendrerit.
-
+            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+                <div class="font-medium text-bold text-3xl dark:text-white">2</div>
+                <img class="mr-12 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 1</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 100</div>
                 </div>
             </div>
+            
+            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+                <div class="font-medium text-bold text-3xl dark:text-white">3</div>
+                <img class="mr-12 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 1</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 100</div>
+                </div>
+            </div>
+            
+            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+                <div class="font-medium text-bold text-3xl dark:text-white">4</div>
+                <img class="mr-12 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 1</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 100</div>
+                </div>
+            </div>
+            
+            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+                <div class="font-medium text-bold text-3xl dark:text-white">5</div>
+                <img class="mr-12 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 1</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 100</div>
+                </div>
+            </div> 
+            
+            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+                <div class="font-medium text-bold text-3xl dark:text-white">6</div>
+                <img class="mr-12 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 1</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 100</div>
+                </div>
+            </div>   
+            
+        </div>
 
-
-            <div class="text-white font-bold text-2xl p-4">Select an option</div>
-
-            <div class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6">
-                # <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
-                #     <div id="option0" class="text-white font-bold text-2xl">Button 1</div>
-                # </button>
-                # <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
-                #     <div id="option1" class="text-white font-bold text-2xl">Button 2</div>
-                # </button>
-                # <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
-                #     <div id="option2" class="text-white font-bold text-2xl">Button 3</div>
-                # </button>
-                # <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
-                #     <div id="option3" class="text-white font-bold text-2xl">Button 4</div>
-                # </button>
+        <div id="quizEndDiv" class="p-8 rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
+        
+            
+            <div class="p-8 rounded-lg mx-6 bg-blue-200 text-green font-bold text-2xl h-full w-full">
+                <div class="flex justify-center items-center text-black font-bold text-2xl h-1/3" id="questionText">
+                    VICTORY
+                </div>
             </div>
         </div>
 
         <div id="opponentDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
             <div class="flex flex-col items-center">
-                <div>HEALTH POINTS</div>
-                <div class="relative size-40 flex items-center justify-center">
-
-                    <div id="BHealthBar">
-                        <svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-                            <!-- Background Circle (Gauge) -->
-                            <circle cx="18" cy="18" r="16" fill="none"
-                                    class="stroke-current text-green-200 dark:text-neutral-700"
-                                    stroke-width="1" stroke-dasharray="75 100" stroke-linecap="round"></circle>
-
-                            <!-- Gauge Progress -->
-                            <circle cx="18" cy="18" r="16" fill="none"
-                                    class="stroke-current text-green-500 dark:text-green-500"
-                                    stroke-width="2" stroke-dasharray="15 100" stroke-linecap="round"></circle>
-                        </svg>
-                    </div>
-
-                    <!-- Value Text -->
-                    <div class="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                        <span class="text-4xl font-bold text-green-600 dark:text-green-500">
-                            <div id="BHealthBarText">25</div>
-                            </span>
-                        <span class="text-green-600 dark:text-green-500 block">Score</span>
-                    </div>
-                </div>
+                <div>QUESTIONS LIST</div>
+                
             </div>
-
-            <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-                <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center gap-4">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-xl m-4">Player 1</div>
-                        <div class="text-white text-bold text-xl m-4">Correct</div>
-                        <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-                <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center gap-4">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-xl m-4">Player 1</div>
-                        <div class="text-white text-bold text-xl m-4">Correct</div>
-                        <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-                <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center gap-4">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-xl m-4">Player 1</div>
-                        <div class="text-white text-bold text-xl m-4">Correct</div>
-                        <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                    </div>
-                </div>
+            <div class="flex flex-col items-center mt-4"> 
+                <ul class="grid grid-cols-1 gap-2 w-full h-full p-4">
+                  <li><button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">1</button></li>
+                  <li><button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">2</button></li>
+                  <li><button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">3</button></li>
+                  <li><button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">4</button></li>
+                  <li><button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">5</button></li>
+                  <li><button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">6</button></li>
+                  <li><button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">7</button></li>
+                  <li><button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">8</button></li>
+                  <li><button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">9</button></li>
+                  <li><button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">10</button></li>
+                </ul>
             </div>
         </div>
     </div>
