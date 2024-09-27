@@ -56,69 +56,6 @@ def navBar(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(navigation_bar, "navBar", viewerObj.turboApp.methods.update)
 
 
-# def loginPage(viewerObj: BaseViewer):
-#     login = f"""
-#
-#     <nav class="bg-neutral-300">
-#         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-#             <div class="relative flex items-center justify-between h-16">
-#                 <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-#                     <div class="flex-shrink-0 flex items-center">
-#                         <a href="#" class="text-white text-2xl">Gambit</a>
-#                     </div>
-#                     <div class="hidden sm:block sm:ml-6">
-#                         <div class="flex space-x-4">
-#                             <a href="#" class="text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
-#                             <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
-#                             <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-#                         </div>
-#                     </div>
-#                 </div>
-#                 <div class="hidden sm:block sm:ml-6">
-#                     <div class="flex space
-#                     -x-4">
-#                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
-#                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
-#                     </div>
-#                 </div>
-#             </div>
-#         </div>
-#     </nav>
-#     """
-#     viewerObj.queueTurboAction(login, "loginPage", viewerObj.turboApp.methods.update)
-# def registerPage(viewerObj: BaseViewer):
-#     registration = f"""
-#
-#     <nav class="bg-neutral-300">
-#         <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-#             <div class="relative flex items-center justify-between h-16">
-#                 <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-#                     <div class="flex-shrink-0 flex items-center">
-#                         <a href="#" class="text-white text-2xl">Study Well</a>
-#                     </div>
-#                     <div class="hidden sm:block sm:ml-6">
-#                         <div class="flex space
-#                         -x-4">
-#                             <a href="#" class="text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
-#                             <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
-#                             <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-#                         </div>
-#                     </div>
-#                 </div>
-#                 <div class="hidden sm:block sm:ml-6">
-#                     <div class="flex space
-#                     -x-4">
-#                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
-#                         <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
-#                     </div>
-#                 </div>
-#             </div>
-#         </div>
-#     </nav>
-#     """
-#     viewerObj.queueTurboAction(registration, "registerPage", viewerObj.turboApp.methods.update)
-
-
 def renderHomepage(viewerObj: BaseViewer):
     home = f"""
 <div class="px-12 w-full sm:px-12">
@@ -166,49 +103,96 @@ def renderHomepage(viewerObj: BaseViewer):
 
 def renderAuthPage(viewerObj: BaseViewer):
     loginRegister = f"""
-        <nav class="my-6 relative flex items-center justify-between sm:h-10 md:justify-center" aria-label="Global">
-            <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-                    <a href="#">
-                        <span class="sr-only">Gambit - All in One Education</span>
-                        <img class="w-auto h-14 sm:h-18" src="https://www.svgrepo.com/show/448244/pack.svg" loading="lazy" width="202" height="80">
-                    </a>
-                    <div class="flex items-center -mr-2 md:hidden">
-                        <button class="inline-flex items-center justify-center p-2 text-blue-700 bg-yellow-700 rounded-lg hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-50"  type="button" aria-expanded="false">
-                        </button>
-                    </div>
-                </div>
-            </div>
-            <div class="hidden md:flex md:space-x-10 list-none">
-                <p class="text-3xl text-white font-bold">THE ALL IN ONE PLATFORM </p>
-            </div>
-            <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
-                <div class="py-4 inline-flex rounded-full shadow">   
-                    <button class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-yellow-300 border border-transparent rounded-3xl cursor-pointer hover:bg-gray-100 font-bold">
-                        REGISTER
-                    </button>
-                </div>
-            </div>
-        </nav>
-
-        <div class="flex items-center justify-stretch min-h-screen grid grid-cols-2 gap-8 px-6 py-6 place-content-stretch h-64">
-            <div id="loginDiv" class="rounded-lg bg-blue-700 flex items-center justify-center h-96">
-                <button id="loginButton" class="rounded-lg bg-blue-700 flex items-center justify-center h-96 w-full">
-                    <p class="text-white font-bold text-4xl">Login</p>
+<nav class="my-6 relative flex items-center justify-between sm:h-10 md:justify-center" aria-label="Global">
+    <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
+        <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
+            <a href="#">
+                <span class="sr-only">Gambit - All in One Education</span>
+                <img class="w-auto h-14 sm:h-18" src="https://www.svgrepo.com/show/448244/pack.svg" loading="lazy"
+                     width="202" height="80">
+            </a>
+            <div class="flex items-center -mr-2 md:hidden">
+                <button class="inline-flex items-center justify-center p-2 text-blue-700 bg-yellow-700 rounded-lg hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-50"
+                        type="button" aria-expanded="false">
                 </button>
-                <div id="loginWarning"></div>
-                <div id="loginFormContainer" class="hidden rounded-lg bg-blue-700 flex items-center justify-center h-96"></div>
             </div>
-
-            <div id="registerDiv" class="rounded-lg bg-yellow-700 flex items-center justify-center h-96">
-                <button id="registerButton" class="rounded-lg bg-yellow-700 flex items-center justify-center h-96 w-full">
-                    <p class="text-white font-bold text-4xl">Register</p>
-                </button> 
-
-                <div id="registrationWarning"></div>
-                <div id="registerFormContainer" class="hidden rounded-lg bg-yellow-700 flex items-center justify-center h-96"></div> 
-            </div> 
         </div>
+    </div>
+    <div class="hidden md:flex md:space-x-10 list-none">
+        <p class="text-3xl text-white font-bold">THE ALL IN ONE EDUCATION PLATFORM </p>
+    </div>
+    <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
+        <div class="py-4 inline-flex rounded-full">
+            <button class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-yellow-300 border border-transparent rounded-3xl cursor-pointer hover:bg-gray-100 font-bold">
+                Login OR Sign UP Here
+            </button>
+        </div>
+    </div>
+</nav>
+
+
+<div class="flex items-center justify-center min-h-screen">
+    <div class="flex items-center bg-slate-500 rounded-lg p-8 justify-stretch h-3/4 min-h-0 grid grid-cols-2 gap-8 place-content-stretch mx-6 w-full">
+        <!-- Login Section -->
+        <div id="loginDiv" class="rounded-lg bg-blue-700 flex items-center justify-center h-96">
+            <button id="loginButton" class="rounded-lg bg-blue-700 flex items-center justify-center h-96 w-full">
+                <p class="text-white font-bold text-4xl">Login</p>
+            </button>
+            <div id="loginFormContainer" class="hidden rounded-lg bg-blue-700 flex items-center justify-center h-96">
+                <form onsubmit="return submit_ws(this)">
+                    {viewerObj.addCSRF("login")}
+                    <input type="text" autocomplete="off"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           name="username" placeholder="Username">
+                    <input autocomplete="off"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           type="password" name="password" placeholder="Password">
+                    <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit</button>
+                </form>
+            </div>
+        </div>
+
+
+        <!-- Register Section -->
+        <div id="registerDiv" class="rounded-lg bg-yellow-700 flex items-center justify-center h-96 w-full">
+            <button id="registerButton" class="rounded-lg bg-yellow-700 flex items-center justify-center h-96 w-full">
+                <p class="text-white font-bold text-4xl">Register</p>
+            </button>
+
+            <div class="flex justify-between">
+                <div id="registerFormContainer"
+                     class="hidden rounded-lg bg-yellow-700 flex items-center justify-center h-96 w-full">
+                    <form class="w-full px-6" onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF("register")}
+
+                        <input type="text" autocomplete="off"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               name="username" placeholder="Username">
+
+                        <input type="text" autocomplete="off"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               name="email" placeholder="Email">
+
+                        <input type="password" autocomplete="off"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               name="password" placeholder="Password">
+
+                        <input type="password" autocomplete="off"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               name="confirm_password" placeholder="Confirm Password">
+                        <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+
+        <div id="loginWarning"
+             class="text-2xl flex col-span-2 items-center justify-center text-black rounded-lg px-4 py-2 text-center font-semibold w-full"></div>
+        <div id="registrationWarning"
+             class="text-2xl flex col-span-2 items-center justify-center text-black rounded-lg px-4 py-2 text-center font-semibold w-full"></div>
+    </div>
+</div>
 
 
     <script>
@@ -225,72 +209,6 @@ def renderAuthPage(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(loginRegister, "fullPage", viewerObj.turboApp.methods.update)
     sendRegisterForm(viewerObj)
     sendLoginForm(viewerObj)
-
-
-def testPage(viewerObj: BaseViewer):
-    testingpage = f"""
-    <div id="app" class="w-full max-w-xs">
-
-    <button type="button" id="viewlogin"class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800">View Login</button>    
-    <button type="button" id="hideButton"class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 me-2 mb-2 dark:bg-blue-600 dark:hover:bg-blue-700 focus:outline-none dark:focus:ring-blue-800" onclick="hideLogin()">Hide</button>    
-    <button type="button" id="showButton"class="text-white bg-blue-600 rounded-full font-medium text-sm px-5 py-2.5 me-2 mb-2 hover:bg-blue-800" onclick="showLogin()">Show Login</button>    
-    </div>
-
-    <div id="loginContainer" class="rounded-lg w-2/3 bg-blue-700 h-128 p-4 m-4 ">
-        <div id="loginForm">
-            <h2 class="font-bold text-lg mb-4">Login</h2>
-            <input class="rounded-lg w-full p-4 my-2" type="text" placeholder="Username">
-            <input class="rounded-lg w-full p-4 my-2" type="password" placeholder="Password">
-            <div class="flex justify-center">
-            <button class="bg-blue-500 rounded-full text-white p-2 w-1/2 mb-4 my-4">Login</button>
-            </div>
-            <p class="text-center">Don't have an account? <button onclick="showRegister()" class="text-blue-500">Register</button></p>
-        </div>
-    </div>
-    # <script>
-    #     function showLogin() {{
-    #         document.getElementById('loginForm').style.display = 'block';
-    #         document.getElementById('registerForm').style.display = 'none';
-    #     }}
-    # </script>
-
-    <style>
-    .fade-in {{
-      animation: fadeIn 1s ease-in-out forwards;
-    }}
-    @keyframes fadeIn {{
-      from {{
-        opacity: 0;
-      }}
-      to {{
-        opacity: 1;
-      }}
-    }}
-  </style>
-
-    <script>
-    const showDivBtn = document.getElementById('viewlogin');
-    const showLoginBtn = document.getElementById('showButton');
-    const animatedDiv = document.getElementById('loginForm');
-
-    showDivBtn.addEventListener('click', () => {{
-      animatedDiv.classList.remove('hidden');
-      animatedDiv.classList.add('fade-in');
-    }});
-  </script>
-
-  <script>
-    function hideLogin() {{
-    document.getElementById('loginContainer').style.display = 'none';
-    }}
-
-    function showLogin() {{
-    document.getElementById('loginContainer').style.display = 'block';
-    }}
-  </script>
-    """
-
-    viewerObj.queueTurboAction(testingpage, "testPage", viewerObj.turboApp.methods.update)
 
 
 def renderQuizGamePage(viewerObj: BaseViewer):
@@ -755,24 +673,38 @@ def renderQuizMatchFoundPage(viewerObj: BaseViewer):
 def sendRegisterForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF("register")}
-                        <input type="text" class="py-3 px-4 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" name="username" placeholder="Username" >
-                        <input type="text" class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" name="email" placeholder="Email" >
-                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" type="password" name="password" placeholder="Password" >
-                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" type="password" name="confirm_password" placeholder="Confirm Password" >
-                        <button type="submit" class="bg-white text-blue-700 font-bold p-6 rounded">Submit</button>
+                                                <input type="text" autocomplete="off"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               name="username" placeholder="Username">
+
+                        <input type="text" autocomplete="off"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               name="email" placeholder="Email">
+
+                        <input type="password" autocomplete="off"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               name="password" placeholder="Password">
+
+                        <input type="password" autocomplete="off"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               name="confirm_password" placeholder="Confirm Password">
+
+                        <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit
+                        </button>
                     </form>"""
     viewerObj.queueTurboAction(form, "registerFormContainer", viewerObj.turboApp.methods.update)
 
 
 def sendLoginForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF("login")}
-                        <input type="text" class="py-3 px-5 block w-full border-gray-200 rounded-full text-xl focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" name="username" placeholder="Username" >
-                        <br>
-                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-xl focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" type="password" name="password" placeholder="Password" >
-                        <br>
-                        <button type="submit" class="bg-white text-blue-700 font-bold p-6 rounded">Submit</button>
-                    </form>"""
+                    {viewerObj.addCSRF("login")}
+                    <input type="text" autocomplete="off"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           name="username" placeholder="Username">
+                    <input autocomplete="off" class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           type="password" name="password" placeholder="Password">
+                    <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit</button>
+                </form>"""
     viewerObj.queueTurboAction(form, "loginFormContainer", viewerObj.turboApp.methods.update)
 
 
@@ -1066,11 +998,11 @@ def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
 
-    # renderAuthPage(viewerObj)
+    renderAuthPage(viewerObj)
     # sleep(2)
     # renderHomepage(viewerObj)
     # sleep(2)
-    renderQuizLobbyPage(viewerObj)
+    # renderQuizLobbyPage(viewerObj)
     # sleep(2)
     # renderQuizMatchFoundPage(viewerObj)
     # sleep(2)
