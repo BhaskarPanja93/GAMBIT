@@ -164,9 +164,7 @@ def renderHomepage(viewerObj: BaseViewer):
 
 
 def renderAuthPage(viewerObj: BaseViewer):
-
     loginRegister = f"""
-    
         <nav class="my-6 relative flex items-center justify-between sm:h-10 md:justify-center" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
                 <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
@@ -198,16 +196,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                     <p class="text-white font-bold text-4xl">Login</p>
                 </button>
                 <div id="loginWarning"></div>
-                <div id="loginFormContainer" class="hidden rounded-lg bg-blue-700 flex items-center justify-center h-96">
-                    <form onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF("login")}
-                        <input type="text" class="py-3 px-5 block w-full border-gray-200 rounded-full text-xl focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" name="username" placeholder="Username" >
-                        <br>
-                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-xl focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" type="password" name="password" placeholder="Password" >
-                        <br>
-                        <button type="submit" class="bg-white text-blue-700 font-bold p-6 rounded">Submit</button>
-                    </form>
-                </div>
+                <div id="loginFormContainer" class="hidden rounded-lg bg-blue-700 flex items-center justify-center h-96"></div>
             </div>
 
             <div id="registerDiv" class="rounded-lg bg-yellow-700 flex items-center justify-center h-96">
@@ -216,17 +205,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                 </button> 
 
                 <div id="registrationWarning"></div>
-                <div id="registerFormContainer" class="hidden rounded-lg bg-yellow-700 flex items-center justify-center h-96">
-                    <form onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF("register")}
-                        <input type="text" class="py-3 px-4 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" name="username" placeholder="Username" >
-                        <input type="text" class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" name="email" placeholder="Email" >
-                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" type="password" name="password" placeholder="Password" >
-                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" type="password" name="confirm_password" placeholder="Confirm Password" >
-
-                        <button type="submit" class="bg-white text-blue-700 font-bold p-6 rounded">Submit</button>
-                    </form>
-                </div> 
+                <div id="registerFormContainer" class="hidden rounded-lg bg-yellow-700 flex items-center justify-center h-96"></div> 
             </div> 
         </div>
 
@@ -241,23 +220,10 @@ def renderAuthPage(viewerObj: BaseViewer):
             document.getElementById('registerButton').classList.add('hidden');
         }});    
     </script>
-
     """
-
     viewerObj.queueTurboAction(loginRegister, "fullPage", viewerObj.turboApp.methods.update)
-
-    loginInputForm = f"""
-
-
-
-    """
-
-    # viewerObj.queueTurboAction(loginInputForm, "loginRegisterPage", viewerObj.turboApp.methods.update)
-
-    registerInputForm = f"""
-
-    """
-    # viewerObj.queueTurboAction(registerInput, "registerDiv", viewerObj.turboApp.methods.update)
+    sendRegisterForm(viewerObj)
+    sendLoginForm(viewerObj)
 
 
 def testPage(viewerObj: BaseViewer):
@@ -698,7 +664,7 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
     <div class="bg-orange-700 flex h-full w-full gap-8 px-6 py-6">
 
         <div class="w-full">
-                        <h1 class="flex justify-center text-3xl font-bold text-white">Lobby</h1>
+            <h1 class="flex justify-center text-3xl font-bold text-white">Lobby</h1>
 
           <div id="quizLobbyDiv" class="p-8 rounded-lg grid grid-cols-3 w-full h-full gap-4">
             <div class="bg-blue-500 h-full rounded-lg flex flex-col justify-between items-center py-6">
@@ -840,10 +806,9 @@ def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
 
-    renderAuthPage(viewerObj)
-    sleep(2)
-
-    # renderHomepage(viewerObj)
+    # renderAuthPage(viewerObj)
+    # sleep(2)
+    renderHomepage(viewerObj)
     # sleep(2)
     # renderQuizLobbyPage(viewerObj)
     # sleep(2)
