@@ -295,10 +295,10 @@ def renderQuizGamePage(viewerObj: BaseViewer):
 # Ending Quiz Page
 def renderQuizEndPage(viewerObj: BaseViewer):
     quizEnd = f"""
-    <div class="bg-orange-700 flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
-    <div id="leaderboardDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+    <div class="bg-[#23003d] flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
+    <div id="leaderboardDiv" class="rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
         <div class="flex flex-col items-center">
-            <div class="my-4 text-bold underline text-gray text-3xl font-bold">Leaderboard</div>
+            <div class="my-4 text-bold text-white text-3xl font-bold">Leaderboard</div>
         </div>
 
         <!-- Leaderboard Entries -->
@@ -306,15 +306,15 @@ def renderQuizEndPage(viewerObj: BaseViewer):
 
     </div>
 
-    <div id="postQuiz" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
-        <div class="p-8 rounded-lg mx-6 bg-blue-200 text-green font-bold text-2xl h-full w-full">
-            <div id="resultTextDiv" class="flex justify-center items-center text-black font-bold text-2xl h-1/3"></div>
+    <div id="postQuiz" class="rounded-lg bg-[#490080] flex flex-col items-center justify-center w-full h-full">
+        <div class="p-8 rounded-lg mx-6 bg-[#490080] font-bold text-2xl h-full w-full">
+            <div id="resultTextDiv" class="flex justify-center items-center text-white font-bold text-2xl h-1/3"></div>
         </div>
     </div>
 
-    <div class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+    <div class="rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
         <div class="flex flex-col items-center">
-            <div>QUESTIONS LIST</div>
+            <div style="color:white">QUESTIONS LIST</div>
         </div>
         <div id="postQuizQuestionList" class="flex flex-col items-center mt-4"></div>
     </div>
@@ -326,44 +326,44 @@ def renderQuizEndPage(viewerObj: BaseViewer):
 def renderQuizLobbyPage(viewerObj: BaseViewer):
     quizLobby = f"""
 
-    <div class="bg-orange-700 flex h-full w-full gap-8 px-6 py-6">
+    <div class="bg-[#23003d] flex h-full w-full gap-8 px-6 py-6">
 
         <div class="w-full">
             <h1 class="flex justify-center text-3xl font-bold text-white">Lobby</h1>
 
           <div id="quizLobbyDiv" class="p-8 rounded-lg grid grid-cols-3 w-full h-full gap-4">
-            <div class="bg-blue-500 h-full rounded-lg flex flex-col justify-between items-center py-6">
-                <img class="rounded-full w-48 h-48 mb-4" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
+                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
                 <div class="text-white text-xl font-bold text-center">Username</div> <!-- Increased size and centered -->
                 <div class="text-white text-lg text-center">Rank</div> <!-- Increased size and centered -->
                 <div class="text-white text-lg text-center">Level</div> <!-- Increased size and centered -->
             </div>
 
-            <div class="bg-red-500 h-full rounded-lg flex flex-col justify-between items-center py-6">
-                <img class="rounded-full w-48 h-48 mb-4" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
+                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
                 <div class="text-white text-lg font-semibold">Username</div>
                 <div class="text-white text-md">Rank</div>
                 <div class="text-white text-md">Level</div>
             </div>
-            <div class="bg-green-500 h-full rounded-lg flex flex-col justify-between items-center py-6">
-                <img class="rounded-full w-48 h-48 mb-4" src="static/images/profilepic.webp" alt="Extra large avatar">
+            <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
+                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
                 <div class="text-white text-lg font-semibold">Username</div>
                 <div class="text-white text-md">Rank</div>
                 <div class="text-white text-md">Level</div>
             </div>
           </div>
         </div>
-        <div id="quizFriendListDiv" class="p-6 flex items-center rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+        <div id="quizFriendListDiv" class="p-6 flex items-center rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
             <!-- Queue Up Button -->
             <form class="w-full" onsubmit="return submit_ws(this)">
                 {viewerObj.addCSRF('startQueue')}
-                <button type="submit" class="w-full p-4 rounded-full flex justify-center bg-gray-700 mb-4">
+                <button type="submit" class="w-full p-4 rounded-full flex justify-center bg-gradient-to-r from-purple-500 to-violet-700 hover:scale-105 hover:transition duration-300 ease-in-out mb-4">
                     <div id="queueTimer" class="w-full text-white font-bold">QUEUE UP</div>
                 </button>
             </form>
 
             <!-- Friend List Container -->
-            <div class="rounded-lg h-full w-full bg-yellow-200 m-8 p-4">
+            <div class="rounded-lg h-full w-full bg-[#eacfff] m-8 p-4">
                 <!-- Friend List Title -->
                 <div class="text-dark font-bold flex justify-center mb-4">FRIEND LIST</div>
 
@@ -372,52 +372,7 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
                     <!-- Friend 1 -->
                     <div class="bg-white rounded-lg p-2 flex justify-between items-center">
                         <span class="font-semibold">Friend 1</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 2 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 2</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 3 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 3</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 4 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 4</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 5 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 5</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 6 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 6</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 7 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 7</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 8 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 8</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 9 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 9</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 10 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 10</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                        <button class="bg-gradient-to-r from-purple-500 to-violet-700 text-white px-4 py-1 rounded-lg">Invite</button>
                     </div>
                 </div>
             </div>
@@ -430,9 +385,9 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
 
 def renderQuizMatchFoundPage(viewerObj: BaseViewer):
     matchFound = f"""
-        <div class="bg-orange-700 flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
-            <div id="quizDiv" class="rounded-lg bg-gray-100 flex flex-col items-center justify-center w-full h-full">
-                <h1 class="text-7xl text-dark font-bold">MATCH FOUND</h1>
+        <div class="bg-[#23003d] flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
+            <div id="quizDiv" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex flex-col items-center justify-center w-full h-full">
+                <h1 class="text-7xl text-white font-bold">MATCH FOUND</h1>
         </div>
         </div>
 
@@ -665,7 +620,7 @@ class Quiz:
 
     def sendPostQuizQuestion(self, viewer: BaseViewer, questionIndex):
         questionIndex = int(questionIndex)
-        postQuestion = f"""<div class="rounded-lg px-2 mx-6 bg-blue-100 text-green font-bold text-2xl p-4">
+        postQuestion = f"""<div class="rounded-lg px-2 mx-6 bg-[#eacfff] text-green font-bold text-2xl p-4">
                 <div class="text-black font-bold text-2xl h-1/3 p-4 m-4">{self.questions[questionIndex].questionStatement}{self.questions[questionIndex].correctAnswers[0]}</div>
             </div>"""
         viewer.queueTurboAction(postQuestion, "postQuiz", viewer.turboApp.methods.update)
@@ -680,7 +635,7 @@ class Quiz:
                                     <form onsubmit="return submit_ws(this)">
                                         {viewer.addCSRF('postQuestion')}
                                         <input type="hidden" name="question" value="{questionIndex}">
-                                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">{questionIndex+1}</button>
+                                        <button class="rounded-lg hover:scale-105 hover:text-white hover:transition duration-300 ease-in-out bg-gradient-to-r from-purple-500 to-violet-700 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">{questionIndex+1}</button>
                                     </form>
                                 </li>
                                 """
@@ -756,11 +711,11 @@ class Quiz:
                         rank += 1
                         username = viewerToUsernameMaps.get(viewerID, "")
                         score = sortedPlayerList[viewerID]
-                        playerDiv = f"""<div class="rounded-lg bg-[#eacfff] mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                                    <div class="font-medium text-bold text-3xl dark:text-black">{rank}</div>
+                        playerDiv = f"""<div class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
+                                    <div class="font-medium text-bold text-3xl text-white">{rank}</div>
                                     <div class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
-                                        <img class="mr-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                                        <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white">
+                                        <img class="mr-4 rounded-full w-16 h-16" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
+                                        <div class="rounded-lg bg-red-white mr-8 font-medium text-[#23003d]">
                                             <div class="px-2 text-white text-bold text-xl">{username}</div>
                                             <div class="px-2 text-white text-bold text-xl">Points: {score}</div>
                                         </div>
