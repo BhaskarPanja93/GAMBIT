@@ -131,11 +131,11 @@ def renderAuthPage(viewerObj: BaseViewer):
 <div class="flex items-center justify-center min-h-screen">
     <div class="flex items-center bg-slate-500 rounded-lg p-8 justify-stretch h-3/4 min-h-0 grid grid-cols-2 gap-8 place-content-stretch mx-6 w-full">
         <!-- Login Section -->
-        <div id="loginDiv" class="rounded-lg bg-blue-700 flex items-center justify-center h-96">
-            <button id="loginButton" class="rounded-lg bg-blue-700 flex items-center justify-center h-96 w-full">
-                <p class="text-white font-bold text-4xl">Login</p>
+        <div id="loginDiv" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-2xl">
+            <button id="loginButton" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 w-full shadow-2xl">
+                <div class="w-full text-white font-bold text-4xl">Login</div>
             </button>
-            <div id="loginFormContainer" class="hidden rounded-lg bg-blue-700 flex items-center justify-center h-96">
+            <div id="loginFormContainer" class="hidden w-full rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-2xl">
                 <form onsubmit="return submit_ws(this)">
                     {viewerObj.addCSRF("login")}
                     <input type="text" autocomplete="off"
@@ -149,16 +149,15 @@ def renderAuthPage(viewerObj: BaseViewer):
             </div>
         </div>
 
-
         <!-- Register Section -->
-        <div id="registerDiv" class="rounded-lg bg-yellow-700 flex items-center justify-center h-96 w-full">
-            <button id="registerButton" class="rounded-lg bg-yellow-700 flex items-center justify-center h-96 w-full">
-                <p class="text-white font-bold text-4xl">Register</p>
+        <div id="registerDiv" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-2xl">
+            <button id="registerButton" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 w-full shadow-2xl">
+                <div class="w-full text-white font-bold text-4xl">Register</div>
             </button>
 
-            <div class="flex justify-between">
+            
                 <div id="registerFormContainer"
-                     class="hidden rounded-lg bg-yellow-700 flex items-center justify-center h-96 w-full">
+                     class="hidden w-full rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-2xl">
                     <form class="w-full px-6" onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF("register")}
                         
@@ -187,7 +186,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                         </button>
                     </form>
                 </div>
-            </div>
+            
         </div>
 
         <div id="loginWarning"
