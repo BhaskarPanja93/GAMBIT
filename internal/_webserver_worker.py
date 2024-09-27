@@ -1,5 +1,6 @@
 from flask import redirect, request
 from gevent import monkey
+from time import sleep
 
 monkey.patch_all()
 
@@ -10,15 +11,6 @@ updatePackage()
 from internal.Enums import *
 
 
-# def sendRegister(viewerObj: BaseViewer):
-#     registerHTML = f"""
-#         <form id="songForm" onsubmit="return submit_ws(this)" autocomplete="off">
-#             {viewerObj.addCSRF(FormPurposes.register.value)}
-#             <label for="songName">Register:</label><br>
-#             <input type="text" id="songName" name="songName"><br><br>
-#             <button class="text-gray-500 focus:"type="submit">Register</button>
-#         </form>"""
-#     viewerObj.queueTurboAction(registerHTML, "register", viewerObj.turboApp.methods.update)
 
 
 def sendLogin(viewerObj: BaseViewer):
@@ -183,9 +175,33 @@ def homePage(viewerObj: BaseViewer):
 
 
 def loginRegisterPage(viewerObj: BaseViewer):
-    homePage(viewerObj)
 
     loginRegister = f"""
+    
+        <nav class="my-6 relative flex items-center justify-between sm:h-10 md:justify-center" aria-label="Global">
+            <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
+                    <a href="#">
+                        <span class="sr-only">Gambit - All in One Education</span>
+                        <img class="w-auto h-14 sm:h-18" src="https://www.svgrepo.com/show/448244/pack.svg" loading="lazy" width="202" height="80">
+                    </a>
+                    <div class="flex items-center -mr-2 md:hidden">
+                        <button class="inline-flex items-center justify-center p-2 text-blue-700 bg-yellow-700 rounded-lg hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-50"  type="button" aria-expanded="false">
+                        </button>
+                    </div>
+                </div>
+            </div>
+            <div class="hidden md:flex md:space-x-10 list-none">
+                <p class="text-3xl text-white font-bold">THE ALL IN ONE PLATFORM </p>
+            </div>
+            <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
+                <div class="py-4 inline-flex rounded-full shadow">   
+                    <button class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-yellow-300 border border-transparent rounded-3xl cursor-pointer hover:bg-gray-100 font-bold">
+                        REGISTER
+                    </button>
+                </div>
+            </div>
+        </nav>
 
         <div class="flex items-center justify-stretch min-h-screen grid grid-cols-2 gap-8 px-6 py-6 place-content-stretch h-64">
             <div id="loginDiv" class="rounded-lg bg-blue-700 flex items-center justify-center h-96">
@@ -194,7 +210,8 @@ def loginRegisterPage(viewerObj: BaseViewer):
                 </button>
 
                 <div id="loginFormContainer" class="hidden rounded-lg bg-blue-700 flex items-center justify-center h-96">
-                    <form onsubmit="return submitLogin(this)">
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF("login")}
                         <input type="text" class="py-3 px-5 block w-full border-gray-200 rounded-full text-xl focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" name="username" placeholder="Username" >
                         <br>
                         <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-xl focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" type="password" name="password" placeholder="Password" >
@@ -211,14 +228,11 @@ def loginRegisterPage(viewerObj: BaseViewer):
 
 
                 <div id="registerFormContainer" class="hidden rounded-lg bg-yellow-700 flex items-center justify-center h-96">
-                    <form onsubmit="return submitRegister(this)">
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF("register")}
                         <input type="text" class="py-3 px-4 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" name="username" placeholder="Username" >
-
                         <input type="text" class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" name="email" placeholder="Email" >
-
                         <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" type="password" name="password" placeholder="Password" >
-
-
                         <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" type="password" name="confirm_password" placeholder="Confirm Password" >
 
                         <button type="submit" class="bg-white text-blue-700 font-bold p-6 rounded">Submit</button>
@@ -233,9 +247,6 @@ def loginRegisterPage(viewerObj: BaseViewer):
             document.getElementById('loginFormContainer').classList.remove('hidden');
             document.getElementById('loginButton').classList.add('hidden');
         }});   
-
-
-
             document.getElementById('registerButton').addEventListener('click', function() {{
             document.getElementById('registerFormContainer').classList.remove('hidden');
             document.getElementById('registerButton').classList.add('hidden');
@@ -244,7 +255,7 @@ def loginRegisterPage(viewerObj: BaseViewer):
 
     """
 
-    viewerObj.queueTurboAction(loginRegister, "loginRegisterPage", viewerObj.turboApp.methods.update)
+    viewerObj.queueTurboAction(loginRegister, "homePage", viewerObj.turboApp.methods.update)
 
     loginInputForm = f"""
 
@@ -361,52 +372,28 @@ def quizPage(viewerObj: BaseViewer):
             </div>
         </div>
 
-
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
+        <div id="selfPlayer_create" class="rounded-lg bg-red-200 mx-4 my-2 flex flex-col items-center justify-center">
+            <div class="flex flex-col justify-center items-center gap-4">
                 <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
+                    <img class="mx-4 my-4 rounded-lg w-20 h-20"
+                 src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp"
+                 alt="Extra large avatar">
+                    <div class="flex justify-center text-white text-bold text-xl m-2">Player 1</div>
+                    <div class="flex justify-center text-white text-bold text-xl m-2">Correct</div>
+                    <div class="flex justify-center text-white text-bold text-xl m-2">Incorrect</div>
                 </div>
             </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
+        </div> 
+        
+        
+        
+        
     </div>
 
-    <div id="quizDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
-        <div class="rounded-lg px-2 mx-6 bg-blue-100 text-green font-bold text-2xl p-4">
-            <div class="text-black font-bold text-2xl h-1/3 p-4 m-4" id="questionText">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae risus efficitur quam imperdiet
-                sagittis. Suspendisse rutrum iaculis lectus sit amet maximus. Integer tincidunt in arcu vitae
-                condimentum.
-                Nunc porta ex elit, eget sollicitudin tellus pharetra quis. Ut laoreet, enim maximus dapibus
-                ullamcorper,
-                arcu leo scelerisque quam, a vulputate ligula turpis eu dolor. Proin sem sem, elementum ut nulla nec,
-                fermentum fringilla libero. Maecenas eu facilisis erat, vitae iaculis orci. Donec volutpat enim vitae
-                leo
-                convallis hendrerit.
-
+    <div id="quizDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full p-4">
+        <div class="rounded-lg mx-6 bg-blue-100 text-green font-bold text-2xl p-4 w-full">
+            <div class="text-black font-bold text-2xl h-1/3 p-4 m-4 flex justify-center" id="questionText">
+                What is the capital city of France?
             </div>
         </div>
 
@@ -414,199 +401,34 @@ def quizPage(viewerObj: BaseViewer):
         <div class="text-white font-bold text-2xl p-4">Select an option</div>
 
         <div id="option-group" class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6">
-        <form onsubmit="return submit_ws(this)">
-        {viewerObj.addCSRF("submit")}
-            <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
-                <div id="option0" class="text-white font-bold text-2xl">Button 1</div>
-            </button>
-        </form>
-        <form onsubmit="return submit_ws(this)">
-        {viewerObj.addCSRF("submit")}
-            <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
-                <div id="option1" class="text-white font-bold text-2xl">Button 2</div>
-            </button>
-        </form>
-        <form onsubmit="return submit_ws(this)">
-        {viewerObj.addCSRF("submit")}
-            <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
-                <div id="option2" class="text-white font-bold text-2xl">Button 3</div>
-            </button>
-        </form>
-        <form onsubmit="return submit_ws(this)">
-        {viewerObj.addCSRF("submit")}
-            <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
-                <div id="option3" class="text-white font-bold text-2xl">Button 4</div>
-            </button>
-        </form>
-</div>
-
-    <div id="teamBDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
-        <div class="flex flex-col items-center">
-            <div>HEALTH POINTS</div>
-            <div class="relative size-40 flex items-center justify-center">
-
-                <div id="BHealthBar">
-                    <svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Background Circle (Gauge) -->
-                        <circle cx="18" cy="18" r="16" fill="none"
-                                class="stroke-current text-green-200 dark:text-neutral-700"
-                                stroke-width="1" stroke-dasharray="75 100" stroke-linecap="round"></circle>
-
-                        <!-- Gauge Progress -->
-                        <circle cx="18" cy="18" r="16" fill="none"
-                                class="stroke-current text-green-500 dark:text-green-500"
-                                stroke-width="2" stroke-dasharray="15 100" stroke-linecap="round"></circle>
-                    </svg>
-                </div>
-
-                <!-- Value Text -->
-                <div class="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                    <span class="text-4xl font-bold text-green-600 dark:text-green-500">
-                        <div id="BHealthBarText">25</div>
-                        </span>
-                    <span class="text-green-600 dark:text-green-500 block">Score</span>
-                </div>
-            </div>
+            <form onsubmit="return submit_ws(this)">
+                {viewerObj.addCSRF("option0")}
+                <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
+                    <div id="option0" class="text-white font-bold text-2xl">Berlin 1</div>
+                </button>
+            </form>
+            <form onsubmit="return submit_ws(this)">
+                {viewerObj.addCSRF("option1")}
+                <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
+                    <div id="option1" class="text-white font-bold text-2xl">Madrid 2</div>
+                </button>
+            </form>
+            <form onsubmit="return submit_ws(this)">
+                {viewerObj.addCSRF("option2")}
+                <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
+                    <div id="option2" class="text-white font-bold text-2xl">Paris 3</div>
+                </button>
+            </form>
+            <form onsubmit="return submit_ws(this)">
+                {viewerObj.addCSRF("option3")}
+                <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
+                    <div id="option3" class="text-white font-bold text-2xl">Rome 4</div>
+                </button>
+            </form>
+        </div>
         </div>
 
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="/{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
-    </div>
-</div>
-"""
-
-    viewerObj.queueTurboAction(quiz, "quizPage", viewerObj.turboApp.methods.update)
-
-
-
-
-# Ending Quiz Page
-def quizEndPage(viewerObj: BaseViewer):
-    quizEnd = f"""
-    <div class="bg-orange-700 flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
-
-        <div id="teamADiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
-            <div class="flex flex-col items-center">
-                <div>Leaderboard</div>
-            </div>
-
-            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                <img class="mx-6 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-l">Player 1</div>
-                        <div class="text-white text-bold text-l m-1">Correct</div>
-                        <div class="text-white text-bold text-l m-1">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                <img class="mx-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-l m-1">Player 1</div>
-                        <div class="text-white text-bold text-l m-1">Correct</div>
-                        <div class="text-white text-bold text-l m-1">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                <img class="mx-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-l m-1">Player 1</div>
-                        <div class="text-white text-bold text-l m-1">Correct</div>
-                        <div class="text-white text-bold text-l m-1">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                <img class="mx-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-l m-1">Player 1</div>
-                        <div class="text-white text-bold text-l m-1">Correct</div>
-                        <div class="text-white text-bold text-l m-1">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                <img class="mx-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-l m-1">Player 1</div>
-                        <div class="text-white text-bold text-l m-1">Correct</div>
-                        <div class="text-white text-bold text-l m-1">Incorrect</div>
-                    </div>
-                </div>
-            </div>
-            
-        </div>
-
-        <div id="quizEndDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
-            <div class="rounded-lg px-2 mx-6 bg-blue-100 text-green font-bold text-2xl p-4">
-                <div class="text-black font-bold text-2xl h-1/3 p-4 m-4" id="questionText">
-                    Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae risus efficitur quam imperdiet
-                    sagittis. Suspendisse rutrum iaculis lectus sit amet maximus. Integer tincidunt in arcu vitae
-                    condimentum.
-                    Nunc porta ex elit, eget sollicitudin tellus pharetra quis. Ut laoreet, enim maximus dapibus
-                    ullamcorper,
-                    arcu leo scelerisque quam, a vulputate ligula turpis eu dolor. Proin sem sem, elementum ut nulla nec,
-                    fermentum fringilla libero. Maecenas eu facilisis erat, vitae iaculis orci. Donec volutpat enim vitae
-                    leo
-                    convallis hendrerit.
-
-                </div>
-            </div>
-
-
-            <div class="text-white font-bold text-2xl p-4">Select an option</div>
-
-            <div class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6">
-                # <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
-                #     <div id="option0" class="text-white font-bold text-2xl">Button 1</div>
-                # </button>
-                # <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
-                #     <div id="option1" class="text-white font-bold text-2xl">Button 2</div>
-                # </button>
-                # <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
-                #     <div id="option2" class="text-white font-bold text-2xl">Button 3</div>
-                # </button>
-                # <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
-                #     <div id="option3" class="text-white font-bold text-2xl">Button 4</div>
-                # </button>
-            </div>
-        </div>
-
-        <div id="opponentDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+        <div id="teamBDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
             <div class="flex flex-col items-center">
                 <div>HEALTH POINTS</div>
                 <div class="relative size-40 flex items-center justify-center">
@@ -627,49 +449,215 @@ def quizEndPage(viewerObj: BaseViewer):
 
                     <!-- Value Text -->
                     <div class="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
-                        <span class="text-4xl font-bold text-green-600 dark:text-green-500">
-                            <div id="BHealthBarText">25</div>
-                            </span>
+                    <span class="text-4xl font-bold text-green-600 dark:text-green-500">
+                        <div id="BHealthBarText">25</div>
+                        </span>
                         <span class="text-green-600 dark:text-green-500 block">Score</span>
                     </div>
                 </div>
             </div>
 
-            <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-                <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center gap-4">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-xl m-4">Player 1</div>
-                        <div class="text-white text-bold text-xl m-4">Correct</div>
-                        <div class="text-white text-bold text-xl m-4">Incorrect</div>
+            <div id="otherPlayer_create" class="rounded-lg bg-red-200 mx-4 my-2 flex flex-col items-center justify-center">
+                <div class="flex flex-col justify-center items-center gap-4">
+                    <div id="otherPlayer1" class="font-medium dark:text-white">
+                        <img class="mx-4 my-4 rounded-lg w-20 h-20"
+                     src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp"
+                     alt="Extra large avatar">
+                        <div class="flex justify-center text-white text-bold text-xl m-2">Player 1</div>
+                        <div class="flex justify-center text-white text-bold text-xl m-2">Correct</div>
+                        <div class="flex justify-center text-white text-bold text-xl m-2">Incorrect</div>
                     </div>
                 </div>
             </div>
-            <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-                <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center gap-4">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-xl m-4">Player 1</div>
-                        <div class="text-white text-bold text-xl m-4">Correct</div>
-                        <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                    </div>
+            
+        </div>
+    </div>
+
+    
+"""
+
+    viewerObj.queueTurboAction(quiz, "homePage", viewerObj.turboApp.methods.update)
+
+
+# Ending Quiz Page
+def quizEndPage(viewerObj: BaseViewer):
+    quizEnd = f"""
+    <div class="bg-orange-700 flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
+    <div id="leaderboardDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+        <div class="flex flex-col items-center">
+            <div class="my-4 text-bold underline text-gray text-3xl font-bold">Leaderboard</div>
+        </div>
+
+        <!-- Leaderboard Entries -->
+        <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+            <div class="font-medium text-bold text-3xl dark:text-white">1</div>
+            
+            
+            <div id="player1" class="w-full p-4 flex items-center justify-start"> <!-- Aligning items in the center -->
+                <img class="mr-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 1</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 100</div>
                 </div>
             </div>
-            <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-                <img class="mx-4 rounded w-28 h-28" src="static/images/profilepic.webp" alt="Extra large avatar">
-                <div class="flex items-center gap-4">
-                    <div class="font-medium dark:text-white">
-                        <div class="text-white text-bold text-xl m-4">Player 1</div>
-                        <div class="text-white text-bold text-xl m-4">Correct</div>
-                        <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                    </div>
+            
+        </div>
+
+        <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+            <div class="font-medium text-bold text-3xl dark:text-white">2</div>
+            
+            <div id="player2" class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
+                <img class="mr-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 2</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 90</div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+            <div class="font-medium text-bold text-3xl dark:text-white">3</div>
+            
+            <div id="player3" class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
+                <img class="mr-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 3</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 80</div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+            <div class="font-medium text-bold text-3xl dark:text-white">4</div>
+            
+            <div id="player4" class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
+                <img class="mr-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 4</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 70</div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+            <div class="font-medium text-bold text-3xl dark:text-white">5</div>
+            
+            <div id="player5" class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
+                <img class="mr-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 5</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 60</div>
+                </div>
+            </div>
+            
+        </div>
+
+        <div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6"> 
+            <div class="font-medium text-bold text-3xl dark:text-white">6</div>
+            
+            <div id="player6" class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
+                <img class="mr-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white"> 
+                    <div class="px-2 text-white text-bold text-xl">Player 6</div>
+                    <div class="px-2 text-white text-bold text-xl">Points: 50</div>
+                </div>
+            </div>
+            
+        </div>
+    </div>
+
+        <div id="quizEndDiv" class="p-8 rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
+            <div class="p-8 rounded-lg mx-6 bg-blue-200 text-green font-bold text-2xl h-full w-full">
+                <div id="resultTextDiv" class="flex justify-center items-center text-black font-bold text-2xl h-1/3" id="questionText">
+                    VICTORY
                 </div>
             </div>
         </div>
-    </div>
-    """
 
-    viewerObj.queueTurboAction(quizEnd, "quizEndPage", viewerObj.turboApp.methods.update)
+        <div id="questionListDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+            <div class="flex flex-col items-center">
+                <div>QUESTIONS LIST</div>
+                
+            </div>
+            <div class="flex flex-col items-center mt-4"> 
+                <ul class="grid grid-cols-1 gap-2 w-full h-full p-4">
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question1')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">1</button>
+                        <form>
+                    </li>
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question2')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">2</button>
+                        <form>
+                    </li>
+                    
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question3')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">3</button>
+                        <form>
+                    </li>
+                    
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question4')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">4</button>
+                        <form>
+                    </li>
+                    
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question5')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">5</button>
+                        <form>
+                    </li>
+                    
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question6')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">6</button>
+                        <form>
+                    </li>
+                    
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question7')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">7</button>
+                        <form>
+                    </li>
+                    
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question8')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">8</button>
+                        <form>
+                    </li>
+                    
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question9')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">9</button>
+                        <form>
+                    </li>
+                    
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question10')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">10</button>
+                        <form>
+                    </li>
+                </ul>
+            </div>
+        </div>
+    </div>    
+    """
+    viewerObj.queueTurboAction(quizEnd, "homePage", viewerObj.turboApp.methods.update)
 
 
 def quizLobbyPage(viewerObj: BaseViewer):
@@ -773,25 +761,44 @@ def quizLobbyPage(viewerObj: BaseViewer):
         </div>
 
     </div>
-
-
     """
-    viewerObj.queueTurboAction(quizLobby, "quizLobbyPage", viewerObj.turboApp.methods.update)
+    viewerObj.queueTurboAction(quizLobby, "homePage", viewerObj.turboApp.methods.update)
 
+
+def quizMatchFound(viewerObj: BaseViewer):
+    matchFound = f"""
+        <div class="bg-orange-700 flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
+            <div id="quizDiv" class="rounded-lg bg-gray-100 flex flex-col items-center justify-center w-full h-full">
+                <h1 class="text-7xl text-dark font-bold">MATCH FOUND</h1>     
+        </div>
+        </div>
+            
+        """
+    viewerObj.queueTurboAction(matchFound, "homePage", viewerObj.turboApp.methods.update)
 
 
 def newVisitorCallback(viewerObj: BaseViewer):
-    initial = "<div id=\"quizLobbyPage\"></div>"
+    initial = "<div id=\"homePage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
 
-    # loginRegisterPage(viewerObj)
-    # quizPage(viewerObj)
-    quizLobbyPage(viewerObj)
-    # quizEndPage(viewerObj)
-    # loginInput(viewerObj)
-    # sendRegister(viewerObj)
-    # sendLogin(viewerObj)
     # homePage(viewerObj)
+    # sleep(2)
+    loginRegisterPage(viewerObj)
+    # sleep(2)
+    # quizLobbyPage(viewerObj)
+    # sleep(2)
+    # quizPage(viewerObj)
+    # sleep(2)
+    # quizMatchFound(viewerObj)
+    # sleep(2)
+    # quizEndPage(viewerObj)
+    # sleep(2)
+    # loginInput(viewerObj)
+    # sleep(2)
+    # sendRegister(viewerObj)
+    # sleep(2)
+    # sendLogin(viewerObj)
+    # sleep(2)
 
 
 def visitorLeftCallback(viewerObj: BaseViewer):
@@ -801,7 +808,7 @@ def visitorLeftCallback(viewerObj: BaseViewer):
 def formSubmitCallback(viewerObj: BaseViewer, form: dict):
     if form is not None:
         purpose = form.pop("PURPOSE")
-        print(purpose,form)
+        print(purpose, form)
 
         if purpose == FormPurposes.register.value:
             print(form)
@@ -810,18 +817,16 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             print(form)
 
 
-
 extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
 bodyBase = """<body class="bg-slate-700"><div id="mainDiv"><div></body>"""
-
 
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
                                Routes.webHomePage.value, Routes.webWS.value, ServerSecrets.webFernetKey.value,
                                extraHeads, bodyBase, CoreValues.title.value, False)
 
+
 @baseApp.get(Routes.internalConnection.value)
 def _internalConn():
-
     return ""
 
 
