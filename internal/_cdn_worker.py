@@ -46,5 +46,6 @@ def _fileContent():
 def _favicon():
     return send_from_directory(folderLocation+"/static/image", "favicon.png", as_attachment=True)
 
+
 print(f"CDN: http://127.0.0.1:{ServerSecrets.cdnPort.value}")
 WSGIServer(('0.0.0.0', ServerSecrets.cdnPort.value,), CDNApp, log=None).serve_forever()

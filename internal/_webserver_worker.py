@@ -10,195 +10,10 @@ from randomisedString import Generator as StringGenerator
 from dynamicWebsite import *
 from internal.Enums import *
 from gevent.pywsgi import WSGIServer
+from internal.Methods import *
+from customisedLogs import Manager as LogManager
+from werkzeug.security import check_password_hash, generate_password_hash
 
-
-SQLconn = MySQLPoolManager(DBData.DBUser.value, DBData.DBPassword.value, DBData.DBName.value,DBData.DBHosts.value)
-
-
-class Party:
-    def __init__(self):
-        self.sides: dict[str, list[BaseViewer]] = {"A": [], "B": []}
-        self.teamSize = {"A": 0, "B": 0}
-        self.partyStartAt = time()
-        self.gameStarted = False
-        self.quiz = None
-        Thread(target=self.forceStartTimer).start()
-
-    def forceStartTimer(self):
-        while time() - self.partyStartAt < 5 and not self.gameStarted:
-            for team in self.sides:
-                for player in self.sides[team]:
-                    player.queueTurboAction(str(5 - int(time() - self.partyStartAt)), "queueTimer", player.turboApp.methods.update.value)
-            sleep(1)
-
-    def joinTeam(self, viewer: BaseViewer, team):
-        def _PlayerJoinTeam(self, viewer, team):
-            self.teamSize[team] += 1
-            self.sides[team].append(viewer)
-
-        if team is None:
-            if self.teamSize["A"] + self.teamSize["B"] < 6:
-                if self.teamSize["A"] < self.teamSize["B"]:
-                    team = "A"
-                else:
-                    team = "B"
-                _PlayerJoinTeam(self, viewer, team)
-        else:
-            _PlayerJoinTeam(self, viewer, team)
-
-    def leaveTeam(self, viewer: BaseViewer, team):
-        if viewer in self.sides[team]:
-            self.teamSize[team] -= 1
-            self.sides[team].remove(viewer)
-
-    def initGame(self):
-        self.gameStarted = True
-        self.quiz = Quiz(turboApp, SQLconn)
-        self.quiz.startQuiz(self.sides)
-
-
-class Question:
-    def __init__(self):
-        self.questionID = ""
-        self.questionStatement = ""
-        self.teamOptions: dict[str, list[str]] = {"A": [], "B": []}
-        self.correctAnswers = []
-
-    def setValues(self, questionID, question: str, options: dict[str, list[str]]):
-        self.questionID = questionID
-        self.questionStatement = question
-        self.correctAnswers = options["Correct"]
-        for team in self.teamOptions:
-            shuffle(options["InCorrect"])
-            for _ in range(3):
-                while True:
-                    option = options["InCorrect"][_]
-                    if option not in self.teamOptions[team]:
-                        self.teamOptions[team].append(option)
-                        break
-            self.teamOptions[team].append(options["Correct"][0])
-            shuffle(self.teamOptions[team])
-
-
-class Quiz:
-    def __init__(self, turboApp: ModifiedTurbo, MySQLPool: MySQLPoolManager):
-        self.MySQLPool = MySQLPool
-        self.turboApp = turboApp
-
-        self.startTime = time()
-        self.matchID = StringGenerator().AlphaNumeric(50, 50)
-        self.questionsStarted = False
-        self.endTime = 0.0
-
-        self.players: dict[str, dict] = {}  # "abc":{"Team":team, "Viewer":viewer}
-        self.teamHealth = {}
-        self.scores = {}  # "abc":10
-
-        self.questions: list[Question] = []
-        self.questionIndex = -1
-        self.optionsPressed = {}
-
-    def renderPlayers(self):
-        for player in self.players:
-            for _player in self.players:
-                continue
-                #TODO:
-
-    def extractQuestions(self):
-        for questionData in self.MySQLPool.execute("SELECT * from questions where QuizEligible=1 ORDER BY RAND() LIMIT 10"):
-            question = Question()
-            question.setValues(questionData["QuestionID"], questionData["Text"], questionData["Options"])
-            self.questions.append(question)
-        self.questionIndex = -1
-
-    def nextQuestion(self):
-        self.questionIndex += 1
-        self.optionsPressed = {}
-        currentQuestion = self.questions[self.questionIndex]
-        for playerID in self.players:
-            viewer = self.players[playerID]["Viewer"]
-            team = self.players[playerID]["Team"]
-            viewer.queueTurboAction(currentQuestion.questionStatement, "questionText", viewer.turboApp.methods.update.value)
-            for optionNumber in range(len(currentQuestion.teamOptions[team])):
-                viewer.queueTurboAction(currentQuestion.teamOptions[team][optionNumber], f"option{optionNumber}", viewer.turboApp.methods.update.value)
-
-    def receiveUserInput(self, viewer: BaseViewer, optionIndex):
-        if len(self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]]) > optionIndex >= 0:
-            if viewer.viewerID not in self.optionsPressed:
-                self.optionsPressed[viewer.viewerID] = optionIndex
-                if len(self.optionsPressed) == len(self.players):
-                    self.endQuestion()
-
-    def endQuestion(self):
-        points = {}
-        for viewerID in self.optionsPressed:
-            option = self.questions[self.questionIndex].teamOptions[self.players[viewerID]["Team"]][self.optionsPressed[viewerID]]
-            if option in self.questions[self.questionIndex].correctAnswers:
-                if self.players[viewerID]["Team"] not in points:
-                    points[self.players[viewerID]["Team"]] = 0
-                points[self.players[viewerID]["Team"]] += 1
-                if viewerID not in self.scores:
-                    self.scores[viewerID] = 0
-                self.scores[viewerID] += 10
-        for team in points:
-            if points[team] == 0:
-                for _team in points:
-                    if team != team and points[_team] != 0:
-                        self.updateHealth(team, -3)
-                        break
-            else:
-                _point = points[team]
-                for _team in points:
-                    if team != team and points[_team] != 0:
-                        self.updateHealth(team, -1)
-                        break
-
-    def updateHealth(self, teamChanged: str, offset):
-        self.teamHealth[teamChanged] += offset
-        for playerID in self.players:
-            viewer = self.players[playerID]["Viewer"]
-            team = self.players[playerID]["Team"]
-            if team == teamChanged:
-                viewer.queueTurboAction(str(newHealth), f"selfHealth", viewer.turboApp.methods.update.value)
-            else:
-                viewer.queueTurboAction(str(newHealth), f"otherHealth", viewer.turboApp.methods.update.value)
-
-    def startQuiz(self, sides: dict[str, list[BaseViewer]]):
-        for team in sides:
-            for player in sides[team]:
-                self.players[player.viewerID] = {"Team": team, "Viewer": player}
-        self.extractQuestions()
-
-    def endQuiz(self):
-        pass
-
-    def saveToDB(self):
-        pass
-
-
-# def sendRegister(viewerObj: BaseViewer):
-#     registerHTML = f"""
-#         <form id="songForm" onsubmit="return submit_ws(this)" autocomplete="off">
-#             {viewerObj.addCSRF(FormPurposes.register.value)}
-#             <label for="songName">Register:</label><br>
-#             <input type="text" id="songName" name="songName"><br><br>
-#             <button class="text-gray-500 focus:"type="submit">Register</button>
-#         </form>"""
-#     viewerObj.queueTurboAction(registerHTML, "register", viewerObj.turboApp.methods.update)
-
-
-def sendLogin(viewerObj: BaseViewer):
-    registerHTML = f"""
-
-            <button class="focus:border-blue-500 text-gray-500 text-2xl sm:max-w-md flex-wrap">LOL</button>
-
-        <form id="songForm" onsubmit="return submit_ws(this)" autocomplete="off">
-            {viewerObj.addCSRF(FormPurposes.login.value)}
-            <label for="songName">Login:</label><br>
-            <input type="text" id="songName" name="songName"><br><br>
-            <button type="submit">Login</button>
-        </form>"""
-    viewerObj.queueTurboAction(registerHTML, "login", viewerObj.turboApp.methods.update)
 
 
 def navBar(viewerObj: BaseViewer):
@@ -382,7 +197,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                 <button id="loginButton" class="rounded-lg bg-blue-700 flex items-center justify-center h-96 w-full">
                     <p class="text-white font-bold text-4xl">Login</p>
                 </button>
-
+                <div id="loginWarning"></div>
                 <div id="loginFormContainer" class="hidden rounded-lg bg-blue-700 flex items-center justify-center h-96">
                     <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF("login")}
@@ -400,7 +215,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                     <p class="text-white font-bold text-4xl">Register</p>
                 </button> 
 
-
+                <div id="registrationWarning"></div>
                 <div id="registerFormContainer" class="hidden rounded-lg bg-yellow-700 flex items-center justify-center h-96">
                     <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF("register")}
@@ -994,6 +809,31 @@ def renderQuizMatchFoundPage(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(matchFound, "fullPage", viewerObj.turboApp.methods.update)
 
 
+
+def sendRegisterForm(viewerObj:BaseViewer):
+    form = f"""<form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF("register")}
+                        <input type="text" class="py-3 px-4 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" name="username" placeholder="Username" >
+                        <input type="text" class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" name="email" placeholder="Email" >
+                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" type="password" name="password" placeholder="Password" >
+                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-l focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none mb-4" type="password" name="confirm_password" placeholder="Confirm Password" >
+                        <button type="submit" class="bg-white text-blue-700 font-bold p-6 rounded">Submit</button>
+                    </form>"""
+    viewerObj.queueTurboAction(form, "registerFormContainer", viewerObj.turboApp.methods.update)
+
+
+def sendLoginForm(viewerObj:BaseViewer):
+    form = f"""<form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF("login")}
+                        <input type="text" class="py-3 px-5 block w-full border-gray-200 rounded-full text-xl focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" name="username" placeholder="Username" >
+                        <br>
+                        <input class="py-3 px-5 block w-full border-gray-200 rounded-full text-xl focus:border-blue-500 focus:ring-blue-500 disabled:opacity-50 disabled:pointer-events-none" type="password" name="password" placeholder="Password" >
+                        <br>
+                        <button type="submit" class="bg-white text-blue-700 font-bold p-6 rounded">Submit</button>
+                    </form>"""
+    viewerObj.queueTurboAction(form, "loginFormContainer", viewerObj.turboApp.methods.update)
+
+
 def newVisitorCallback(viewerObj: BaseViewer):
     print("Visitor Joined: ", viewerObj.viewerID)
 
@@ -1003,26 +843,225 @@ def newVisitorCallback(viewerObj: BaseViewer):
     renderAuthPage(viewerObj)
     sleep(2)
 
-    renderHomepage(viewerObj)
-    sleep(2)
-    renderQuizLobbyPage(viewerObj)
-    sleep(2)
-    renderQuizMatchFoundPage(viewerObj)
-    sleep(2)
-    renderQuizGamePage(viewerObj)
-    sleep(2)
-    quizEndPage(viewerObj)
-    sleep(2)
+    # renderHomepage(viewerObj)
+    # sleep(2)
+    # renderQuizLobbyPage(viewerObj)
+    # sleep(2)
+    # renderQuizMatchFoundPage(viewerObj)
+    # sleep(2)
+    # renderQuizGamePage(viewerObj)
+    # sleep(2)
+    # quizEndPage(viewerObj)
+    # sleep(2)
     #loginInput(viewerObj)
     #sleep(2)
     #sendRegister(viewerObj)
     #sleep(2)
-    sendLogin(viewerObj)
-    sleep(2)
+    # sendLogin(viewerObj)
+    # sleep(2)
 
 
 def visitorLeftCallback(viewerObj: BaseViewer):
     print("Visitor Left: ", viewerObj.viewerID)
+
+
+class Party:
+    def __init__(self):
+        self.sides: dict[str, list[BaseViewer]] = {"A": [], "B": []}
+        self.teamSize = {"A": 0, "B": 0}
+        self.partyStartAt = time()
+        self.gameStarted = False
+        self.quiz = None
+        Thread(target=self.forceStartTimer).start()
+
+    def forceStartTimer(self):
+        while time() - self.partyStartAt < 5 and not self.gameStarted:
+            for team in self.sides:
+                for player in self.sides[team]:
+                    player.queueTurboAction(str(5 - int(time() - self.partyStartAt)), "queueTimer", player.turboApp.methods.update.value)
+            sleep(1)
+
+    def joinTeam(self, viewer: BaseViewer, team):
+        def _PlayerJoinTeam(self, viewer, team):
+            self.teamSize[team] += 1
+            self.sides[team].append(viewer)
+
+        if team is None:
+            if self.teamSize["A"] + self.teamSize["B"] < 6:
+                if self.teamSize["A"] < self.teamSize["B"]:
+                    team = "A"
+                else:
+                    team = "B"
+                _PlayerJoinTeam(self, viewer, team)
+        else:
+            _PlayerJoinTeam(self, viewer, team)
+
+    def leaveTeam(self, viewer: BaseViewer, team):
+        if viewer in self.sides[team]:
+            self.teamSize[team] -= 1
+            self.sides[team].remove(viewer)
+
+    def initGame(self):
+        self.gameStarted = True
+        self.quiz = Quiz(turboApp, SQLconn)
+        self.quiz.startQuiz(self.sides)
+
+
+class Question:
+    def __init__(self):
+        self.questionID = ""
+        self.questionStatement = ""
+        self.teamOptions: dict[str, list[str]] = {"A": [], "B": []}
+        self.correctAnswers = []
+
+    def setValues(self, questionID, question: str, options: dict[str, list[str]]):
+        self.questionID = questionID
+        self.questionStatement = question
+        self.correctAnswers = options["Correct"]
+        for team in self.teamOptions:
+            shuffle(options["InCorrect"])
+            for _ in range(3):
+                while True:
+                    option = options["InCorrect"][_]
+                    if option not in self.teamOptions[team]:
+                        self.teamOptions[team].append(option)
+                        break
+            self.teamOptions[team].append(options["Correct"][0])
+            shuffle(self.teamOptions[team])
+
+
+class Quiz:
+    def __init__(self, turboApp: ModifiedTurbo, MySQLPool: MySQLPoolManager):
+        self.MySQLPool = MySQLPool
+        self.turboApp = turboApp
+
+        self.startTime = time()
+        self.matchID = StringGenerator().AlphaNumeric(50, 50)
+        self.questionsStarted = False
+        self.endTime = 0.0
+
+        self.players: dict[str, dict] = {}  # "abc":{"Team":team, "Viewer":viewer}
+        self.teamHealth = {}
+        self.scores = {}  # "abc":10
+
+        self.questions: list[Question] = []
+        self.questionIndex = -1
+        self.optionsPressed = {}
+
+    def renderPlayers(self):
+        for player in self.players:
+            for _player in self.players:
+                continue
+                #TODO:
+
+    def extractQuestions(self):
+        for questionData in self.MySQLPool.execute("SELECT * from questions where QuizEligible=1 ORDER BY RAND() LIMIT 10"):
+            question = Question()
+            question.setValues(questionData["QuestionID"], questionData["Text"], questionData["Options"])
+            self.questions.append(question)
+        self.questionIndex = -1
+
+    def nextQuestion(self):
+        self.questionIndex += 1
+        self.optionsPressed = {}
+        currentQuestion = self.questions[self.questionIndex]
+        for playerID in self.players:
+            viewer = self.players[playerID]["Viewer"]
+            team = self.players[playerID]["Team"]
+            viewer.queueTurboAction(currentQuestion.questionStatement, "questionText", viewer.turboApp.methods.update.value)
+            for optionNumber in range(len(currentQuestion.teamOptions[team])):
+                viewer.queueTurboAction(currentQuestion.teamOptions[team][optionNumber], f"option{optionNumber}", viewer.turboApp.methods.update.value)
+
+    def receiveUserInput(self, viewer: BaseViewer, optionIndex):
+        if len(self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]]) > optionIndex >= 0:
+            if viewer.viewerID not in self.optionsPressed:
+                self.optionsPressed[viewer.viewerID] = optionIndex
+                if len(self.optionsPressed) == len(self.players):
+                    self.endQuestion()
+
+    def endQuestion(self):
+        points = {}
+        for viewerID in self.optionsPressed:
+            option = self.questions[self.questionIndex].teamOptions[self.players[viewerID]["Team"]][self.optionsPressed[viewerID]]
+            if option in self.questions[self.questionIndex].correctAnswers:
+                if self.players[viewerID]["Team"] not in points:
+                    points[self.players[viewerID]["Team"]] = 0
+                points[self.players[viewerID]["Team"]] += 1
+                if viewerID not in self.scores:
+                    self.scores[viewerID] = 0
+                self.scores[viewerID] += 10
+        for team in points:
+            if points[team] == 0:
+                for _team in points:
+                    if team != team and points[_team] != 0:
+                        self.updateHealth(team, -3)
+                        break
+            else:
+                _point = points[team]
+                for _team in points:
+                    if team != team and points[_team] != 0:
+                        self.updateHealth(team, -1)
+                        break
+
+    def updateHealth(self, teamChanged: str, offset):
+        self.teamHealth[teamChanged] += offset
+        for playerID in self.players:
+            viewer = self.players[playerID]["Viewer"]
+            team = self.players[playerID]["Team"]
+            if team == teamChanged:
+                viewer.queueTurboAction(str(newHealth), f"selfHealth", viewer.turboApp.methods.update.value)
+            else:
+                viewer.queueTurboAction(str(newHealth), f"otherHealth", viewer.turboApp.methods.update.value)
+
+    def startQuiz(self, sides: dict[str, list[BaseViewer]]):
+        for team in sides:
+            for player in sides[team]:
+                self.players[player.viewerID] = {"Team": team, "Viewer": player}
+        self.extractQuestions()
+
+    def endQuiz(self):
+        pass
+
+    def saveToDB(self):
+        pass
+
+
+def registerUser(viewerObj:BaseViewer, form:dict):
+    username = form.get("username", "")
+    email = form.get("email", "")
+    password = form.get("password", "")
+    confirm_password = form.get("confirm_password", "")
+    if not username:
+        viewerObj.queueTurboAction("Invalid Username", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        sendRegisterForm(viewerObj)
+    elif SQLconn.execute(f"SELECT UserName from user_auth where UserName=\"{username}\" limit 1"):
+        viewerObj.queueTurboAction("Username Taken", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        sendRegisterForm(viewerObj)
+    elif email.count("@")!=1 or email.count(".")!=1:
+        viewerObj.queueTurboAction("Email not valid", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        sendRegisterForm(viewerObj)
+    elif password!=confirm_password:
+        viewerObj.queueTurboAction("Passwords Dont match", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        sendRegisterForm(viewerObj)
+    else:
+        while True:
+            userID = StringGenerator().AlphaNumeric(50, 50)
+            if not SQLconn.execute(f"SELECT UserName from user_auth where UserID=\"{userID}\" limit 1"):
+                SQLconn.execute(f"INSERT INTO user_info values (\"{userID}\", now(), \"{username}\", 0)")
+                SQLconn.execute(f"INSERT INTO user_auth values (\"{userID}\", \"{username}\", \"{generate_password_hash(password)}\")")
+                break
+
+def loginUser(viewerObj:BaseViewer, form:dict):
+    username = form.get("username", "")
+    password = form.get("password", "")
+    if not SQLconn.execute(f"SELECT UserName from user_auth where UserName=\"{username}\" limit 1"):
+        viewerObj.queueTurboAction("Username Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
+        sendLoginForm(viewerObj)
+    elif not check_password_hash(SQLconn.execute(f"SELECT PWHash from user_auth where UserName=\"{username}\"")[0]["PWHash"].decode(), password):
+        viewerObj.queueTurboAction("Password Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
+        sendLoginForm(viewerObj)
+    else:
+        renderHomepage(viewerObj)
 
 
 def formSubmitCallback(viewerObj: BaseViewer, form: dict):
@@ -1031,12 +1070,15 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
         print(purpose, form)
 
         if purpose == FormPurposes.register.value:
-            print(form)
+            registerUser(viewerObj, form)
 
         elif purpose == FormPurposes.login.value:
-            print(form)
+            loginUser(viewerObj, form)
 
 
+logger = LogManager()
+SQLconn = connectDB(logger)
+activeParties:list[Party] = []
 extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
 bodyBase = """<body class="bg-slate-700"><div id="mainDiv"><div></body>"""
 
