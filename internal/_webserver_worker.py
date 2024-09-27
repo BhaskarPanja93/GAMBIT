@@ -78,19 +78,22 @@ def renderHomepage(viewerObj: BaseViewer):
             </div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="py-4 inline-flex rounded-full shadow">   
-                    <button class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-yellow-300 border border-transparent rounded-3xl cursor-pointer hover:bg-gray-100 font-bold">
-                        REGISTER
+                <form onsubmit="return submit_ws(this)">
+                {viewerObj.addCSRF("renderQuiz")}
+                    <button type="submit" class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-gradient-to-r from-purple-500 to-violet-700 border border-transparent rounded-3xl cursor-pointer hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
+                        SIGN IN
                     </button>
+                </form>
                 </div>
             </div>
         </nav>
 
         <div id="imageBackground" class=" py-12 relative image-container w-full">
         <!-- Image -->
-        <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
+        <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
          <form onsubmit="return submit_ws(this)">
                 {viewerObj.addCSRF("renderQuiz")}
-                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-blue-700 text-white font-bold text-4xl rounded-full p-12">START LEARNING</button>
+                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 hover:transition duration-300 ease-in-out" style="color: #23003d;">START LEARNING</button>
         </form>
         <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full">
             All Your Education Needs In One</p>
@@ -942,9 +945,9 @@ def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
 
-    renderAuthPage(viewerObj)
+    # renderAuthPage(viewerObj)
     # sleep(2)
-    # renderHomepage(viewerObj)
+    renderHomepage(viewerObj)
     # sleep(2)
     # renderQuizLobbyPage(viewerObj)
     # sleep(2)
