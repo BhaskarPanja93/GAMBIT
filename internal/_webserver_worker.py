@@ -1,20 +1,21 @@
 from gevent import monkey
 monkey.patch_all()
 
-from flask import redirect, request
+from ssl import SSLContext, PROTOCOL_TLS_SERVER
+from requests import get
+from flask import request
 from random import shuffle
 from threading import Thread
 from time import time, sleep
 from pooledMySQL import Manager as MySQLPoolManager
 from randomisedString import Generator as StringGenerator
 from dynamicWebsite import *
-from internal.Enums import *
+from Enums import *
 from gevent.pywsgi import WSGIServer
-from internal.Methods import *
+from Methods import *
 from customisedLogs import Manager as LogManager
 from werkzeug.security import check_password_hash, generate_password_hash
-from json import loads, dumps
-
+from json import loads
 
 
 def navBar(viewerObj: BaseViewer):
@@ -79,7 +80,7 @@ def renderHomepage(viewerObj: BaseViewer):
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="py-4 inline-flex rounded-full shadow">   
                 <form onsubmit="return submit_ws(this)">
-                {viewerObj.addCSRF("renderQuiz")}
+                {viewerObj.addCSRF("renderAuthPage")}
                     <button type="submit" class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-gradient-to-r from-purple-500 to-violet-700 border border-transparent rounded-3xl cursor-pointer hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
                         SIGN IN
                     </button>
@@ -816,6 +817,9 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
                 if viewerObj.viewerID in party.players:
                     party.quiz.receiveUserInput(viewerObj, form["option"])
 
+        elif purpose == "renderAuthPage":
+            renderAuthPage(viewerObj)
+
         elif purpose == "renderQuiz":
             renderQuizLobbyPage(viewerObj)
 
@@ -878,8 +882,15 @@ def _internalConn():
 
 @baseApp.errorhandler(404)
 def not_found(e):
-    return redirect(f"http://127.0.0.1:{ServerSecrets.cdnPort.value}/{request.url.replace(request.root_url, '')}")
+    return get(f"http://127.0.0.1:{ServerSecrets.cdnPort.value}/{request.url.replace(request.root_url, '')}").content
+    #return redirect(f"http://127.0.0.1:{ServerSecrets.cdnPort.value}/{request.url.replace(request.root_url, '')}")
 
 
-print(f"http://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
-WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None).serve_forever()
+try:
+    open("C:\cert\privkey.pem", "r").close()
+    print(f"https://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
+    WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None, keyfile=r'C:\cert\privkey.pem', certfile=r'C:\cert\cert.pem').serve_forever()
+except:
+    print(f"http://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
+    WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None).serve_forever()
+

@@ -1,6 +1,7 @@
 from pathlib import Path
 
-from internal.SecretEnums import *
+try: from SecretEnums import * ## change
+except: from internal.SecretEnums import * ## change
 
 
 for location in HostDetails.possibleFolderLocation.value:
