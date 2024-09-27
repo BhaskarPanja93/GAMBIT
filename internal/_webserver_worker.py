@@ -131,9 +131,9 @@ def renderAuthPage(viewerObj: BaseViewer):
 
 
 <div class="flex items-center justify-center min-h-screen">
-    <div class="flex items-center bg-slate-500 rounded-lg p-8 justify-stretch h-3/4 min-h-0 grid grid-cols-2 gap-8 place-content-stretch mx-6 w-full">
+    <div class="flex items-center bg-transparent rounded-lg p-8 justify-stretch h-3/4 min-h-0 grid grid-cols-2 gap-8 place-content-stretch mx-6 w-full">
         <!-- Login Section -->
-        <div id="loginDiv" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-2xl">
+        <div id="loginDiv" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-2lg hover:scale-105 hover:transition duration-300 ease-in-out">
             <button id="loginButton" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 w-full shadow-2xl">
                 <div class="w-full text-white font-bold text-4xl">Login</div>
             </button>
@@ -152,14 +152,14 @@ def renderAuthPage(viewerObj: BaseViewer):
         </div>
 
         <!-- Register Section -->
-        <div id="registerDiv" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-2xl">
+        <div id="registerDiv" sty class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-lg hover:scale-105 hover:transition duration-300 ease-in-out">
             <button id="registerButton" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 w-full shadow-2xl">
                 <div class="w-full text-white font-bold text-4xl">Register</div>
             </button>
 
             
                 <div id="registerFormContainer"
-                     class="hidden w-full rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-2xl">
+                     class="hidden w-full rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-lg">
                     <form class="w-full px-6" onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF("register")}
                         
@@ -192,9 +192,9 @@ def renderAuthPage(viewerObj: BaseViewer):
         </div>
 
         <div id="loginWarning"
-             class="text-2xl flex col-span-2 items-center justify-center text-black rounded-lg px-4 py-2 text-center font-semibold w-full"></div>
+             class="text-2xl flex col-span-2 items-center justify-center text-white rounded-lg px-4 py-2 text-center font-semibold w-full"></div>
         <div id="registrationWarning"
-             class="text-2xl flex col-span-2 items-center justify-center text-black rounded-lg px-4 py-2 text-center font-semibold w-full"></div>
+             class="text-2xl flex col-span-2 items-center justify-center text-white rounded-lg px-4 py-2 text-center font-semibold w-full"></div>
     </div>
 </div>
 
@@ -998,7 +998,7 @@ activeParties:list[Party] = []
 waitingParties:list[Party] = []
 viewerToUsernameMaps = {}
 extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
-bodyBase = """<body class="bg-slate-700"><div id="mainDiv"><div></body>"""
+bodyBase = """<body style="background-color: #23003d;"> <div id="mainDiv"><div></body>"""
 
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
                                Routes.webHomePage.value, Routes.webWS.value, ServerSecrets.webFernetKey.value,
