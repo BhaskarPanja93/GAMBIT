@@ -123,9 +123,6 @@ def renderAuthPage(viewerObj: BaseViewer):
     </div>
     <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
         <div class="py-4 inline-flex rounded-full">
-            <button class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-yellow-300 border border-transparent rounded-3xl cursor-pointer hover:bg-gray-100 font-bold">
-                Login OR Sign UP Here
-            </button>
         </div>
     </div>
 </nav>
@@ -164,10 +161,15 @@ def renderAuthPage(viewerObj: BaseViewer):
                      class="hidden rounded-lg bg-yellow-700 flex items-center justify-center h-96 w-full">
                     <form class="w-full px-6" onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF("register")}
-
+                        
                         <input type="text" autocomplete="off"
                                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                               name="username" placeholder="Username">
+                               name="name" placeholder="Name">
+                               
+                        <input type="text" autocomplete="off"
+                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                               name="age" placeholder="Age">
+                               
 
                         <input type="text" autocomplete="off"
                                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -180,6 +182,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                         <input type="password" autocomplete="off"
                                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                name="confirm_password" placeholder="Confirm Password">
+                               
                         <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit
                         </button>
                     </form>
@@ -673,23 +676,30 @@ def renderQuizMatchFoundPage(viewerObj: BaseViewer):
 def sendRegisterForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF("register")}
-                                                <input type="text" autocomplete="off"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                               name="username" placeholder="Username">
-
-                        <input type="text" autocomplete="off"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                               name="email" placeholder="Email">
-
-                        <input type="password" autocomplete="off"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                               name="password" placeholder="Password">
-
-                        <input type="password" autocomplete="off"
-                               class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
-                               name="confirm_password" placeholder="Confirm Password">
-
-                        <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit
+                    <input type="text" autocomplete="off"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           name="name" placeholder="Name">
+                           
+                    <input type="text" autocomplete="off"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           name="age" placeholder="Age">
+                           
+                    <input type="text" autocomplete="off"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           name="username" placeholder="Username">
+                    
+                    <input type="text" autocomplete="off"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           name="email" placeholder="Email">
+                    
+                    <input type="password" autocomplete="off"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           name="password" placeholder="Password">
+                    
+                    <input type="password" autocomplete="off"
+                           class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
+                           name="confirm_password" placeholder="Confirm Password">
+                           <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit
                         </button>
                     </form>"""
     viewerObj.queueTurboAction(form, "registerFormContainer", viewerObj.turboApp.methods.update)
