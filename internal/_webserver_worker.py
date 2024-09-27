@@ -917,6 +917,8 @@ def registerUser(viewerObj:BaseViewer, form:dict):
             if not SQLconn.execute(f"SELECT UserName from user_auth where UserID=\"{userID}\" limit 1"):
                 SQLconn.execute(f"INSERT INTO user_info values (\"{userID}\", now(), \"{name}\", {age})")
                 SQLconn.execute(f"INSERT INTO user_auth values (\"{userID}\", \"{username}\", \"{generate_password_hash(password)}\")")
+                viewerToUsernameMaps[viewerObj.viewerID] = username
+                renderHomepage(viewerObj)
                 break
 
 def loginUser(viewerObj:BaseViewer, form:dict):
@@ -929,6 +931,7 @@ def loginUser(viewerObj:BaseViewer, form:dict):
         viewerObj.queueTurboAction("Password Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
         sendLoginForm(viewerObj)
     else:
+        viewerToUsernameMaps[viewerObj.viewerID] = username
         renderHomepage(viewerObj)
 
 
