@@ -88,10 +88,12 @@ def renderHomepage(viewerObj: BaseViewer):
         <div id="imageBackground" class=" py-12 relative image-container w-full">
         <!-- Image -->
         <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
-        <button class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-blue-700 text-white font-bold text-4xl rounded-full p-12">START LEARNING</button>
+         <form onsubmit="return submit_ws(this)">
+                {viewerObj.addCSRF("renderQuiz")}
+                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-blue-700 text-white font-bold text-4xl rounded-full p-12">START LEARNING</button>
+        </form>
         <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full">
             All Your Education Needs In One</p>
-
         </div>
     </div>
 </div>
@@ -222,26 +224,12 @@ def renderQuizGamePage(viewerObj: BaseViewer):
             <div>HEALTH POINTS</div>
             <div class="relative size-40 flex items-center justify-center">
 
-
-                <div id="AHealthBar">
-                    <svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
-                        <!-- Background Circle (Gauge) -->
-                        <circle cx="18" cy="18" r="16" fill="none"
-                                class="stroke-current text-green-200 dark:text-neutral-700"
-                                stroke-width="1" stroke-dasharray="75 100" stroke-linecap="round"></circle>
-
-                        <!-- Gauge Progress -->
-                        <circle cx="18" cy="18" r="16" fill="none"
-                                class="stroke-current text-green-500 dark:text-green-500"
-                                stroke-width="2" stroke-dasharray="15 100" stroke-linecap="round"></circle>
-                    </svg>
-                </div>
-
+                <div id="selfTeamHealthBar"></div>
 
                 <!-- Value Text -->
                 <div class="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
                     <span class="text-4xl font-bold text-green-600 dark:text-green-500">
-                        <div id="AHealthBarText">25</div>
+                        <div id="selfTeamHealthText"></div>
                         </span>
                     <span class="text-green-600 dark:text-green-500 block">Score</span>
                 </div>
@@ -311,7 +299,7 @@ def renderQuizGamePage(viewerObj: BaseViewer):
                 <div>HEALTH POINTS</div>
                 <div class="relative size-40 flex items-center justify-center">
 
-                    <div id="BHealthBar">
+                    <div id="otherTeamHealthBar">
                         <svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
                             <!-- Background Circle (Gauge) -->
                             <circle cx="18" cy="18" r="16" fill="none"
@@ -328,7 +316,7 @@ def renderQuizGamePage(viewerObj: BaseViewer):
                     <!-- Value Text -->
                     <div class="absolute top-1/2 start-1/2 transform -translate-x-1/2 -translate-y-1/2 text-center">
                     <span class="text-4xl font-bold text-green-600 dark:text-green-500">
-                        <div id="BHealthBarText">25</div>
+                        <div id="otherTeamHealthText"></div>
                         </span>
                     <span class="text-green-600 dark:text-green-500 block">Score</span>
                 </div>
@@ -728,10 +716,10 @@ class Party:
         Thread(target=self.forceStartTimer).start()
 
     def forceStartTimer(self):
-        while time() - self.partyStartAt < 2 and not self.gameStarted:
+        while time() - self.partyStartAt < 4 and not self.gameStarted:
             for team in self.sides:
                 for player in self.sides[team]:
-                    player.queueTurboAction(str(2 - int(time() - self.partyStartAt)), "queueTimer", player.turboApp.methods.update.value)
+                    player.queueTurboAction(str(4 - int(time() - self.partyStartAt)), "queueTimer", player.turboApp.methods.update.value)
             sleep(0.1)
         self.initGame()
 
@@ -882,27 +870,30 @@ class Quiz:
     def endQuestion(self):
         points = {}
         for viewerID in self.optionsPressed:
+            if viewerID not in self.scores:
+                self.scores[viewerID] = 0
+            if self.players[viewerID]["Team"] not in points:
+                points[self.players[viewerID]["Team"]] = 0
+
             option = self.questions[self.questionIndex].teamOptions[self.players[viewerID]["Team"]][self.optionsPressed[viewerID]]
             if option in self.questions[self.questionIndex].correctAnswers:
-                if self.players[viewerID]["Team"] not in points:
-                    points[self.players[viewerID]["Team"]] = 0
                 points[self.players[viewerID]["Team"]] += 1
-                if viewerID not in self.scores:
-                    self.scores[viewerID] = 0
                 self.scores[viewerID] += 10
-        for team in points:
-            if points[team] == 0:
-                for _team in self.sides:
-                    if team != _team and _team in points and points[_team] != 0:
-                        self.updateHealth(team, -3)
-                        break
             else:
-                _point = points[team]
-                for _team in self.sides:
-                    if team != _team and (_team not in points or points[_team] < _point):
-                        self.updateHealth(_team, -1)
-                        break
-        print(points)
+                points[self.players[viewerID]["Team"]] -= 1
+                self.scores[viewerID] -= 10
+
+        for side in self.sides:
+            if side not in points:
+                self.updateHealth(side, -1)
+                points[side] = 0
+            elif points[side] <= 0:
+                self.updateHealth(side, -3)
+                points[side] = 0
+        for side in self.sides:
+            for _otherSide in self.sides:
+                if side!=_otherSide and points[side]<points[_otherSide]:
+                    self.updateHealth(side, 5*(points[side]-points[_otherSide]))
         print(self.teamHealth)
         print(self.scores)
         self.nextQuestion()
@@ -912,21 +903,32 @@ class Quiz:
         for playerID in self.players:
             viewer = self.players[playerID]["Viewer"]
             team = self.players[playerID]["Team"]
-            # if team == teamChanged:
-            #     viewer.queueTurboAction(str(newHealth), f"selfHealth", viewer.turboApp.methods.update.value)
-            # else:
-            #     viewer.queueTurboAction(str(newHealth), f"otherHealth", viewer.turboApp.methods.update.value)
+            bar = f"""<svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
+                        <circle cx="18" cy="18" r="16" fill="none"
+                                class="stroke-current text-green-200 dark:text-neutral-700"
+                                stroke-width="1" stroke-dasharray="75 100" stroke-linecap="round"></circle>
+                        <circle cx="18" cy="18" r="16" fill="none"
+                                class="stroke-current text-green-500 dark:text-green-500"
+                                stroke-width="2" stroke-dasharray="{self.teamHealth[teamChanged]} 100" stroke-linecap="round"></circle>
+                    </svg>"""
+            if team == teamChanged:
+                viewer.queueTurboAction(bar, f"selfTeamHealthBar", viewer.turboApp.methods.update.value)
+                viewer.queueTurboAction(str(self.teamHealth[teamChanged]), f"selfTeamHealthText", viewer.turboApp.methods.update.value)
+            else:
+                viewer.queueTurboAction(bar, f"otherTeamHealthBar", viewer.turboApp.methods.update.value)
+                viewer.queueTurboAction(str(self.teamHealth[teamChanged]), f"otherTeamHealthText", viewer.turboApp.methods.update.value)
 
     def startQuiz(self, sides: dict[str, list[BaseViewer]], players):
         started = time()
         self.sides = sides
         self.players = players
         self.extractQuestions()
-        sleep(2-(time()-started))
-        for side in sides:
-            self.teamHealth[side] = 100
+        sleep(3-(time()-started))
         for playerID in self.players:
             renderQuizGamePage(self.players[playerID]["Viewer"])
+        for side in sides:
+            self.teamHealth[side] = 100
+            self.updateHealth(side, 0)
         self.renderPlayers()
         self.nextQuestion()
 
@@ -999,6 +1001,9 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             for party in activeParties:
                 if viewerObj.viewerID in party.players:
                     party.quiz.receiveUserInput(viewerObj, form["option"])
+
+        elif purpose == "renderQuiz":
+            renderQuizLobbyPage(viewerObj)
 
 
 def newVisitorCallback(viewerObj: BaseViewer):
