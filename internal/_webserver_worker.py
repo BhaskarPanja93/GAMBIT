@@ -759,7 +759,7 @@ class Quiz:
                         playerDiv = f"""<div class="rounded-lg bg-[#eacfff] mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
                                     <div class="font-medium text-bold text-3xl dark:text-black">{rank}</div>
                                     <div class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
-                                        <img class="mr-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
+                                        <img class="mr-4 rounded w-16 h-16" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
                                         <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white">
                                             <div class="px-2 text-white text-bold text-xl">{username}</div>
                                             <div class="px-2 text-white text-bold text-xl">Points: {score}</div>
