@@ -27,7 +27,6 @@ def _liveContent():
 def _fileContent():
     fileType = request.args.get("type", "").strip()
     fileName = request.args.get("name", "").strip()
-    print(request.url, fileType, fileName)
     if fileType == CDNFileType.font.value:
          return send_from_directory(folderLocation+"/static/font", fileName, as_attachment=True)
     elif fileType == CDNFileType.image.value:
@@ -41,6 +40,11 @@ def _fileContent():
     elif fileType == CDNFileType.js.value:
         return send_from_directory(folderLocation + "/static/js", fileName, as_attachment=True)
     return ""
+
+
+@CDNApp.get("/favicon.ico")
+def _favicon():
+    return send_from_directory(folderLocation+"/static/image", "favicon.png", as_attachment=True)
 
 print(f"CDN: http://127.0.0.1:{ServerSecrets.cdnPort.value}")
 WSGIServer(('0.0.0.0', ServerSecrets.cdnPort.value,), CDNApp, log=None).serve_forever()
