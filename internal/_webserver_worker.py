@@ -374,6 +374,26 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
                         <span class="font-semibold">Friend 1</span>
                         <button class="bg-gradient-to-r from-purple-500 to-violet-700 text-white px-4 py-1 rounded-lg">Invite</button>
                     </div>
+                    <!-- Friend 7 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 7</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 8 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 8</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 9 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 9</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 10 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 10</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
                 </div>
             </div>
         </div>
@@ -446,12 +466,13 @@ class Party:
         self.players: dict[str, dict] = {}  # "abc":{"Team":team, "Viewer":viewer}
         self.sides: dict[str, list[BaseViewer]] = {"A": [], "B": []}
         self.teamSize = {"A": 0, "B": 0}
-        self.partyStartAt = time()
+        self.partyStartAt = 0
         self.gameStarted = False
         self.quiz = None
-        Thread(target=self.forceStartTimer).start()
+
 
     def forceStartTimer(self):
+        self.partyStartAt = time()
         while time() - self.partyStartAt < 4 and not self.gameStarted:
             for team in self.sides:
                 for player in self.sides[team]:
@@ -463,10 +484,16 @@ class Party:
         def _PlayerJoinTeam(self, viewer, team):
             self.teamSize[team] += 1
             self.sides[team].append(viewer)
+            if self.teamSize["A"] + self.teamSize["B"] == 6:
+                self.initGame()
+            elif self.teamSize["A"] + self.teamSize["B"] > 1:
+                Thread(target=self.forceStartTimer).start()
+            else:
+                viewer.queueTurboAction("Waiting..", "queueTimer", viewer.turboApp.methods.update.value)
 
         if team is None:
             if self.teamSize["A"] + self.teamSize["B"] < 6:
-                if self.teamSize["A"] < self.teamSize["B"]:
+                if self.teamSize["B"] >= self.teamSize["A"]:
                     team = "A"
                 else:
                     team = "B"
@@ -483,12 +510,12 @@ class Party:
 
     def initGame(self):
         self.gameStarted = True
+        waitingParties.remove(self)
+        activeParties.append(self)
         for side in self.sides:
             for player in self.sides[side]:
                 self.players[player.viewerID] = {"Team": side, "Viewer": player}
                 renderQuizMatchFoundPage(player)
-        waitingParties.remove(self)
-        activeParties.append(self)
         self.quiz = Quiz(turboApp, SQLconn)
         self.quiz.startQuiz(self.sides, self.players)
 
@@ -722,10 +749,6 @@ class Quiz:
                                     </div>
                             </div>"""
                         player.queueTurboAction(playerDiv, "quizLeaderboard", player.turboApp.methods.newDiv.value)
-
-
-
-
 
     def startQuiz(self, sides: dict[str, list[BaseViewer]], players):
         started = time()
