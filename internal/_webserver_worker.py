@@ -373,27 +373,7 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
                     <div class="bg-white rounded-lg p-2 flex justify-between items-center">
                         <span class="font-semibold">Friend 1</span>
                         <button class="bg-gradient-to-r from-purple-500 to-violet-700 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 7 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 7</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 8 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 8</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 9 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 9</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
-                    <!-- Friend 10 -->
-                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
-                        <span class="font-semibold">Friend 10</span>
-                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
-                    </div>
+                    </div>     
                 </div>
             </div>
         </div>
