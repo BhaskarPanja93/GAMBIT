@@ -491,12 +491,13 @@ class Party:
         self.players: dict[str, dict] = {}  # "abc":{"Team":team, "Viewer":viewer}
         self.sides: dict[str, list[BaseViewer]] = {"A": [], "B": []}
         self.teamSize = {"A": 0, "B": 0}
-        self.partyStartAt = time()
+        self.partyStartAt = 0
         self.gameStarted = False
         self.quiz = None
 
 
     def forceStartTimer(self):
+        self.partyStartAt = time()
         while time() - self.partyStartAt < 4 and not self.gameStarted:
             for team in self.sides:
                 for player in self.sides[team]:
