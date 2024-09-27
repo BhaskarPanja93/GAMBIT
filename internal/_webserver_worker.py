@@ -236,40 +236,8 @@ def renderQuizGamePage(viewerObj: BaseViewer):
             </div>
         </div>
 
+        <div id="selfTeam_create"></div>
 
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <img class="mx-4 my-4 rounded-lg w-20 h-20"
-                 src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp"
-                 alt="Extra large avatar">
-                    <div class="flex justify-center text-white text-bold text-xl m-2">Player 1</div>
-                    <div class="flex justify-center text-white text-bold text-xl m-2">Correct</div>
-                    <div class="flex justify-center text-white text-bold text-xl m-2">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="quizDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
@@ -323,36 +291,7 @@ def renderQuizGamePage(viewerObj: BaseViewer):
             </div>
         </div>
 
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
+        <div id="otherTeam_create"></div>
     </div>
 </div>
 """
@@ -373,94 +312,113 @@ def renderQuizEndPage(viewerObj: BaseViewer):
         <!-- Leaderboard Entries -->
         <div id="quizLeaderboard_create"></div>
 
+    </div>
+
+    <div class="p-8 rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
+        <div class="p-8 rounded-lg mx-6 bg-blue-200 text-green font-bold text-2xl h-full w-full">
+            <div id="resultTextDiv" class="flex justify-center items-center text-black font-bold text-2xl h-1/3"></div>
         </div>
     </div>
 
-        <div class="p-8 rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
-            <div class="p-8 rounded-lg mx-6 bg-blue-200 text-green font-bold text-2xl h-full w-full">
-                <div id="resultTextDiv" class="flex justify-center items-center text-black font-bold text-2xl h-1/3"></div>
-            </div>
+    <div id="questionListDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+        <div class="flex flex-col items-center">
+            <div>QUESTIONS LIST</div>
         </div>
-
-        <div id="questionListDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
-            <div class="flex flex-col items-center">
-                <div>QUESTIONS LIST</div>
-            </div>
-            <div class="flex flex-col items-center mt-4">
-                <ul class="grid grid-cols-1 gap-2 w-full h-full p-4">
-                    <li>
-                        <form onsubmit="return submit_ws(this)">
+        <div class="flex flex-col items-center mt-4">
+            <ul class="grid grid-cols-1 gap-2 w-full h-full p-4">
+                <li>
+                    <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question1')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">1</button>
-                        <form>
-                    </li>
-                    <li>
-                        <form onsubmit="return submit_ws(this)">
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">1
+                        </button>
+                        </form>
+                </li>
+                <li>
+                    <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question2')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">2</button>
-                        <form>
-                    </li>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">2
+                        </button>
+                        </form>
+                </li>
 
-                    <li>
-                        <form onsubmit="return submit_ws(this)">
+                <li>
+                    <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question3')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">3</button>
-                        <form>
-                    </li>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">3
+                        </button>
+                        </form>
+                </li>
 
-                    <li>
-                        <form onsubmit="return submit_ws(this)">
+                <li>
+                    <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question4')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">4</button>
-                        <form>
-                    </li>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">4
+                        </button>
+                        </form>
+                </li>
 
-                    <li>
-                        <form onsubmit="return submit_ws(this)">
+                <li>
+                    <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question5')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">5</button>
-                        <form>
-                    </li>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">5
+                        </button>
+                        </form>
+                </li>
 
-                    <li>
-                        <form onsubmit="return submit_ws(this)">
+                <li>
+                    <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question6')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">6</button>
-                        <form>
-                    </li>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">6
+                        </button>
+                        </form>
+                </li>
 
-                    <li>
-                        <form onsubmit="return submit_ws(this)">
+                <li>
+                    <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question7')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">7</button>
-                        <form>
-                    </li>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">7
+                        </button>
+                        </form>
+                </li>
 
-                    <li>
-                        <form onsubmit="return submit_ws(this)">
+                <li>
+                    <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question8')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">8</button>
-                        <form>
-                    </li>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">8
+                        </button>
+                        </form>
+                </li>
 
-                    <li>
-                        <form onsubmit="return submit_ws(this)">
+                <li>
+                    <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question9')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">9</button>
-                        <form>
-                    </li>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">9
+                        </button>
+                        </form>
+                </li>
 
-                    <li>
-                        <form onsubmit="return submit_ws(this)">
+                <li>
+                    <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question10')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">10</button>
-                        <form>
-                    </li>
-                </ul>
-            </div>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">10
+                        </button>
+                        </form>
+                </li>
+            </ul>
         </div>
     </div>
-    """
+</div>
+"""
     viewerObj.queueTurboAction(quizEnd, "fullPage", viewerObj.turboApp.methods.update)
 
 
@@ -657,8 +615,10 @@ class Party:
                 else:
                     team = "B"
                 _PlayerJoinTeam(self, viewer, team)
+            else: return False
         else:
             _PlayerJoinTeam(self, viewer, team)
+        return True
 
     def leaveTeam(self, viewer: BaseViewer, team):
         if viewer in self.sides[team]:
@@ -722,12 +682,24 @@ class Quiz:
 
     def renderPlayers(self):
         for playerID in self.players:
+            player: BaseViewer = self.players[playerID]["Viewer"]
             for side in self.sides:
                 for _player in self.sides[side]:
+                    playerDiv = f"""
+                            <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+                                <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
+                                <div class="flex items-center gap-4">
+                                    <div class="font-medium dark:text-white">
+                                        <div class="text-white text-bold text-xl m-4">Name: {viewerToUsernameMaps.get(_player.viewerID, "")}</div>
+                                        <div class="text-white text-bold text-xl m-4">Score: {self.scores.get(_player.viewerID, 0)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            """
                     if self.players[playerID]["Team"] == side:
-                        self.players[playerID]["Viewer"]
+                        player.queueTurboAction(playerDiv, "selfTeam", player.turboApp.methods.newDiv)
                     else:
-                        self.players[playerID]["Viewer"]
+                        player.queueTurboAction(playerDiv, "otherTeam", player.turboApp.methods.newDiv)
 
     def extractQuestions(self):
         for questionData in self.MySQLPool.execute("SELECT * from questions where QuizEligible=1 ORDER BY RAND() LIMIT 30"):
@@ -815,7 +787,7 @@ class Quiz:
         for side in self.sides:
             for _otherSide in self.sides:
                 if side!=_otherSide and points[side]<points[_otherSide]:
-                    self.updateHealth(side, 2*(1+self.questionIndex)*(points[side]-points[_otherSide]))
+                    self.updateHealth(side, 10*(1+self.questionIndex)*(points[side]-points[_otherSide]))
         print(self.teamHealth)
         print(self.scores)
         self.nextQuestion()
@@ -917,6 +889,8 @@ def registerUser(viewerObj:BaseViewer, form:dict):
             if not SQLconn.execute(f"SELECT UserName from user_auth where UserID=\"{userID}\" limit 1"):
                 SQLconn.execute(f"INSERT INTO user_info values (\"{userID}\", now(), \"{name}\", {age})")
                 SQLconn.execute(f"INSERT INTO user_auth values (\"{userID}\", \"{username}\", \"{generate_password_hash(password)}\")")
+                viewerToUsernameMaps[viewerObj.viewerID] = username
+                renderHomepage(viewerObj)
                 break
 
 def loginUser(viewerObj:BaseViewer, form:dict):
@@ -929,6 +903,7 @@ def loginUser(viewerObj:BaseViewer, form:dict):
         viewerObj.queueTurboAction("Password Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
         sendLoginForm(viewerObj)
     else:
+        viewerToUsernameMaps[viewerObj.viewerID] = username
         renderHomepage(viewerObj)
 
 
@@ -946,12 +921,12 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
         elif purpose == FormPurposes.startQueue.value:
             if waitingParties:
                 for party in waitingParties:
-                    party.joinTeam(viewerObj)
-                    break
-            else:
-                party = Party()
-                waitingParties.append(party)
-                party.joinTeam(viewerObj)
+                    if party.joinTeam(viewerObj):
+                        return
+            party = Party()
+            waitingParties.append(party)
+            party.joinTeam(viewerObj)
+
         elif purpose == "quizOption":
             for party in activeParties:
                 if viewerObj.viewerID in party.players:
@@ -977,7 +952,7 @@ def newVisitorCallback(viewerObj: BaseViewer):
     # sleep(2)
     # renderQuizGamePage(viewerObj)
     # sleep(2)
-    # quizEndPage(viewerObj)
+    # renderQuizEndPage(viewerObj)
     # sleep(2)
     #loginInput(viewerObj)
     #sleep(2)
