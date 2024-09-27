@@ -1,5 +1,4 @@
 from gevent import monkey
-
 monkey.patch_all()
 
 from flask import redirect, request
@@ -15,6 +14,7 @@ from internal.Methods import *
 from customisedLogs import Manager as LogManager
 from werkzeug.security import check_password_hash, generate_password_hash
 from json import loads, dumps
+
 
 
 def navBar(viewerObj: BaseViewer):
@@ -157,20 +157,20 @@ def renderAuthPage(viewerObj: BaseViewer):
                 <div class="w-full text-white font-bold text-4xl">Register</div>
             </button>
 
-
+            
                 <div id="registerFormContainer"
                      class="hidden w-full rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-2xl">
                     <form class="w-full px-6" onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF("register")}
-
+                        
                         <input type="text" autocomplete="off"
                                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                name="name" placeholder="Name">
-
+                               
                         <input type="text" autocomplete="off"
                                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                name="age" placeholder="Age">
-
+                               
 
                         <input type="text" autocomplete="off"
                                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -183,12 +183,12 @@ def renderAuthPage(viewerObj: BaseViewer):
                         <input type="password" autocomplete="off"
                                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                name="confirm_password" placeholder="Confirm Password">
-
+                               
                         <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit
                         </button>
                     </form>
                 </div>
-
+            
         </div>
 
         <div id="loginWarning"
@@ -357,6 +357,7 @@ def renderQuizGamePage(viewerObj: BaseViewer):
 </div>
 """
 
+
     viewerObj.queueTurboAction(quiz, "fullPage", viewerObj.turboApp.methods.update)
 
 
@@ -372,113 +373,94 @@ def renderQuizEndPage(viewerObj: BaseViewer):
         <!-- Leaderboard Entries -->
         <div id="quizLeaderboard_create"></div>
 
-    </div>
-
-    <div class="p-8 rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
-        <div class="p-8 rounded-lg mx-6 bg-blue-200 text-green font-bold text-2xl h-full w-full">
-            <div id="resultTextDiv" class="flex justify-center items-center text-black font-bold text-2xl h-1/3"></div>
         </div>
     </div>
 
-    <div id="questionListDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
-        <div class="flex flex-col items-center">
-            <div>QUESTIONS LIST</div>
+        <div class="p-8 rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
+            <div class="p-8 rounded-lg mx-6 bg-blue-200 text-green font-bold text-2xl h-full w-full">
+                <div id="resultTextDiv" class="flex justify-center items-center text-black font-bold text-2xl h-1/3"></div>
+            </div>
         </div>
-        <div class="flex flex-col items-center mt-4">
-            <ul class="grid grid-cols-1 gap-2 w-full h-full p-4">
-                <li>
-                    <form onsubmit="return submit_ws(this)">
+
+        <div id="questionListDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+            <div class="flex flex-col items-center">
+                <div>QUESTIONS LIST</div>
+            </div>
+            <div class="flex flex-col items-center mt-4">
+                <ul class="grid grid-cols-1 gap-2 w-full h-full p-4">
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question1')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
-                                onclick="this.classList.toggle('bg-blue-400')">1
-                        </button>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">1</button>
                         <form>
-                </li>
-                <li>
-                    <form onsubmit="return submit_ws(this)">
+                    </li>
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question2')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
-                                onclick="this.classList.toggle('bg-blue-400')">2
-                        </button>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">2</button>
                         <form>
-                </li>
+                    </li>
 
-                <li>
-                    <form onsubmit="return submit_ws(this)">
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question3')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
-                                onclick="this.classList.toggle('bg-blue-400')">3
-                        </button>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">3</button>
                         <form>
-                </li>
+                    </li>
 
-                <li>
-                    <form onsubmit="return submit_ws(this)">
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question4')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
-                                onclick="this.classList.toggle('bg-blue-400')">4
-                        </button>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">4</button>
                         <form>
-                </li>
+                    </li>
 
-                <li>
-                    <form onsubmit="return submit_ws(this)">
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question5')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
-                                onclick="this.classList.toggle('bg-blue-400')">5
-                        </button>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">5</button>
                         <form>
-                </li>
+                    </li>
 
-                <li>
-                    <form onsubmit="return submit_ws(this)">
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question6')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
-                                onclick="this.classList.toggle('bg-blue-400')">6
-                        </button>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">6</button>
                         <form>
-                </li>
+                    </li>
 
-                <li>
-                    <form onsubmit="return submit_ws(this)">
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question7')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
-                                onclick="this.classList.toggle('bg-blue-400')">7
-                        </button>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">7</button>
                         <form>
-                </li>
+                    </li>
 
-                <li>
-                    <form onsubmit="return submit_ws(this)">
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question8')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
-                                onclick="this.classList.toggle('bg-blue-400')">8
-                        </button>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">8</button>
                         <form>
-                </li>
+                    </li>
 
-                <li>
-                    <form onsubmit="return submit_ws(this)">
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question9')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
-                                onclick="this.classList.toggle('bg-blue-400')">9
-                        </button>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">9</button>
                         <form>
-                </li>
+                    </li>
 
-                <li>
-                    <form onsubmit="return submit_ws(this)">
+                    <li>
+                        <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF('question10')}
-                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
-                                onclick="this.classList.toggle('bg-blue-400')">10
-                        </button>
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">10</button>
                         <form>
-                </li>
-            </ul>
+                    </li>
+                </ul>
+            </div>
         </div>
     </div>
-</div>
-"""
+    """
     viewerObj.queueTurboAction(quizEnd, "fullPage", viewerObj.turboApp.methods.update)
 
 
@@ -599,29 +581,30 @@ def renderQuizMatchFoundPage(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(matchFound, "fullPage", viewerObj.turboApp.methods.update)
 
 
-def sendRegisterForm(viewerObj: BaseViewer):
+
+def sendRegisterForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF("register")}
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="name" placeholder="Name">
-
+                           
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="age" placeholder="Age">
-
+                           
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="username" placeholder="Username">
-
+                    
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="email" placeholder="Email">
-
+                    
                     <input type="password" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="password" placeholder="Password">
-
+                    
                     <input type="password" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="confirm_password" placeholder="Confirm Password">
@@ -631,7 +614,7 @@ def sendRegisterForm(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(form, "registerFormContainer", viewerObj.turboApp.methods.update)
 
 
-def sendLoginForm(viewerObj: BaseViewer):
+def sendLoginForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
                     {viewerObj.addCSRF("login")}
                     <input type="text" autocomplete="off"
@@ -658,8 +641,7 @@ class Party:
         while time() - self.partyStartAt < 4 and not self.gameStarted:
             for team in self.sides:
                 for player in self.sides[team]:
-                    player.queueTurboAction(str(4 - int(time() - self.partyStartAt)), "queueTimer",
-                                            player.turboApp.methods.update.value)
+                    player.queueTurboAction(str(4 - int(time() - self.partyStartAt)), "queueTimer", player.turboApp.methods.update.value)
             sleep(0.1)
         self.initGame()
 
@@ -693,6 +675,7 @@ class Party:
         activeParties.append(self)
         self.quiz = Quiz(turboApp, SQLconn)
         self.quiz.startQuiz(self.sides, self.players)
+
 
 
 class Question:
@@ -747,8 +730,7 @@ class Quiz:
                         self.players[playerID]["Viewer"]
 
     def extractQuestions(self):
-        for questionData in self.MySQLPool.execute(
-                "SELECT * from questions where QuizEligible=1 ORDER BY RAND() LIMIT 30"):
+        for questionData in self.MySQLPool.execute("SELECT * from questions where QuizEligible=1 ORDER BY RAND() LIMIT 30"):
             question = Question()
             question.setValues(questionData["QuestionID"], questionData["Text"], loads(questionData["Options"]))
             self.questions.append(question)
@@ -761,8 +743,7 @@ class Quiz:
         for playerID in self.players:
             viewer = self.players[playerID]["Viewer"]
             team = self.players[playerID]["Team"]
-            viewer.queueTurboAction(currentQuestion.questionStatement, "questionText",
-                                    viewer.turboApp.methods.update.value)
+            viewer.queueTurboAction(currentQuestion.questionStatement, "questionText", viewer.turboApp.methods.update.value)
             options = f"""<form onsubmit="return submit_ws(this)">
                 {viewer.addCSRF("quizOption")}
                 <input type="hidden" name="option" value="0">
@@ -796,15 +777,14 @@ class Quiz:
     def receiveUserInput(self, viewer: BaseViewer, optionIndex):
         optionIndex = int(optionIndex)
         print(viewer.viewerID, optionIndex, type(optionIndex))
-        if len(self.questions[self.questionIndex].teamOptions[
-                   self.players[viewer.viewerID]["Team"]]) > optionIndex >= 0:
+        if len(self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]]) > optionIndex >= 0:
             if viewer.viewerID not in self.optionsPressed:
                 self.optionsPressed[viewer.viewerID] = optionIndex
                 options = f"""<button class="col-span-2 rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
                                     <div class="text-white font-bold text-2xl">{self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]][optionIndex]}</div>
                                 </button>"""
                 viewer.queueTurboAction(options, "options", viewer.turboApp.methods.update.value)
-                print(len(self.optionsPressed), len(self.players))
+                print(len(self.optionsPressed) , len(self.players))
                 if len(self.optionsPressed) == len(self.players):
                     sleep(2)
                     self.endQuestion()
@@ -817,8 +797,7 @@ class Quiz:
             if self.players[viewerID]["Team"] not in points:
                 points[self.players[viewerID]["Team"]] = 0
 
-            option = self.questions[self.questionIndex].teamOptions[self.players[viewerID]["Team"]][
-                self.optionsPressed[viewerID]]
+            option = self.questions[self.questionIndex].teamOptions[self.players[viewerID]["Team"]][self.optionsPressed[viewerID]]
             if option in self.questions[self.questionIndex].correctAnswers:
                 points[self.players[viewerID]["Team"]] += 1
                 self.scores[viewerID] += 10
@@ -835,15 +814,15 @@ class Quiz:
                 points[side] = 0
         for side in self.sides:
             for _otherSide in self.sides:
-                if side != _otherSide and points[side] < points[_otherSide]:
-                    self.updateHealth(side, 2 * (1 + self.questionIndex) * (points[side] - points[_otherSide]))
+                if side!=_otherSide and points[side]<points[_otherSide]:
+                    self.updateHealth(side, 10*(1+self.questionIndex)*(points[side]-points[_otherSide]))
         print(self.teamHealth)
         print(self.scores)
         self.nextQuestion()
 
     def updateHealth(self, teamChanged: str, offset):
         self.teamHealth[teamChanged] += offset
-        if self.teamHealth[teamChanged] < 0: self.teamHealth[teamChanged] = 0
+        if self.teamHealth[teamChanged] <0: self.teamHealth[teamChanged] = 0
         for playerID in self.players:
             viewer = self.players[playerID]["Viewer"]
             team = self.players[playerID]["Team"]
@@ -853,16 +832,14 @@ class Quiz:
                                 stroke-width="1" stroke-dasharray="75 100" stroke-linecap="round"></circle>
                         <circle cx="18" cy="18" r="16" fill="none"
                                 class="stroke-current text-green-500 dark:text-green-500"
-                                stroke-width="2" stroke-dasharray="{75 * self.teamHealth[teamChanged] / 100} 100" stroke-linecap="round"></circle>
+                                stroke-width="2" stroke-dasharray="{75*self.teamHealth[teamChanged]/100} 100" stroke-linecap="round"></circle>
                     </svg>"""
             if team == teamChanged:
                 viewer.queueTurboAction(bar, f"selfTeamHealthBar", viewer.turboApp.methods.update.value)
-                viewer.queueTurboAction(str(self.teamHealth[teamChanged]), f"selfTeamHealthText",
-                                        viewer.turboApp.methods.update.value)
+                viewer.queueTurboAction(str(self.teamHealth[teamChanged]), f"selfTeamHealthText", viewer.turboApp.methods.update.value)
             else:
                 viewer.queueTurboAction(bar, f"otherTeamHealthBar", viewer.turboApp.methods.update.value)
-                viewer.queueTurboAction(str(self.teamHealth[teamChanged]), f"otherTeamHealthText",
-                                        viewer.turboApp.methods.update.value)
+                viewer.queueTurboAction(str(self.teamHealth[teamChanged]), f"otherTeamHealthText", viewer.turboApp.methods.update.value)
 
         if self.teamHealth[teamChanged] == 0:
             sortedPlayerList = dict(sorted(self.scores.items(), key=lambda key_val: key_val[1], reverse=True))
@@ -890,12 +867,16 @@ class Quiz:
                             </div>"""
                         player.queueTurboAction(playerDiv, "quizLeaderboard", player.turboApp.methods.newDiv.value)
 
+
+
+
+
     def startQuiz(self, sides: dict[str, list[BaseViewer]], players):
         started = time()
         self.sides = sides
         self.players = players
         self.extractQuestions()
-        sleep(3 - (time() - started))
+        sleep(3-(time()-started))
         for playerID in self.players:
             renderQuizGamePage(self.players[playerID]["Viewer"])
         for side in sides:
@@ -911,7 +892,7 @@ class Quiz:
         pass
 
 
-def registerUser(viewerObj: BaseViewer, form: dict):
+def registerUser(viewerObj:BaseViewer, form:dict):
     username = form.get("username", "")
     email = form.get("email", "")
     password = form.get("password", "")
@@ -924,32 +905,27 @@ def registerUser(viewerObj: BaseViewer, form: dict):
     elif SQLconn.execute(f"SELECT UserName from user_auth where UserName=\"{username}\" limit 1"):
         viewerObj.queueTurboAction("Username Taken", "registrationWarning", viewerObj.turboApp.methods.update.value)
         sendRegisterForm(viewerObj)
-    elif email.count("@") != 1 or email.count(".") != 1:
+    elif email.count("@")!=1 or email.count(".")!=1:
         viewerObj.queueTurboAction("Email not valid", "registrationWarning", viewerObj.turboApp.methods.update.value)
         sendRegisterForm(viewerObj)
-    elif password != confirm_password:
-        viewerObj.queueTurboAction("Passwords Dont match", "registrationWarning",
-                                   viewerObj.turboApp.methods.update.value)
+    elif password!=confirm_password:
+        viewerObj.queueTurboAction("Passwords Dont match", "registrationWarning", viewerObj.turboApp.methods.update.value)
         sendRegisterForm(viewerObj)
     else:
         while True:
             userID = StringGenerator().AlphaNumeric(50, 50)
             if not SQLconn.execute(f"SELECT UserName from user_auth where UserID=\"{userID}\" limit 1"):
                 SQLconn.execute(f"INSERT INTO user_info values (\"{userID}\", now(), \"{name}\", {age})")
-                SQLconn.execute(
-                    f"INSERT INTO user_auth values (\"{userID}\", \"{username}\", \"{generate_password_hash(password)}\")")
+                SQLconn.execute(f"INSERT INTO user_auth values (\"{userID}\", \"{username}\", \"{generate_password_hash(password)}\")")
                 break
 
-
-def loginUser(viewerObj: BaseViewer, form: dict):
+def loginUser(viewerObj:BaseViewer, form:dict):
     username = form.get("username", "")
     password = form.get("password", "")
     if not SQLconn.execute(f"SELECT UserName from user_auth where UserName=\"{username}\" limit 1"):
         viewerObj.queueTurboAction("Username Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
         sendLoginForm(viewerObj)
-    elif not check_password_hash(
-            SQLconn.execute(f"SELECT PWHash from user_auth where UserName=\"{username}\"")[0]["PWHash"].decode(),
-            password):
+    elif not check_password_hash(SQLconn.execute(f"SELECT PWHash from user_auth where UserName=\"{username}\"")[0]["PWHash"].decode(), password):
         viewerObj.queueTurboAction("Password Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
         sendLoginForm(viewerObj)
     else:
@@ -991,7 +967,7 @@ def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
 
-    # renderAuthPage(viewerObj)
+    renderAuthPage(viewerObj)
     # sleep(2)
     # renderHomepage(viewerObj)
     # sleep(2)
@@ -1001,12 +977,12 @@ def newVisitorCallback(viewerObj: BaseViewer):
     # sleep(2)
     # renderQuizGamePage(viewerObj)
     # sleep(2)
-    renderQuizEndPage(viewerObj)
+    # quizEndPage(viewerObj)
     # sleep(2)
-    # loginInput(viewerObj)
-    # sleep(2)
-    # sendRegister(viewerObj)
-    # sleep(2)
+    #loginInput(viewerObj)
+    #sleep(2)
+    #sendRegister(viewerObj)
+    #sleep(2)
     # sendLogin(viewerObj)
     # sleep(2)
 
@@ -1015,10 +991,11 @@ def visitorLeftCallback(viewerObj: BaseViewer):
     print("Visitor Left: ", viewerObj.viewerID)
 
 
+
 logger = LogManager()
 SQLconn = connectDB(logger)
-activeParties: list[Party] = []
-waitingParties: list[Party] = []
+activeParties:list[Party] = []
+waitingParties:list[Party] = []
 viewerToUsernameMaps = {}
 extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
 bodyBase = """<body class="bg-slate-700"><div id="mainDiv"><div></body>"""
