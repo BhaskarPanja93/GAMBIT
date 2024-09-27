@@ -220,11 +220,11 @@ def renderAuthPage(viewerObj: BaseViewer):
 
 def renderQuizGamePage(viewerObj: BaseViewer):
     quiz = f"""
-<div class="bg-orange-700 flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
+<div class="bg-[#23003d] flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
 
-    <div id="teamADiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+    <div id="teamADiv" class="rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
         <div class="flex flex-col items-center">
-            <div>HEALTH POINTS</div>
+            <div class="text-white mb-1">HEALTH POINTS</div>
             <div class="relative size-40 flex items-center justify-center">
 
                 <div id="selfTeamHealthBar"></div>
@@ -243,20 +243,9 @@ def renderQuizGamePage(viewerObj: BaseViewer):
 
     </div>
 
-    <div id="quizDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
-        <div class="rounded-lg px-2 mx-6 bg-blue-100 text-green font-bold text-2xl p-4">
-            <div class="text-black font-bold text-2xl h-1/3 p-4 m-4" id="questionText">
-                Lorem ipsum dolor sit amet, consectetur adipiscing elit. Maecenas vitae risus efficitur quam imperdiet
-                sagittis. Suspendisse rutrum iaculis lectus sit amet maximus. Integer tincidunt in arcu vitae
-                condimentum.
-                Nunc porta ex elit, eget sollicitudin tellus pharetra quis. Ut laoreet, enim maximus dapibus
-                ullamcorper,
-                arcu leo scelerisque quam, a vulputate ligula turpis eu dolor. Proin sem sem, elementum ut nulla nec,
-                fermentum fringilla libero. Maecenas eu facilisis erat, vitae iaculis orci. Donec volutpat enim vitae
-                leo
-                convallis hendrerit.
-
-            </div>
+    <div id="quizDiv" class="rounded-lg bg-[#490080] flex flex-col items-center justify-center w-full h-full">
+        <div class="rounded-lg px-2 mx-6 bg-[#eacfff] text-green font-bold text-2xl p-4">
+            <div class="bg-[#eacfff] font-bold text-2xl h-1/3 p-4 m-4" style="color:#23003d" id="questionText"> </div>
         </div>
 
 
@@ -265,9 +254,9 @@ def renderQuizGamePage(viewerObj: BaseViewer):
         <div id="options" class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6"></div>
         </div>
 
-        <div id="teamBDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+        <div id="teamBDiv" class="rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
             <div class="flex flex-col items-center">
-                <div>HEALTH POINTS</div>
+                <div class="text-white mb-1" >HEALTH POINTS</div>
                 <div class="relative size-40 flex items-center justify-center">
 
                     <div id="otherTeamHealthBar">
@@ -689,12 +678,12 @@ class Quiz:
             for side in self.sides:
                 for _player in self.sides[side]:
                     playerDiv = f"""
-                            <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-                                <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
+                            <div class="rounded-lg bg-[#eacfff] mx-4 my-2 flex justify-between items-center">
+                                <img class="mx-4 rounded-full border-4 border-white w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
                                 <div class="flex items-center gap-4">
                                     <div class="font-medium dark:text-white">
-                                        <div class="text-white text-bold text-xl m-4">Name: {viewerToUsernameMaps.get(_player.viewerID, "")}</div>
-                                        <div class="text-white text-bold text-xl m-4">Score: {self.scores.get(_player.viewerID, 0)}</div>
+                                        <div class="text-black text-bold text-xl m-4">Name: {viewerToUsernameMaps.get(_player.viewerID, "")}</div>
+                                        <div class="text-black text-bold text-xl m-4">Score: {self.scores.get(_player.viewerID, 0)}</div>
                                     </div>
                                 </div>
                             </div>
@@ -722,28 +711,28 @@ class Quiz:
             options = f"""<form onsubmit="return submit_ws(this)">
                 {viewer.addCSRF("quizOption")}
                 <input type="hidden" name="option" value="0">
-                <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
+                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
                     <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][0]}</div>
                 </button>
             </form>
             <form onsubmit="return submit_ws(this)">
                 {viewer.addCSRF("quizOption")}
                 <input type="hidden" name="option" value="1">
-                <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
+                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
                     <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][1]}</div>
                 </button>
             </form>
             <form onsubmit="return submit_ws(this)">
                 {viewer.addCSRF("quizOption")}
                 <input type="hidden" name="option" value="2">
-                <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
+                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
                     <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][2]}</div>
                 </button>
             </form>
             <form onsubmit="return submit_ws(this)">
                 {viewer.addCSRF("quizOption")}
                 <input type="hidden" name="option" value="3">
-                <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
+                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
                     <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][3]}</div>
                 </button>
             </form>"""
@@ -755,7 +744,7 @@ class Quiz:
         if len(self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]]) > optionIndex >= 0:
             if viewer.viewerID not in self.optionsPressed:
                 self.optionsPressed[viewer.viewerID] = optionIndex
-                options = f"""<button class="col-span-2 rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
+                options = f"""<button class="col-span-2 rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full">
                                     <div class="text-white font-bold text-2xl">{self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]][optionIndex]}</div>
                                 </button>"""
                 viewer.queueTurboAction(options, "options", viewer.turboApp.methods.update.value)
@@ -830,8 +819,8 @@ class Quiz:
                         rank += 1
                         username = viewerToUsernameMaps.get(viewerID, "")
                         score = sortedPlayerList[viewerID]
-                        playerDiv = f"""<div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                                    <div class="font-medium text-bold text-3xl dark:text-white">{rank}</div>
+                        playerDiv = f"""<div class="rounded-lg bg-[#eacfff] mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
+                                    <div class="font-medium text-bold text-3xl dark:text-black">{rank}</div>
                                     <div class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
                                         <img class="mr-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
                                         <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white">
@@ -945,9 +934,9 @@ def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
 
-    # renderAuthPage(viewerObj)
+    renderAuthPage(viewerObj)
     # sleep(2)
-    renderHomepage(viewerObj)
+    # renderHomepage(viewerObj)
     # sleep(2)
     # renderQuizLobbyPage(viewerObj)
     # sleep(2)
