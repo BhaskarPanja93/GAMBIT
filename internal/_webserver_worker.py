@@ -597,13 +597,124 @@ def quizEndPage(viewerObj: BaseViewer):
     """
 
     viewerObj.queueTurboAction(quizEnd, "quizEndPage", viewerObj.turboApp.methods.update)
+
+
+def quizLobbyPage(viewerObj: BaseViewer):
+    quizLobby = f"""
+
+    <div class="bg-orange-700 flex h-full w-full gap-8 px-6 py-6">
+        
+        <div class="w-full">
+                        <h1 class="flex justify-center text-3xl font-bold text-white">Lobby</h1>
+
+          <div id="quizLobbyDiv" class="p-8 rounded-lg grid grid-cols-3 w-full h-full gap-4">
+            <div class="bg-blue-500 h-full rounded-lg flex flex-col justify-between items-center py-6">
+                <img class="rounded-full w-48 h-48 mb-4" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="text-white text-xl font-bold text-center">Username</div> <!-- Increased size and centered -->
+                <div class="text-white text-lg text-center">Rank</div> <!-- Increased size and centered -->
+                <div class="text-white text-lg text-center">Level</div> <!-- Increased size and centered -->
+            </div>
+
+            <div class="bg-red-500 h-full rounded-lg flex flex-col justify-between items-center py-6">
+                <img class="rounded-full w-48 h-48 mb-4" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="text-white text-lg font-semibold">Username</div>
+                <div class="text-white text-md">Rank</div>
+                <div class="text-white text-md">Level</div>
+            </div>
+            <div class="bg-green-500 h-full rounded-lg flex flex-col justify-between items-center py-6">
+                <img class="rounded-full w-48 h-48 mb-4" src="static/images/profilepic.webp" alt="Extra large avatar">
+                <div class="text-white text-lg font-semibold">Username</div>
+                <div class="text-white text-md">Rank</div>
+                <div class="text-white text-md">Level</div>
+            </div> 
+          </div>
+        </div>
+        <div id="quizFriendListDiv" class="p-6 flex items-center rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+            <!-- Queue Up Button -->
+            <form class="w-full" onsubmit="return submit_ws(this)">
+                {viewerObj.addCSRF('startQueue')}
+                <button type="submit" class="w-full p-4 rounded-full flex justify-center bg-gray-700 mb-4">
+                    <div class="w-full text-white font-bold">QUEUE UP</div>
+                </button>
+            </form>
+        
+            <!-- Friend List Container -->
+            <div class="rounded-lg h-full w-full bg-yellow-200 m-8 p-4">
+                <!-- Friend List Title -->
+                <div class="text-dark font-bold flex justify-center mb-4">FRIEND LIST</div>
+                
+                <!-- Individual Friend Entries -->
+                <div class="flex flex-col space-y-2">
+                    <!-- Friend 1 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 1</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 2 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 2</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 3 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 3</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 4 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 4</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 5 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 5</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 6 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 6</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 7 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 7</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 8 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 8</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 9 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 9</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                    <!-- Friend 10 -->
+                    <div class="bg-white rounded-lg p-2 flex justify-between items-center">
+                        <span class="font-semibold">Friend 10</span>
+                        <button class="bg-blue-500 text-white px-4 py-1 rounded-lg">Invite</button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+    </div>
+
+
+    """
+    viewerObj.queueTurboAction(quizLobby, "quizLobbyPage", viewerObj.turboApp.methods.update)
+
+
+
 def newVisitorCallback(viewerObj: BaseViewer):
-    initial = "<div id=\"quizEndPage\"></div>"
+    initial = "<div id=\"quizLobbyPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
 
     # loginRegisterPage(viewerObj)
     # quizPage(viewerObj)
-    quizEndPage(viewerObj)
+    quizLobbyPage(viewerObj)
+    # quizEndPage(viewerObj)
     # loginInput(viewerObj)
     # sendRegister(viewerObj)
     # sendLogin(viewerObj)
@@ -617,6 +728,7 @@ def visitorLeftCallback(viewerObj: BaseViewer):
 def formSubmitCallback(viewerObj: BaseViewer, form: dict):
     if form is not None:
         purpose = form.pop("PURPOSE")
+        print(purpose,form)
 
         if purpose == FormPurposes.register.value:
             print(form)
