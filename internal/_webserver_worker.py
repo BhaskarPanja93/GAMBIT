@@ -494,7 +494,7 @@ class Party:
         self.partyStartAt = time()
         self.gameStarted = False
         self.quiz = None
-        Thread(target=self.forceStartTimer).start()
+
 
     def forceStartTimer(self):
         while time() - self.partyStartAt < 4 and not self.gameStarted:
@@ -508,10 +508,16 @@ class Party:
         def _PlayerJoinTeam(self, viewer, team):
             self.teamSize[team] += 1
             self.sides[team].append(viewer)
+            if self.teamSize["A"] + self.teamSize["B"] == 6:
+                self.initGame()
+            elif self.teamSize["A"] + self.teamSize["B"] > 1:
+                Thread(target=self.forceStartTimer).start()
+            else:
+                viewer.queueTurboAction("Waiting..", "queueTimer", viewer.turboApp.methods.update.value)
 
         if team is None:
             if self.teamSize["A"] + self.teamSize["B"] < 6:
-                if self.teamSize["A"] < self.teamSize["B"]:
+                if self.teamSize["B"] >= self.teamSize["A"]:
                     team = "A"
                 else:
                     team = "B"
@@ -528,12 +534,12 @@ class Party:
 
     def initGame(self):
         self.gameStarted = True
+        waitingParties.remove(self)
+        activeParties.append(self)
         for side in self.sides:
             for player in self.sides[side]:
                 self.players[player.viewerID] = {"Team": side, "Viewer": player}
                 renderQuizMatchFoundPage(player)
-        waitingParties.remove(self)
-        activeParties.append(self)
         self.quiz = Quiz(turboApp, SQLconn)
         self.quiz.startQuiz(self.sides, self.players)
 
@@ -767,10 +773,6 @@ class Quiz:
                                     </div>
                             </div>"""
                         player.queueTurboAction(playerDiv, "quizLeaderboard", player.turboApp.methods.newDiv.value)
-
-
-
-
 
     def startQuiz(self, sides: dict[str, list[BaseViewer]], players):
         started = time()
