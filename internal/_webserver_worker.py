@@ -236,40 +236,8 @@ def renderQuizGamePage(viewerObj: BaseViewer):
             </div>
         </div>
 
+        <div id="selfTeam_create"></div>
 
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <img class="mx-4 my-4 rounded-lg w-20 h-20"
-                 src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp"
-                 alt="Extra large avatar">
-                    <div class="flex justify-center text-white text-bold text-xl m-2">Player 1</div>
-                    <div class="flex justify-center text-white text-bold text-xl m-2">Correct</div>
-                    <div class="flex justify-center text-white text-bold text-xl m-2">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
     </div>
 
     <div id="quizDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
@@ -323,36 +291,7 @@ def renderQuizGamePage(viewerObj: BaseViewer):
             </div>
         </div>
 
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
-        <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-            <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-            <div class="flex items-center gap-4">
-                <div class="font-medium dark:text-white">
-                    <div class="text-white text-bold text-xl m-4">Player 1</div>
-                    <div class="text-white text-bold text-xl m-4">Correct</div>
-                    <div class="text-white text-bold text-xl m-4">Incorrect</div>
-                </div>
-            </div>
-        </div>
+        <div id="otherTeam_create"></div>
     </div>
 </div>
 """
@@ -657,8 +596,10 @@ class Party:
                 else:
                     team = "B"
                 _PlayerJoinTeam(self, viewer, team)
+            else: return False
         else:
             _PlayerJoinTeam(self, viewer, team)
+        return True
 
     def leaveTeam(self, viewer: BaseViewer, team):
         if viewer in self.sides[team]:
@@ -722,12 +663,24 @@ class Quiz:
 
     def renderPlayers(self):
         for playerID in self.players:
+            player: BaseViewer = self.players[playerID]["Viewer"]
             for side in self.sides:
                 for _player in self.sides[side]:
+                    playerDiv = f"""
+                            <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
+                                <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
+                                <div class="flex items-center gap-4">
+                                    <div class="font-medium dark:text-white">
+                                        <div class="text-white text-bold text-xl m-4">Name: {viewerToUsernameMaps.get(_player.viewerID, "")}</div>
+                                        <div class="text-white text-bold text-xl m-4">Score: {self.scores.get(_player.viewerID, 0)}</div>
+                                    </div>
+                                </div>
+                            </div>
+                            """
                     if self.players[playerID]["Team"] == side:
-                        self.players[playerID]["Viewer"]
+                        player.queueTurboAction(playerDiv, "selfTeam", player.turboApp.methods.newDiv)
                     else:
-                        self.players[playerID]["Viewer"]
+                        player.queueTurboAction(playerDiv, "otherTeam", player.turboApp.methods.newDiv)
 
     def extractQuestions(self):
         for questionData in self.MySQLPool.execute("SELECT * from questions where QuizEligible=1 ORDER BY RAND() LIMIT 30"):
@@ -949,12 +902,12 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
         elif purpose == FormPurposes.startQueue.value:
             if waitingParties:
                 for party in waitingParties:
-                    party.joinTeam(viewerObj)
-                    break
-            else:
-                party = Party()
-                waitingParties.append(party)
-                party.joinTeam(viewerObj)
+                    if party.joinTeam(viewerObj):
+                        return
+            party = Party()
+            waitingParties.append(party)
+            party.joinTeam(viewerObj)
+
         elif purpose == "quizOption":
             for party in activeParties:
                 if viewerObj.viewerID in party.players:
