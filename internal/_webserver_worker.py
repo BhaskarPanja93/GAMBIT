@@ -78,25 +78,29 @@ def renderHomepage(viewerObj: BaseViewer):
             </div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="py-4 inline-flex rounded-full shadow">   
-                    <button class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-yellow-300 border border-transparent rounded-3xl cursor-pointer hover:bg-gray-100 font-bold">
-                        REGISTER
+                <form onsubmit="return submit_ws(this)">
+                {viewerObj.addCSRF("renderQuiz")}
+                    <button type="submit" class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-gradient-to-r from-purple-500 to-violet-700 border border-transparent rounded-3xl cursor-pointer hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
+                        SIGN IN
                     </button>
+                </form>
                 </div>
             </div>
         </nav>
 
         <div id="imageBackground" class=" py-12 relative image-container w-full">
         <!-- Image -->
-        <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
+        <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
          <form onsubmit="return submit_ws(this)">
                 {viewerObj.addCSRF("renderQuiz")}
-                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-blue-700 text-white font-bold text-4xl rounded-full p-12">START LEARNING</button>
+                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 hover:transition duration-300 ease-in-out" style="color: #23003d;">START LEARNING</button>
         </form>
         <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full">
             All Your Education Needs In One</p>
         </div>
     </div>
 </div>
+
 """
 
     viewerObj.queueTurboAction(home, "fullPage", viewerObj.turboApp.methods.update)
@@ -216,11 +220,11 @@ def renderAuthPage(viewerObj: BaseViewer):
 
 def renderQuizGamePage(viewerObj: BaseViewer):
     quiz = f"""
-<div class="bg-orange-700 flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
+<div class="bg-[#23003d] flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
 
-    <div id="teamADiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+    <div id="teamADiv" class="rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
         <div class="flex flex-col items-center">
-            <div>HEALTH POINTS</div>
+            <div class="text-white mb-1">HEALTH POINTS</div>
             <div class="relative size-40 flex items-center justify-center">
 
                 <div id="selfTeamHealthBar"></div>
@@ -239,9 +243,9 @@ def renderQuizGamePage(viewerObj: BaseViewer):
 
     </div>
 
-    <div id="quizDiv" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
-        <div class="rounded-lg px-2 mx-6 bg-blue-100 text-green font-bold text-2xl p-4">
-            <div class="text-black font-bold text-2xl h-1/3 p-4 m-4" id="questionText"></div>
+    <div id="quizDiv" class="rounded-lg bg-[#490080] flex flex-col items-center justify-center w-full h-full">
+        <div class="rounded-lg px-2 mx-6 bg-[#eacfff] text-green font-bold text-2xl p-4">
+            <div class="bg-[#eacfff] font-bold text-2xl h-1/3 p-4 m-4" style="color:#23003d" id="questionText"> </div>
         </div>
 
 
@@ -250,9 +254,9 @@ def renderQuizGamePage(viewerObj: BaseViewer):
         <div id="options" class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6"></div>
         </div>
 
-        <div id="teamBDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+        <div id="teamBDiv" class="rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
             <div class="flex flex-col items-center">
-                <div>HEALTH POINTS</div>
+                <div class="text-white mb-1" >HEALTH POINTS</div>
                 <div class="relative size-40 flex items-center justify-center">
 
                     <div id="otherTeamHealthBar">
@@ -299,19 +303,111 @@ def renderQuizEndPage(viewerObj: BaseViewer):
 
         <!-- Leaderboard Entries -->
         <div id="quizLeaderboard_create"></div>
+
     </div>
 
-    <div id="postQuiz" class="rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
+    <div class="p-8 rounded-lg bg-blue-700 flex flex-col items-center justify-center w-full h-full">
         <div class="p-8 rounded-lg mx-6 bg-blue-200 text-green font-bold text-2xl h-full w-full">
             <div id="resultTextDiv" class="flex justify-center items-center text-black font-bold text-2xl h-1/3"></div>
         </div>
     </div>
 
-    <div class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
+    <div id="questionListDiv" class="rounded-lg bg-blue-700 flex flex-col h-full w-1/3">
         <div class="flex flex-col items-center">
             <div>QUESTIONS LIST</div>
         </div>
-        <div id="postQuizQuestionList" class="flex flex-col items-center mt-4"></div>
+        <div class="flex flex-col items-center mt-4">
+            <ul class="grid grid-cols-1 gap-2 w-full h-full p-4">
+                <li>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question1')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">1
+                        </button>
+                        </form>
+                </li>
+                <li>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question2')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">2
+                        </button>
+                        </form>
+                </li>
+
+                <li>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question3')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">3
+                        </button>
+                        </form>
+                </li>
+
+                <li>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question4')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">4
+                        </button>
+                        </form>
+                </li>
+
+                <li>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question5')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">5
+                        </button>
+                        </form>
+                </li>
+
+                <li>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question6')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">6
+                        </button>
+                        </form>
+                </li>
+
+                <li>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question7')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">7
+                        </button>
+                        </form>
+                </li>
+
+                <li>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question8')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">8
+                        </button>
+                        </form>
+                </li>
+
+                <li>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question9')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">9
+                        </button>
+                        </form>
+                </li>
+
+                <li>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF('question10')}
+                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700"
+                                onclick="this.classList.toggle('bg-blue-400')">10
+                        </button>
+                        </form>
+                </li>
+            </ul>
+        </div>
     </div>
 </div>
 """
@@ -582,12 +678,12 @@ class Quiz:
             for side in self.sides:
                 for _player in self.sides[side]:
                     playerDiv = f"""
-                            <div class="rounded-lg bg-red-200 mx-4 my-2 flex justify-between items-center">
-                                <img class="mx-4 rounded w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
+                            <div class="rounded-lg bg-[#eacfff] mx-4 my-2 flex justify-between items-center">
+                                <img class="mx-4 rounded-full border-4 border-white w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
                                 <div class="flex items-center gap-4">
                                     <div class="font-medium dark:text-white">
-                                        <div class="text-white text-bold text-xl m-4">Name: {viewerToUsernameMaps.get(_player.viewerID, "")}</div>
-                                        <div class="text-white text-bold text-xl m-4">Score: {self.scores.get(_player.viewerID, 0)}</div>
+                                        <div class="text-black text-bold text-xl m-4">Name: {viewerToUsernameMaps.get(_player.viewerID, "")}</div>
+                                        <div class="text-black text-bold text-xl m-4">Score: {self.scores.get(_player.viewerID, 0)}</div>
                                     </div>
                                 </div>
                             </div>
@@ -615,28 +711,28 @@ class Quiz:
             options = f"""<form onsubmit="return submit_ws(this)">
                 {viewer.addCSRF("quizOption")}
                 <input type="hidden" name="option" value="0">
-                <button class="rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
+                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
                     <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][0]}</div>
                 </button>
             </form>
             <form onsubmit="return submit_ws(this)">
                 {viewer.addCSRF("quizOption")}
                 <input type="hidden" name="option" value="1">
-                <button class="rounded-lg bg-red-700 flex items-center justify-center h-full w-full">
+                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
                     <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][1]}</div>
                 </button>
             </form>
             <form onsubmit="return submit_ws(this)">
                 {viewer.addCSRF("quizOption")}
                 <input type="hidden" name="option" value="2">
-                <button class="rounded-lg bg-orange-400 flex items-center justify-center h-full w-full">
+                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
                     <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][2]}</div>
                 </button>
             </form>
             <form onsubmit="return submit_ws(this)">
                 {viewer.addCSRF("quizOption")}
                 <input type="hidden" name="option" value="3">
-                <button class="rounded-lg bg-blue-200 flex items-center justify-center h-full w-full">
+                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
                     <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][3]}</div>
                 </button>
             </form>"""
@@ -644,23 +740,18 @@ class Quiz:
 
     def receiveUserInput(self, viewer: BaseViewer, optionIndex):
         optionIndex = int(optionIndex)
+        print(viewer.viewerID, optionIndex, type(optionIndex))
         if len(self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]]) > optionIndex >= 0:
             if viewer.viewerID not in self.optionsPressed:
                 self.optionsPressed[viewer.viewerID] = optionIndex
-                options = f"""<button class="col-span-2 rounded-lg bg-yellow-400 flex items-center justify-center h-full w-full">
+                options = f"""<button class="col-span-2 rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full">
                                     <div class="text-white font-bold text-2xl">{self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]][optionIndex]}</div>
                                 </button>"""
                 viewer.queueTurboAction(options, "options", viewer.turboApp.methods.update.value)
+                print(len(self.optionsPressed) , len(self.players))
                 if len(self.optionsPressed) == len(self.players):
                     sleep(2)
                     self.endQuestion()
-
-    def sendPostQuizQuestion(self, viewer: BaseViewer, questionIndex):
-        questionIndex = int(questionIndex)
-        postQuestion = f"""<div class="rounded-lg px-2 mx-6 bg-blue-100 text-green font-bold text-2xl p-4">
-                <div class="text-black font-bold text-2xl h-1/3 p-4 m-4">{self.questions[questionIndex].questionStatement}{self.questions[questionIndex].correctAnswers[0]}</div>
-            </div>"""
-        viewer.queueTurboAction(postQuestion, "postQuiz", viewer.turboApp.methods.update)
 
     def endQuestion(self):
         points = {}
@@ -688,26 +779,10 @@ class Quiz:
         for side in self.sides:
             for _otherSide in self.sides:
                 if side!=_otherSide and points[side]<points[_otherSide]:
-                    self.updateHealth(side, 40*(1+self.questionIndex)*(points[side]-points[_otherSide]))
-        print("Health: ", self.teamHealth)
-        print("Scores: ", self.scores)
+                    self.updateHealth(side, 10*(1+self.questionIndex)*(points[side]-points[_otherSide]))
+        print(self.teamHealth)
+        print(self.scores)
         self.nextQuestion()
-
-    def sendPostQuestionList(self, viewer:BaseViewer):
-        questionList = """<ul class="grid grid-cols-1 gap-2 w-full h-full p-4">"""
-        for questionIndex in range(0, self.questionIndex + 1):
-            questionList += f"""
-                                <li>
-                                    <form onsubmit="return submit_ws(this)">
-                                        {viewer.addCSRF('postQuestion')}
-                                        <input type="hidden" name="question" value="{questionIndex}">
-                                        <button class="rounded-lg bg-blue-100 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">{questionIndex}</button>
-                                    </form>
-                                </li>
-                                """
-        questionList += "</ul>"
-        viewer.queueTurboAction(questionList, "postQuizQuestionList", viewer.turboApp.methods.update)
-        self.sendPostQuestionList(viewer)
 
     def updateHealth(self, teamChanged: str, offset):
         self.teamHealth[teamChanged] += offset
@@ -735,8 +810,6 @@ class Quiz:
             for side in self.sides:
                 for player in self.sides[side]:
                     renderQuizEndPage(player)
-                    self.sendPostQuestionList(player)
-                    print(side, teamChanged)
                     if side == teamChanged:
                         player.queueTurboAction("DEFEAT", "resultTextDiv", player.turboApp.methods.update)
                     else:
@@ -746,8 +819,8 @@ class Quiz:
                         rank += 1
                         username = viewerToUsernameMaps.get(viewerID, "")
                         score = sortedPlayerList[viewerID]
-                        playerDiv = f"""<div class="rounded-lg bg-red-200 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                                    <div class="font-medium text-bold text-3xl dark:text-white">{rank}</div>
+                        playerDiv = f"""<div class="rounded-lg bg-[#eacfff] mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
+                                    <div class="font-medium text-bold text-3xl dark:text-black">{rank}</div>
                                     <div class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
                                         <img class="mr-4 rounded w-16 h-16" src="static/images/profilepic.webp" alt="Extra large avatar">
                                         <div class="rounded-lg bg-red-700 mr-8 font-medium dark:text-white">
@@ -853,12 +926,6 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 
         elif purpose == "renderQuiz":
             renderQuizLobbyPage(viewerObj)
-
-
-        elif purpose == "postQuestion":
-            for party in activeParties:
-                if viewerObj.viewerID in party.players:
-                    party.quiz.sendPostQuizQuestion(viewerObj, form["question"])
 
 
 def newVisitorCallback(viewerObj: BaseViewer):
