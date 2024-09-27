@@ -37,6 +37,7 @@ class RequiredFiles(Enum):
 class FormPurposes(Enum):
     register = "register"
     login = "login"
+    startQueue = "startQueue"
 
 
 class Routes(Enum):
