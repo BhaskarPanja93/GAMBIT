@@ -82,7 +82,7 @@ def renderHomepage(viewerObj: BaseViewer):
                 <form onsubmit="return submit_ws(this)">
                 {viewerObj.addCSRF("renderAuthPage")}
                     <button type="submit" class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-gradient-to-r from-purple-500 to-violet-700 border border-transparent rounded-3xl cursor-pointer hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
-                        SIGN IN
+                        LOGOUT
                     </button>
                 </form>
                 </div>
@@ -459,7 +459,12 @@ class Party:
                 for player in self.sides[team]:
                     player.queueTurboAction(str(4 - int(time() - self.partyStartAt)), "queueTimer", player.turboApp.methods.update.value)
             sleep(0.1)
-        self.initGame()
+        if self.teamSize["A"] + self.teamSize["B"] >1:
+            self.initGame()
+        else:
+            for team in self.sides:
+                for player in self.sides[team]:
+                    player.queueTurboAction("Waiting..", "queueTimer", player.turboApp.methods.update.value)
 
     def joinTeam(self, viewer: BaseViewer, team=None):
         def _PlayerJoinTeam(self, viewer, team):
@@ -484,10 +489,17 @@ class Party:
             _PlayerJoinTeam(self, viewer, team)
         return True
 
-    def leaveTeam(self, viewer: BaseViewer, team):
-        if viewer in self.sides[team]:
+    def leaveTeam(self, viewer: BaseViewer, team=None):
+        if team is None:
+            for side in self.sides:
+                if viewer in self.sides[side]:
+                    team = side
+        if team and viewer in self.sides[team]:
             self.teamSize[team] -= 1
             self.sides[team].remove(viewer)
+            if self.teamSize["A"] + self.teamSize["B"] <= 0:
+                if self in waitingParties: waitingParties.remove(self)
+                if self in waitingParties: activeParties.remove(self)
 
     def initGame(self):
         self.gameStarted = True
@@ -676,7 +688,7 @@ class Quiz:
         for side in self.sides:
             for _otherSide in self.sides:
                 if side!=_otherSide and points[side]<points[_otherSide]:
-                    self.updateHealth(side, 50*(1+self.questionIndex)*(points[side]-points[_otherSide]))
+                    self.updateHealth(side, 10*(1+self.questionIndex)*(points[side]-points[_otherSide]))
         print(self.teamHealth)
         print(self.scores)
         self.nextQuestion()
@@ -858,6 +870,9 @@ def newVisitorCallback(viewerObj: BaseViewer):
 
 
 def visitorLeftCallback(viewerObj: BaseViewer):
+    for party in activeParties.__add__(waitingParties):
+        if viewerObj.viewerID in party.players:
+            party.leaveTeam(viewerObj, None)
     print("Visitor Left: ", viewerObj.viewerID)
 
 
