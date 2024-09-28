@@ -853,8 +853,10 @@ def newVisitorCallback(viewerObj: BaseViewer):
 
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
-
-    renderAuthPage(viewerObj)
+    if viewerToUsernameMaps[viewerObj.viewerID]:
+        renderHomepage(viewerObj)
+    else:
+        renderAuthPage(viewerObj)
     # sleep(2)
     # renderHomepage(viewerObj)
     # sleep(2)
