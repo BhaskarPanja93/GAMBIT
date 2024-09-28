@@ -1,7 +1,7 @@
 from gevent import monkey
 monkey.patch_all()
 
-from ssl import SSLContext, PROTOCOL_TLS_SERVER
+from random import choice, randrange
 from requests import get
 from flask import request
 from random import shuffle
@@ -332,27 +332,7 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
         <div class="w-full">
             <h1 class="flex justify-center text-3xl font-bold text-white">Lobby</h1>
 
-          <div id="quizLobbyDiv" class="p-8 rounded-lg grid grid-cols-3 w-full h-full gap-4">
-            <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
-                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-                <div class="text-white text-xl font-bold text-center">Username</div> <!-- Increased size and centered -->
-                <div class="text-white text-lg text-center">Rank</div> <!-- Increased size and centered -->
-                <div class="text-white text-lg text-center">Level</div> <!-- Increased size and centered -->
-            </div>
-
-            <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
-                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-                <div class="text-white text-lg font-semibold">Username</div>
-                <div class="text-white text-md">Rank</div>
-                <div class="text-white text-md">Level</div>
-            </div>
-            <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
-                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-                <div class="text-white text-lg font-semibold">Username</div>
-                <div class="text-white text-md">Rank</div>
-                <div class="text-white text-md">Level</div>
-            </div>
-          </div>
+          <div id="quizLobbyDiv" class="p-8 rounded-lg grid grid-cols-3 w-full h-full gap-4"> </div>
         </div>
         <div id="quizFriendListDiv" class="p-6 flex items-center rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
             <!-- Queue Up Button -->
@@ -370,7 +350,7 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
 
                 <!-- Individual Friend Entries -->
                 <div class="flex flex-col space-y-2">
-                    <!-- Friend 1 -->
+                    <!-- Friend 1-->
                     <div class="bg-white rounded-lg p-2 flex justify-between items-center">
                         <span class="font-semibold">Friend 1</span>
                         <button class="bg-gradient-to-r from-purple-500 to-violet-700 text-white px-4 py-1 rounded-lg">Invite</button>
@@ -777,6 +757,9 @@ def registerUser(viewerObj:BaseViewer, form:dict):
     elif email.count("@")!=1 or email.count(".")!=1:
         viewerObj.queueTurboAction("Email not valid", "registrationWarning", viewerObj.turboApp.methods.update.value)
         sendRegisterForm(viewerObj)
+    elif password == "":
+        viewerObj.queueTurboAction("Passwords Not Valid", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        sendRegisterForm(viewerObj)
     elif password!=confirm_password:
         viewerObj.queueTurboAction("Passwords Dont match", "registrationWarning", viewerObj.turboApp.methods.update.value)
         sendRegisterForm(viewerObj)
@@ -834,6 +817,28 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 
         elif purpose == "renderQuiz":
             renderQuizLobbyPage(viewerObj)
+            players = f"""
+            <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
+                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=botpic.jpg" alt="Extra large avatar">
+                <div class="text-white text-xl font-bold text-center">Bot_{StringGenerator().AlphaNumeric(2, 2)}</div> <!-- Increased size and centered -->
+                <div class="text-white text-lg text-center">Iron 1</div> <!-- Increased size and centered -->
+                <div class="text-white text-lg text-center">Level 1</div> <!-- Increased size and centered -->
+            </div>
+
+            <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
+                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
+                <div class="text-white text-lg font-semibold">{viewerToUsernameMaps.get(viewerObj.viewerID, "")}</div>
+                <div class="text-white text-md">{choice(["Iron", "Bronze", "Silver"])}{randrange(1,4)}</div>
+                <div class="text-white text-md">Level {randrange(1,5)}</div>
+            </div>
+            <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
+                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=botpic.jpg" alt="Extra large avatar">
+                <div class="text-white text-lg font-semibold">Bot_{StringGenerator().AlphaNumeric(2, 2)}</div>
+                <div class="text-white text-md">Iron 1</div>
+                <div class="text-white text-md">Level 1</div>
+            </div>
+            """
+            viewerObj.queueTurboAction(players, "quizLobbyDiv", viewerObj.turboApp.methods.update)
 
         elif purpose == "postQuestion":
             for party in activeParties:
