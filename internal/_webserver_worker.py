@@ -813,6 +813,8 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
                     party.quiz.receiveUserInput(viewerObj, form["option"])
 
         elif purpose == "renderAuthPage":
+            if viewerToUsernameMaps.get(viewerObj.viewerID):
+                del viewerToUsernameMaps[viewerObj.viewerID]
             renderAuthPage(viewerObj)
 
         elif purpose == "renderQuiz":
@@ -847,13 +849,12 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 
 
 
-
 def newVisitorCallback(viewerObj: BaseViewer):
     print("Visitor Joined: ", viewerObj.viewerID)
 
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
-    if viewerToUsernameMaps[viewerObj.viewerID]:
+    if viewerToUsernameMaps.get(viewerObj.viewerID):
         renderHomepage(viewerObj)
     else:
         renderAuthPage(viewerObj)
@@ -909,7 +910,7 @@ def not_found(e):
 
 
 try:
-    open("C:\cert\privkey.pem", "r").close()
+    open(r"C:\cert\privkey.pem", "r").close()
     print(f"https://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
     WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None, keyfile=r'C:\cert\privkey.pem', certfile=r'C:\cert\cert.pem').serve_forever()
 except:
