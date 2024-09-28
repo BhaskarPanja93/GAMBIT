@@ -547,7 +547,6 @@ class Quiz:
                                 <div class="flex items-center gap-4">
                                     <div class="font-medium dark:text-white">
                                         <div class="text-black text-bold text-xl m-4">Name: {viewerToUsernameMaps.get(_player.viewerID, "")}</div>
-                                        <div class="text-black text-bold text-xl m-4">Score: {self.scores.get(_player.viewerID, 0)}</div>
                                     </div>
                                 </div>
                             </div>
@@ -613,8 +612,8 @@ class Quiz:
                                     <div class="text-white font-bold text-2xl">{self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]][optionIndex]}</div>
                                 </button>"""
                 viewer.queueTurboAction(options, "options", viewer.turboApp.methods.update.value)
-                print(len(self.optionsPressed) , len(self.players))
                 if len(self.optionsPressed) == len(self.players):
+                    self.updateHealth(self.players[viewer.viewerID]["Team"], -5)
                     sleep(2)
                     self.endQuestion()
 
@@ -747,7 +746,11 @@ def registerUser(viewerObj:BaseViewer, form:dict):
     password = form.get("password", "")
     confirm_password = form.get("confirm_password", "")
     name = form.get("name", "")
-    age = int(form.get("age", 0))
+    age = form.get("age", 0)
+    try: age=int(age)
+    except:
+        viewerObj.queueTurboAction("Invalid Age", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        sendRegisterForm(viewerObj)
     if not username:
         viewerObj.queueTurboAction("Invalid Username", "registrationWarning", viewerObj.turboApp.methods.update.value)
         sendRegisterForm(viewerObj)
