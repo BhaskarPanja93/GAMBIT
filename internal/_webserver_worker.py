@@ -59,48 +59,65 @@ def navBar(viewerObj: BaseViewer):
 
 def renderHomepage(viewerObj: BaseViewer):
     home = f"""
-<div class="px-12 w-full sm:px-12">
+<div class="px-6 w-full sm:px-12">
     <div class="relative pt-6 pb-16 sm:pb-24">
-        <nav class="relative flex items-center justify-between sm:h-10 md:justify-center" aria-label="Global">
+        <nav class="relative flex items-center justify-between sm:h-10 md:justify-center bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
                 <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
                     <a href="#">
-                        <span class="sr-only">Gambit - All in One Education</span>
                         <img class="w-auto h-14 sm:h-18" src="https://www.svgrepo.com/show/448244/pack.svg" loading="lazy" width="202" height="80">
                     </a>
                     <div class="flex items-center -mr-2 md:hidden">
-                        <button class="inline-flex items-center justify-center p-2 text-blue-700 bg-yellow-700 rounded-lg hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-50"  type="button" aria-expanded="false">
+                        <!-- Mobile Menu Button -->
+                        <button class="inline-flex items-center justify-center p-2 text-blue-700 bg-yellow-700 rounded-lg hover:text-gray-500 hover:bg-gray-100 focus:outline-none focus:ring-2 focus:ring-inset focus:ring-gray-50" type="button" aria-expanded="false">
+                            <!-- Icon for mobile menu (hamburger) -->
+                            <svg class="h-6 w-6" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor" aria-hidden="true">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M4 6h16M4 12h16m-7 6h7" />
+                            </svg>
                         </button>
                     </div>
                 </div>
             </div>
+
+            <!-- Desktop Menu -->
             <div class="hidden md:flex md:space-x-10 list-none">
-                <p class="text-3xl text-white font-bold">THE ALL IN ONE PLATFORM </p>
+                <p class="text-2xl md:text-3xl text-white font-bold">THE ALL IN ONE PLATFORM</p>
             </div>
+
+            <!-- Logout button on the right for larger screens -->
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="py-4 inline-flex rounded-full shadow">   
-                <form onsubmit="return submit_ws(this)">
-                {viewerObj.addCSRF("renderAuthPage")}
-                    <button type="submit" class="font-custom inline-flex items-center px-14 py-3 text-2xl text-black bg-gradient-to-r from-purple-500 to-violet-700 border border-transparent rounded-3xl cursor-pointer hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
-                        LOGOUT
-                    </button>
-                </form>
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF("renderAuthPage")}
+                        <button type="submit" class="font-custom inline-flex items-center px-6 sm:px-10 py-2 sm:py-3 text-xl sm:text-2xl text-black bg-gradient-to-r from-purple-500 to-violet-700 border border-transparent rounded-3xl cursor-pointer hover:font-bold hover:scale-105 hover:transition duration-300 ease-in-out">
+                            LOGOUT
+                        </button>
+                    </form>
                 </div>
             </div>
         </nav>
 
-        <div id="imageBackground" class=" py-12 relative image-container w-full">
-        <!-- Image -->
-        <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
-         <form onsubmit="return submit_ws(this)">
+        <!-- Background Image and Buttons -->
+        <div id="imageBackground" class="relative image-container w-full py-12">
+            <!-- Background Image -->
+            <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
+            
+            <!-- Start Learning Button -->
+            <form onsubmit="return submit_ws(this)">
                 {viewerObj.addCSRF("renderQuiz")}
-                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 hover:transition duration-300 ease-in-out" style="color: #23003d;">START LEARNING</button>
-        </form>
-        <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full">
-            All Your Education Needs In One</p>
+                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-3xl sm:text-4xl rounded-full p-8 sm:p-12 hover:scale-105 hover:transition duration-300 ease-in-out" style="color: #23003d;">
+                    START LEARNING
+                </button>
+            </form>
+
+            <!-- Headline Text -->
+            <p class="absolute top-2/3 left-1/2 transform -translate-x-1/2 text-white font-bold text-5xl sm:text-7xl text-center w-full">
+                All Your Education Needs In One
+            </p>
         </div>
     </div>
 </div>
+
 
 """
 
@@ -860,9 +877,9 @@ def newVisitorCallback(viewerObj: BaseViewer):
     if viewerToUsernameMaps.get(viewerObj.viewerID):
         renderHomepage(viewerObj)
     else:
-        renderAuthPage(viewerObj)
+    # renderAuthPage(viewerObj)
     # sleep(2)
-    # renderHomepage(viewerObj)
+        renderHomepage(viewerObj)
     # sleep(2)
     # renderQuizLobbyPage(viewerObj)
     # sleep(2)
