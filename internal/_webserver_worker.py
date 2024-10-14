@@ -1,13 +1,12 @@
 from gevent import monkey
 monkey.patch_all()
 
-from random import choice, randrange
+from random import choice, randrange, choices
 from requests import get
 from flask import request
 from random import shuffle
 from threading import Thread
 from time import time, sleep
-from pooledMySQL import Manager as MySQLPoolManager
 from randomisedString import Generator as StringGenerator
 from dynamicWebsite import *
 from Enums import *
@@ -310,8 +309,7 @@ def renderQuizEndPage(viewerObj: BaseViewer):
         </div>
 
         <!-- Leaderboard Entries -->
-        <div id="quizLeaderboard_create"></div>
-
+        <div id="quizLeaderboard"></div>
     </div>
 
     <div id="postQuiz" class="rounded-lg bg-[#490080] flex flex-col items-center justify-center w-full h-full">
@@ -429,75 +427,113 @@ def sendLoginForm(viewerObj:BaseViewer):
     viewerObj.queueTurboAction(form, "loginFormContainer", viewerObj.turboApp.methods.update)
 
 
+
+class Player:
+    def __init__(self, viewer: BaseViewer|None=None):
+        self.userName = "BOT_"+StringGenerator().AlphaNumeric(4,4)
+        self.viewerObj = viewer
+        self.userName = viewerIDToUsername.get(viewer.viewerID) if viewer else self.userName
+        self.team:Team|None = None
+        self.isHuman:bool = False if not viewer else True
+        self.correctness:float = 0.6
+        self.score = 0
+
+
+
+class Team:
+    def __init__(self, teamID:str):
+        self.teamID = teamID
+        self.players:dict[str, Player] = {}
+        self.score = 0
+        self.health = 0
+
+    def playerJoin(self, player:Player):
+        if player.userName not in self.players:
+            self.players[player.userName] = player
+            player.team = self
+    def playerLeft(self, player: Player):
+        if player.userName in self.players:
+            del self.players[player.userName]
+            player.team = None
+
+
+
 class Party:
-    def __init__(self):
-        self.players: dict[str, dict] = {}  # "abc":{"Team":team, "Viewer":viewer}
-        self.sides: dict[str, list[BaseViewer]] = {"A": [], "B": []}
-        self.teamSize = {"A": 0, "B": 0}
-        self.partyStartAt = 0
-        self.gameStarted = False
-        self.quiz = None
+    def __init__(self, teamCount:int, playerCount:int):
+        self.partyID:str|None = None
+        self.usernamePlayerMap: dict[str, Player] = {}
+        self.teams: list[Team] = []
+        self.timerInitialised = False
+        self.gameObj:Quiz|None = None
+        while not self.partyID or self.partyID in onlineParties: self.partyID = StringGenerator().AlphaNumeric(5, 30)
+        onlineParties[self.partyID] = self
+        for _ in range(teamCount): self.teams.append(Team(f"{self.partyID}{_}"))
+        self.maxPlayers = playerCount
 
 
-    def forceStartTimer(self):
-        self.partyStartAt = time()
-        while time() - self.partyStartAt < 4 and not self.gameStarted:
-            for team in self.sides:
-                for player in self.sides[team]:
-                    player.queueTurboAction(str(4 - int(time() - self.partyStartAt)), "queueTimer", player.turboApp.methods.update.value)
-            sleep(0.1)
-        if self.teamSize["A"] + self.teamSize["B"] >1:
-            self.initGame()
+    def startTimer(self):
+        if not self.timerInitialised:
+            partyTimerStartedAt = time()
+            self.timerInitialised = True
+            while time() - partyTimerStartedAt < 4 and sum([len(team.players) for team in self.teams]) > 1:
+                for player in self.usernamePlayerMap.values():
+                    player.viewerObj.queueTurboAction(str(4 - int(time() - partyTimerStartedAt)), "queueTimer", player.viewerObj.turboApp.methods.update)
+                sleep(1)
+        if sum([len(team.players) for team in self.teams]) > 1:
+            self.partyComplete()
         else:
-            for team in self.sides:
-                for player in self.sides[team]:
-                    player.queueTurboAction("Waiting..", "queueTimer", player.turboApp.methods.update.value)
+            self.timerInitialised = False
+            for player in self.usernamePlayerMap.values():
+                player.viewerObj.queueTurboAction("Waiting...", "queueTimer", player.viewerObj.turboApp.methods.update)
 
-    def joinTeam(self, viewer: BaseViewer, team=None):
-        def _PlayerJoinTeam(self, viewer, team):
-            self.teamSize[team] += 1
-            self.sides[team].append(viewer)
-            if self.teamSize["A"] + self.teamSize["B"] == 6:
-                self.initGame()
-            elif self.teamSize["A"] + self.teamSize["B"] > 1:
-                Thread(target=self.forceStartTimer).start()
+
+    def joinTeam(self, viewer: BaseViewer|None=None):
+        player = Player(viewer)
+        if viewer: viewerIDToParty[viewer.viewerID] = self
+        self.usernamePlayerMap[player.userName] = player
+        shuffle(self.teams)
+        if self.gameObj is None and sum([len(team.players) for team in self.teams]) < 6:
+            smallestTeamLength = len(self.teams[0].players)
+            for team in self.teams:
+                if len(team.players)<smallestTeamLength:
+                    team.playerJoin(player)
+                    break
             else:
-                viewer.queueTurboAction("Waiting..", "queueTimer", viewer.turboApp.methods.update.value)
+                self.teams[0].playerJoin(player)
+            if viewer:
+                if sum([len(team.players) for team in self.teams]) == 6: self.partyComplete()
+                else: Thread(target=self.startTimer).start()
+            return True
+        return False
 
+
+    def leaveTeam(self, viewer: BaseViewer, team:Team|None=None):
+        username = viewerIDToUsername.get(viewer.viewerID)
+        if viewer.viewerID in viewerIDToParty: del viewerIDToParty[viewer.viewerID]
+        player = self.usernamePlayerMap.get(username, Player(viewer))
         if team is None:
-            if self.teamSize["A"] + self.teamSize["B"] < 6:
-                if self.teamSize["B"] >= self.teamSize["A"]:
-                    team = "A"
-                else:
-                    team = "B"
-                _PlayerJoinTeam(self, viewer, team)
-            else: return False
+            for team in self.teams:
+                team.playerLeft(player)
         else:
-            _PlayerJoinTeam(self, viewer, team)
-        return True
+            team.playerLeft(player)
+        if sum([len(team.players) for team in self.teams]) <= 0:
+            self.destroyParty()
 
-    def leaveTeam(self, viewer: BaseViewer, team=None):
-        if team is None:
-            for side in self.sides:
-                if viewer in self.sides[side]:
-                    team = side
-        if team and viewer in self.sides[team]:
-            self.teamSize[team] -= 1
-            self.sides[team].remove(viewer)
-            if self.teamSize["A"] + self.teamSize["B"] <= 0:
-                if self in waitingParties: waitingParties.remove(self)
-                if self in waitingParties: activeParties.remove(self)
 
-    def initGame(self):
-        self.gameStarted = True
-        waitingParties.remove(self)
-        activeParties.append(self)
-        for side in self.sides:
-            for player in self.sides[side]:
-                self.players[player.viewerID] = {"Team": side, "Viewer": player}
-                renderQuizMatchFoundPage(player)
-        self.quiz = Quiz(turboApp, SQLconn)
-        self.quiz.startQuiz(self.sides, self.players)
+    def partyComplete(self):
+        for _ in range(self.maxPlayers - sum([len(team.players) for team in self.teams])): self.joinTeam()
+        self.gameObj = Quiz(self)
+        for player in self.usernamePlayerMap.values():
+            if player.isHuman: renderQuizMatchFoundPage(player.viewerObj)
+        self.gameObj.startQuiz()
+
+
+    def gameComplete(self):
+        self.gameObj = None
+
+
+    def destroyParty(self):
+        if self.partyID in onlineParties: del onlineParties[self.partyID]
 
 
 
@@ -505,124 +541,127 @@ class Question:
     def __init__(self):
         self.questionID = ""
         self.questionStatement = ""
-        self.teamOptions: dict[str, list[str]] = {"A": [], "B": []}
+        self.teamOptions: dict[str, list[str]] = {}
         self.correctAnswers = []
+        self.optionsPressed:dict[Player, int] = {}
 
-    def setValues(self, questionID, question: str, options: dict[str, list[str]]):
+
+    def setValues(self, party:Party, questionID, question: str, options: dict[str, list[str]]):
+        for team in party.teams: self.teamOptions[team.teamID] = []
         self.questionID = questionID
         self.questionStatement = question
         self.correctAnswers = options["Correct"]
-        for team in self.teamOptions:
+        for teamID in self.teamOptions:
             shuffle(options["InCorrect"])
             for _ in range(3):
                 while True:
                     option = options["InCorrect"][_]
-                    if option not in self.teamOptions[team]:
-                        self.teamOptions[team].append(option)
+                    if option not in self.teamOptions[teamID]:
+                        self.teamOptions[teamID].append(option)
                         break
-            self.teamOptions[team].append(options["Correct"][0])
-            shuffle(self.teamOptions[team])
+            self.teamOptions[teamID].append(options["Correct"][0])
+            shuffle(self.teamOptions[teamID])
+
 
 
 class Quiz:
-    def __init__(self, turboApp: ModifiedTurbo, MySQLPool: MySQLPoolManager):
-        self.sides: dict[str, list[BaseViewer]] = {"A": [], "B": []}
-        self.MySQLPool = MySQLPool
-        self.turboApp = turboApp
+    def __init__(self, party:Party):
+        self.party = party
 
         self.startTime = time()
         self.matchID = StringGenerator().AlphaNumeric(50, 50)
-        self.questionsEnded = False
         self.endTime = 0.0
-
-        self.players: dict[str, dict] = {}  # "abc":{"Team":team, "Viewer":viewer}
-        self.teamHealth = {}
-        self.scores = {}  # "abc":10
 
         self.questions: list[Question] = []
         self.questionIndex = -1
-        self.optionsPressed = {}
 
     def renderPlayers(self):
-        for playerID in self.players:
-            player: BaseViewer = self.players[playerID]["Viewer"]
-            for side in self.sides:
-                for _player in self.sides[side]:
+        for playerToRenderFor in self.party.usernamePlayerMap.values():
+            if playerToRenderFor.isHuman:
+                for username in self.party.usernamePlayerMap:
                     playerDiv = f"""
                             <div class="rounded-lg bg-[#eacfff] mx-4 my-2 flex justify-between items-center">
                                 <img class="mx-4 rounded-full border-4 border-white w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
                                 <div class="flex items-center gap-4">
                                     <div class="font-medium dark:text-white">
-                                        <div class="text-black text-bold text-xl m-4">Name: {viewerToUsernameMaps.get(_player.viewerID, "")}</div>
+                                        <div class="text-black text-bold text-xl m-4">Name: {username}</div>
                                     </div>
                                 </div>
                             </div>
                             """
-                    if self.players[playerID]["Team"] == side:
-                        player.queueTurboAction(playerDiv, "selfTeam", player.turboApp.methods.newDiv)
+                    if playerToRenderFor.team == self.party.usernamePlayerMap[username].team:
+                        playerToRenderFor.viewerObj.queueTurboAction(playerDiv, "selfTeam", playerToRenderFor.viewerObj.turboApp.methods.newDiv)
                     else:
-                        player.queueTurboAction(playerDiv, "otherTeam", player.turboApp.methods.newDiv)
+                        playerToRenderFor.viewerObj.queueTurboAction(playerDiv, "otherTeam", playerToRenderFor.viewerObj.turboApp.methods.newDiv)
 
-    def extractQuestions(self):
-        for questionData in self.MySQLPool.execute("SELECT * from questions where QuizEligible=1 ORDER BY RAND() LIMIT 30"):
+    def initQuestions(self):
+        for questionData in SQLconn.execute("SELECT * from questions where QuizEligible=1 ORDER BY RAND() LIMIT 30"):
             question = Question()
-            question.setValues(questionData["QuestionID"], questionData["Text"], loads(questionData["Options"]))
+            question.setValues(self.party, questionData["QuestionID"], questionData["Text"], loads(questionData["Options"]))
             self.questions.append(question)
         self.questionIndex = -1
 
     def nextQuestion(self):
-        if self.questionsEnded: return
+        if self.endTime != 0: return
         self.questionIndex += 1
-        self.optionsPressed = {}
         currentQuestion = self.questions[self.questionIndex]
-        for playerID in self.players:
-            viewer = self.players[playerID]["Viewer"]
-            team = self.players[playerID]["Team"]
-            viewer.queueTurboAction(currentQuestion.questionStatement, "questionText", viewer.turboApp.methods.update.value)
-            options = f"""<form onsubmit="return submit_ws(this)">
-                {viewer.addCSRF("quizOption")}
-                <input type="hidden" name="option" value="0">
+        for player in self.party.usernamePlayerMap.values():
+            if not player.isHuman: continue
+            player.viewerObj.queueTurboAction(currentQuestion.questionStatement, "questionText", player.viewerObj.turboApp.methods.update.value)
+            options = ""
+            for optionIndex in range(4):
+                options+= f"""
+                <form onsubmit="return submit_ws(this)">
+                {player.viewerObj.addCSRF("quizOption")}
+                <input type="hidden" name="party" value="{self.party.partyID}">
+                <input type="hidden" name="option" value="{optionIndex}">
                 <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
-                    <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][0]}</div>
-                </button>
-            </form>
-            <form onsubmit="return submit_ws(this)">
-                {viewer.addCSRF("quizOption")}
-                <input type="hidden" name="option" value="1">
-                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
-                    <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][1]}</div>
-                </button>
-            </form>
-            <form onsubmit="return submit_ws(this)">
-                {viewer.addCSRF("quizOption")}
-                <input type="hidden" name="option" value="2">
-                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
-                    <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][2]}</div>
-                </button>
-            </form>
-            <form onsubmit="return submit_ws(this)">
-                {viewer.addCSRF("quizOption")}
-                <input type="hidden" name="option" value="3">
-                <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
-                    <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[team][3]}</div>
+                    <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[player.team.teamID][optionIndex]}</div>
                 </button>
             </form>"""
-            viewer.queueTurboAction(options, "options", viewer.turboApp.methods.update.value)
+            player.viewerObj.queueTurboAction(options, "options", player.viewerObj.turboApp.methods.update.value)
+        self.generateBotInputs()
 
-    def receiveUserInput(self, viewer: BaseViewer, optionIndex):
+    def generateBotInputs(self):
+        currentQuestion = self.questions[self.questionIndex]
+        for username in self.party.usernamePlayerMap:
+            player = self.party.usernamePlayerMap[username]
+            if not player.isHuman:
+                willAnswerCorrect = choices([True, False], [player.correctness, 1-player.correctness])[0]
+                option=0
+                for answer in currentQuestion.correctAnswers:
+                    option = currentQuestion.teamOptions[player.team.teamID].index(answer)
+                    if option!=-1: break
+                if willAnswerCorrect:
+                    self.receiveUserInput(False, player, option)
+                else:
+                    incorrectOptions = list(range(len(currentQuestion.teamOptions[player.team.teamID])))
+                    incorrectOptions.remove(option)
+                    self.receiveUserInput(False, player, choice(incorrectOptions))
+
+    def receiveUserInput(self, isHuman: bool, viewer: BaseViewer|Player, optionIndex):
+        if isHuman:
+            username = viewerIDToUsername.get(viewer.viewerID, "")
+            if username not in self.party.usernamePlayerMap: return
+            player = self.party.usernamePlayerMap.get(username)
+        else:
+            player = viewer
         optionIndex = int(optionIndex)
-        print(viewer.viewerID, optionIndex, type(optionIndex))
-        if len(self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]]) > optionIndex >= 0:
-            if viewer.viewerID not in self.optionsPressed:
-                self.optionsPressed[viewer.viewerID] = optionIndex
+        currentQuestion = self.questions[self.questionIndex]
+        viewerTeam = player.team
+        if len(currentQuestion.teamOptions[viewerTeam.teamID]) > optionIndex >= 0 and player not in currentQuestion.optionsPressed:
+            currentQuestion.optionsPressed[player] = optionIndex
+            if currentQuestion.teamOptions[viewerTeam.teamID][optionIndex] in currentQuestion.correctAnswers: player.score += 10
+            else: player.score -= 5
+            if isHuman:
                 options = f"""<button class="col-span-2 rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full">
-                                    <div class="text-white font-bold text-2xl">{self.questions[self.questionIndex].teamOptions[self.players[viewer.viewerID]["Team"]][optionIndex]}</div>
+                                    <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[viewerTeam.teamID][optionIndex]}</div>
                                 </button>"""
-                viewer.queueTurboAction(options, "options", viewer.turboApp.methods.update.value)
-                if len(self.optionsPressed) == len(self.players):
-                    self.updateHealth(self.players[viewer.viewerID]["Team"], -5)
-                    sleep(2)
-                    self.endQuestion()
+                player.viewerObj.queueTurboAction(options, "options", viewer.turboApp.methods.update.value)
+            if len(currentQuestion.optionsPressed) == len(self.party.usernamePlayerMap):
+                self.updateHealth(viewerTeam, -5)
+                sleep(1)
+                self.endQuestion()
 
     def sendPostQuizQuestion(self, viewer: BaseViewer, questionIndex):
         questionIndex = int(questionIndex)
@@ -640,6 +679,7 @@ class Quiz:
                                 <li>
                                     <form onsubmit="return submit_ws(this)">
                                         {viewer.addCSRF('postQuestion')}
+                                        <input type="hidden" name="party" value="{self.party.partyID}">
                                         <input type="hidden" name="question" value="{questionIndex}">
                                         <button class="rounded-lg hover:scale-105 hover:text-white hover:transition duration-300 ease-in-out bg-gradient-to-r from-purple-500 to-violet-700 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">{questionIndex+1}</button>
                                     </form>
@@ -650,96 +690,89 @@ class Quiz:
 
     def endQuestion(self):
         points = {}
-        for viewerID in self.optionsPressed:
-            if viewerID not in self.scores:
-                self.scores[viewerID] = 0
-            if self.players[viewerID]["Team"] not in points:
-                points[self.players[viewerID]["Team"]] = 0
-
-            option = self.questions[self.questionIndex].teamOptions[self.players[viewerID]["Team"]][self.optionsPressed[viewerID]]
-            if option in self.questions[self.questionIndex].correctAnswers:
-                points[self.players[viewerID]["Team"]] += 1
-                self.scores[viewerID] += 10
-            else:
-                points[self.players[viewerID]["Team"]] -= 1
-                self.scores[viewerID] -= 10
-
-        for side in self.sides:
-            if side not in points:
-                self.updateHealth(side, -3)
-                points[side] = 0
-            elif points[side] <= 0:
-                self.updateHealth(side, -10)
-                points[side] = 0
-        for side in self.sides:
-            for _otherSide in self.sides:
-                if side!=_otherSide and points[side]<points[_otherSide]:
-                    self.updateHealth(side, 10*(1+self.questionIndex)*(points[side]-points[_otherSide]))
-        print(self.teamHealth)
-        print(self.scores)
+        currentQuestion = self.questions[self.questionIndex]
+        for player in currentQuestion.optionsPressed:
+            if player.team.teamID not in points: points[player.team.teamID] = 0
+            if currentQuestion.teamOptions[player.team.teamID][currentQuestion.optionsPressed[player]] in currentQuestion.correctAnswers: points[player.team.teamID] += 1
+            else: points[player.team.teamID] -= 1
+        for team in self.party.teams:
+            if team.teamID not in points:
+                self.updateHealth(team, -3)
+                points[team.teamID] = 0
+            elif points[team.teamID] <= 0:
+                self.updateHealth(team, -10)
+                points[team.teamID] = 0
+        teamA = self.party.teams[0]
+        teamB = self.party.teams[1]
+        if points[teamA.teamID]<points[teamB.teamID]: self.updateHealth(teamA, 10*(1+self.questionIndex)*(points[teamA.teamID]-points[teamB.teamID]))
         self.nextQuestion()
 
-    def updateHealth(self, teamChanged: str, offset):
-        self.teamHealth[teamChanged] += offset
-        if self.teamHealth[teamChanged] <0: self.teamHealth[teamChanged] = 0
-        for playerID in self.players:
-            viewer = self.players[playerID]["Viewer"]
-            team = self.players[playerID]["Team"]
+    def updateHealth(self, teamChanged: Team, offset):
+        teamChanged.health += offset
+        if teamChanged.health < 0:
+            teamChanged.health = 0
+            print(teamChanged.health)
+        for player in self.party.usernamePlayerMap.values():
+            if not player.isHuman: continue
             bar = f"""<svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="18" cy="18" r="16" fill="none"
                                 class="stroke-current text-green-200 dark:text-neutral-700"
                                 stroke-width="1" stroke-dasharray="75 100" stroke-linecap="round"></circle>
                         <circle cx="18" cy="18" r="16" fill="none"
                                 class="stroke-current text-green-500 dark:text-green-500"
-                                stroke-width="2" stroke-dasharray="{75*self.teamHealth[teamChanged]/100} 100" stroke-linecap="round"></circle>
+                                stroke-width="2" stroke-dasharray="{75*teamChanged.health/100} 100" stroke-linecap="round"></circle>
                     </svg>"""
-            if team == teamChanged:
-                viewer.queueTurboAction(bar, f"selfTeamHealthBar", viewer.turboApp.methods.update.value)
-                viewer.queueTurboAction(str(self.teamHealth[teamChanged]), f"selfTeamHealthText", viewer.turboApp.methods.update.value)
+            if player.team == teamChanged:
+                player.viewerObj.queueTurboAction(bar, f"selfTeamHealthBar", player.viewerObj.turboApp.methods.update.value)
+                player.viewerObj.queueTurboAction(str(teamChanged.health), f"selfTeamHealthText", player.viewerObj.turboApp.methods.update.value)
             else:
-                viewer.queueTurboAction(bar, f"otherTeamHealthBar", viewer.turboApp.methods.update.value)
-                viewer.queueTurboAction(str(self.teamHealth[teamChanged]), f"otherTeamHealthText", viewer.turboApp.methods.update.value)
+                player.viewerObj.queueTurboAction(bar, f"otherTeamHealthBar", player.viewerObj.turboApp.methods.update.value)
+                player.viewerObj.queueTurboAction(str(teamChanged.health), f"otherTeamHealthText", player.viewerObj.turboApp.methods.update.value)
 
-        if self.teamHealth[teamChanged] == 0:
-            self.questionsEnded = True
-            sortedPlayerList = dict(sorted(self.scores.items(), key=lambda key_val: key_val[1], reverse=True))
-            for side in self.sides:
-                for player in self.sides[side]:
-                    renderQuizEndPage(player)
-                    self.sendPostQuestionList(player)
-                    print(side, teamChanged)
-                    if side == teamChanged:
-                        player.queueTurboAction("DEFEAT", "resultTextDiv", player.turboApp.methods.update)
+        if teamChanged.health == 0:
+            self.endTime = time()
+            _scoreRank:list[Player] = []
+            for player in self.party.usernamePlayerMap.values():
+                if player.isHuman: renderQuizEndPage(player.viewerObj)
+                for alreadyAddedIndex in range(len(_scoreRank)):
+                    if player.score > _scoreRank[alreadyAddedIndex].score:
+                        _scoreRank.insert(alreadyAddedIndex, player)
+                        break
+                else:
+                    _scoreRank.append(player)
+
+            leaderboardDiv = ""
+            rank = 0
+            for player in _scoreRank:
+                rank += 1
+                leaderboardDiv += f"""<div class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
+                            <div class="font-medium text-bold text-3xl text-white">{rank}</div>
+                            <div class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
+                                <img class="mr-4 rounded-full w-16 h-16" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
+                                <div class="rounded-lg bg-red-white mr-8 font-medium text-[#23003d]">
+                                    <div class="px-2 text-white text-bold text-xl">{player.userName}</div>
+                                    <div class="px-2 text-white text-bold text-xl">Points: {player.score}</div>
+                                </div>
+                            </div>
+                    </div>"""
+            for player in self.party.usernamePlayerMap.values():
+                if player.isHuman:
+                    self.sendPostQuestionList(player.viewerObj)
+                    if player.team == teamChanged:
+                        player.viewerObj.queueTurboAction("DEFEAT", "resultTextDiv", player.viewerObj.turboApp.methods.update)
                     else:
-                        player.queueTurboAction("VICTORY", "resultTextDiv", player.turboApp.methods.update)
-                    rank = 0
-                    for viewerID in sortedPlayerList:
-                        rank += 1
-                        username = viewerToUsernameMaps.get(viewerID, "")
-                        score = sortedPlayerList[viewerID]
-                        playerDiv = f"""<div class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
-                                    <div class="font-medium text-bold text-3xl text-white">{rank}</div>
-                                    <div class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
-                                        <img class="mr-4 rounded-full w-16 h-16" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-                                        <div class="rounded-lg bg-red-white mr-8 font-medium text-[#23003d]">
-                                            <div class="px-2 text-white text-bold text-xl">{username}</div>
-                                            <div class="px-2 text-white text-bold text-xl">Points: {score}</div>
-                                        </div>
-                                    </div>
-                            </div>"""
-                        player.queueTurboAction(playerDiv, "quizLeaderboard", player.turboApp.methods.newDiv.value)
+                        player.viewerObj.queueTurboAction("VICTORY", "resultTextDiv", player.viewerObj.turboApp.methods.update)
+                    player.viewerObj.queueTurboAction(leaderboardDiv, "quizLeaderboard", player.viewerObj.turboApp.methods.update)
 
-    def startQuiz(self, sides: dict[str, list[BaseViewer]], players):
+    def startQuiz(self):
         started = time()
-        self.sides = sides
-        self.players = players
-        self.extractQuestions()
+        self.initQuestions()
         sleep(3-(time()-started))
-        for playerID in self.players:
-            renderQuizGamePage(self.players[playerID]["Viewer"])
-        for side in sides:
-            self.teamHealth[side] = 100
-            self.updateHealth(side, 0)
+        for player in self.party.usernamePlayerMap.values():
+            if player.isHuman: renderQuizGamePage(player.viewerObj)
+        for team in self.party.teams:
+            team.health = 100
+            self.updateHealth(team, 0)
         self.renderPlayers()
         self.nextQuestion()
 
@@ -779,7 +812,7 @@ def registerUser(viewerObj:BaseViewer, form:dict):
             if not SQLconn.execute(f"SELECT UserName from user_auth where UserID=\"{userID}\" limit 1"):
                 SQLconn.execute(f"INSERT INTO user_info values (\"{userID}\", now(), \"{name}\", {age})")
                 SQLconn.execute(f"INSERT INTO user_auth values (\"{userID}\", \"{username}\", \"{generate_password_hash(password)}\")")
-                viewerToUsernameMaps[viewerObj.viewerID] = username
+                viewerIDToUsername[viewerObj.viewerID] = username
                 renderHomepage(viewerObj)
                 break
 
@@ -793,14 +826,14 @@ def loginUser(viewerObj:BaseViewer, form:dict):
         viewerObj.queueTurboAction("Password Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
         sendLoginForm(viewerObj)
     else:
-        viewerToUsernameMaps[viewerObj.viewerID] = username
+        viewerIDToUsername[viewerObj.viewerID] = username
         renderHomepage(viewerObj)
 
 
 def formSubmitCallback(viewerObj: BaseViewer, form: dict):
     if form is not None:
         purpose = form.pop("PURPOSE")
-        #print(purpose, form)
+        print(viewerIDToUsername.get(viewerObj.viewerID), purpose, form)
 
         if purpose == FormPurposes.register.value:
             registerUser(viewerObj, form)
@@ -809,22 +842,20 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             loginUser(viewerObj, form)
 
         elif purpose == FormPurposes.startQueue.value:
-            if waitingParties:
-                for party in waitingParties:
-                    if party.joinTeam(viewerObj):
-                        return
-            party = Party()
-            waitingParties.append(party)
-            party.joinTeam(viewerObj)
+            for party in onlineParties.values():
+                if party.joinTeam(viewerObj): return
+            newParty = Party(2, 6)
+            newParty.joinTeam(viewerObj)
 
         elif purpose == "quizOption":
-            for party in activeParties:
-                if viewerObj.viewerID in party.players:
-                    party.quiz.receiveUserInput(viewerObj, form["option"])
+            partyID = form.pop("party", "")
+            party = onlineParties.get(partyID, None)
+            if party: party.gameObj.receiveUserInput(True, viewerObj, form["option"])
+
 
         elif purpose == "renderAuthPage":
-            if viewerToUsernameMaps.get(viewerObj.viewerID):
-                del viewerToUsernameMaps[viewerObj.viewerID]
+            if viewerIDToUsername.get(viewerObj.viewerID):
+                del viewerIDToUsername[viewerObj.viewerID]
             renderAuthPage(viewerObj)
 
         elif purpose == "renderQuiz":
@@ -832,20 +863,20 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             players = f"""
             <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
                 <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=botpic.jpg" alt="Extra large avatar">
-                <div class="text-white text-xl font-bold text-center">Bot_{StringGenerator().AlphaNumeric(2, 2)}</div> <!-- Increased size and centered -->
+                <div class="text-white text-xl font-bold text-center">Bot</div> <!-- Increased size and centered -->
                 <div class="text-white text-lg text-center">Iron 1</div> <!-- Increased size and centered -->
                 <div class="text-white text-lg text-center">Level 1</div> <!-- Increased size and centered -->
             </div>
 
             <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
                 <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-                <div class="text-white text-lg font-semibold">{viewerToUsernameMaps.get(viewerObj.viewerID, "")}</div>
+                <div class="text-white text-lg font-semibold">{viewerIDToUsername.get(viewerObj.viewerID, "")}</div>
                 <div class="text-white text-md">{choice(["Iron", "Bronze", "Silver"])}{randrange(1,4)}</div>
                 <div class="text-white text-md">Level {randrange(1,5)}</div>
             </div>
             <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
                 <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=botpic.jpg" alt="Extra large avatar">
-                <div class="text-white text-lg font-semibold">Bot_{StringGenerator().AlphaNumeric(2, 2)}</div>
+                <div class="text-white text-lg font-semibold">Bot</div>
                 <div class="text-white text-md">Iron 1</div>
                 <div class="text-white text-md">Level 1</div>
             </div>
@@ -853,10 +884,9 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             viewerObj.queueTurboAction(players, "quizLobbyDiv", viewerObj.turboApp.methods.update)
 
         elif purpose == "postQuestion":
-            for party in activeParties:
-                if viewerObj.viewerID in party.players:
-                    party.quiz.sendPostQuizQuestion(viewerObj, form["question"])
-
+            partyID = form.pop("party", "")
+            party = onlineParties.get(partyID, None)
+            if party: party.gameObj.sendPostQuizQuestion(viewerObj, form["question"])
 
 
 def newVisitorCallback(viewerObj: BaseViewer):
@@ -864,12 +894,12 @@ def newVisitorCallback(viewerObj: BaseViewer):
 
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
-    if viewerToUsernameMaps.get(viewerObj.viewerID):
+    if viewerIDToUsername.get(viewerObj.viewerID):
         renderHomepage(viewerObj)
     else:
-    # renderAuthPage(viewerObj)
+        renderAuthPage(viewerObj)
     # sleep(2)
-        renderHomepage(viewerObj)
+    # renderHomepage(viewerObj)
     # sleep(2)
     # renderQuizLobbyPage(viewerObj)
     # sleep(2)
@@ -888,18 +918,16 @@ def newVisitorCallback(viewerObj: BaseViewer):
 
 
 def visitorLeftCallback(viewerObj: BaseViewer):
-    for party in activeParties.__add__(waitingParties):
-        if viewerObj.viewerID in party.players:
-            party.leaveTeam(viewerObj, None)
+    if viewerObj.viewerID in viewerIDToParty: viewerIDToParty[viewerObj.viewerID].leaveTeam(viewerObj)
     print("Visitor Left: ", viewerObj.viewerID)
 
 
 
 logger = LogManager()
 SQLconn = connectDB(logger)
-activeParties:list[Party] = []
-waitingParties:list[Party] = []
-viewerToUsernameMaps = {}
+onlineParties:dict[str, Party] = {}
+viewerIDToParty:dict[str, Party] = {}
+viewerIDToUsername = {}
 extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
 bodyBase = """<body style="background-color: #23003d;"> <div id="mainDiv"><div></body>"""
 
