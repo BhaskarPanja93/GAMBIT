@@ -74,7 +74,7 @@ def renderHomepage(viewerObj: BaseViewer):
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="py-4 inline-flex rounded-full shadow">   
                     <form onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF("renderAuthPage")}
+                        {viewerObj.addCSRF(FormPurposes.renderAuth.value)}
                         <button type="submit" mt-100 class="font-custom inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 border border-transparent rounded-3xl cursor-pointer hover:font-bold hover:scale-105 hover:transition duration-300 ease-in-out">
                             Join Now
                         </button>
@@ -92,7 +92,7 @@ def renderHomepage(viewerObj: BaseViewer):
             
             <!-- Start Learning Button -->
             <form onsubmit="return submit_ws(this)">
-                {viewerObj.addCSRF("renderQuiz")}
+                {viewerObj.addCSRF(FormPurposes.renderQuizLobby.value)}
                 <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 hover:transition duration-300 ease-in-out" style="color: #23003d;">
                     START LEARNING
                 </button>
@@ -149,7 +149,7 @@ def renderAuthPage(viewerObj: BaseViewer):
             </button>
             <div id="loginFormContainer" class="hidden w-full rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-2xl">
                 <form onsubmit="return submit_ws(this)">
-                    {viewerObj.addCSRF("login")}
+                    {viewerObj.addCSRF(FormPurposes.login.value)}
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="username" placeholder="Username">
@@ -171,7 +171,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                 <div id="registerFormContainer"
                      class="hidden w-full rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-96 shadow-lg">
                     <form class="w-full px-6" onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF("register")}
+                        {viewerObj.addCSRF(FormPurposes.register.value)}
                         
                         <input type="text" autocomplete="off"
                                class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -342,7 +342,7 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
         <div id="quizFriendListDiv" class="p-6 flex items-center rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
             <!-- Queue Up Button -->
             <form class="w-full" onsubmit="return submit_ws(this)">
-                {viewerObj.addCSRF('startQueue')}
+                {viewerObj.addCSRF(FormPurposes.startQuiz.value)}
                 <button type="submit" class="w-full p-4 rounded-full flex justify-center bg-gradient-to-r from-purple-500 to-violet-700 hover:scale-105 hover:transition duration-300 ease-in-out mb-4">
                     <div id="queueTimer" class="w-full text-white font-bold">QUEUE UP</div>
                 </button>
@@ -384,7 +384,7 @@ def renderQuizMatchFoundPage(viewerObj: BaseViewer):
 
 def sendRegisterForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF("register")}
+                        {viewerObj.addCSRF(FormPurposes.register.value)}
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="name" placeholder="Name">
@@ -416,7 +416,7 @@ def sendRegisterForm(viewerObj:BaseViewer):
 
 def sendLoginForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
-                    {viewerObj.addCSRF("login")}
+                    {viewerObj.addCSRF(FormPurposes.login.value)}
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="username" placeholder="Username">
@@ -427,17 +427,17 @@ def sendLoginForm(viewerObj:BaseViewer):
     viewerObj.queueTurboAction(form, "loginFormContainer", viewerObj.turboApp.methods.update)
 
 
-
 class Player:
     def __init__(self, viewer: BaseViewer|None=None):
         self.userName = "BOT_"+StringGenerator().AlphaNumeric(4,4)
+        self.userID = "BOT_"+StringGenerator().AlphaNumeric(10,10)
+        self.userName = liveCacheManager.getUserName(liveCacheManager.ByViewerID, viewer.viewerID) if viewer else self.userName
+        self.userID = liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewer.viewerID) if viewer else self.userID
         self.viewerObj = viewer
-        self.userName = viewerIDToUsername.get(viewer.viewerID) if viewer else self.userName
         self.team:Team|None = None
         self.isHuman:bool = False if not viewer else True
         self.correctness:float = 0.6
         self.score = 0
-
 
 
 class Team:
@@ -448,12 +448,12 @@ class Team:
         self.health = 0
 
     def playerJoin(self, player:Player):
-        if player.userName not in self.players:
-            self.players[player.userName] = player
+        if player.userID not in self.players:
+            self.players[player.userID] = player
             player.team = self
     def playerLeft(self, player: Player):
-        if player.userName in self.players:
-            del self.players[player.userName]
+        if player.userID in self.players:
+            del self.players[player.userID]
             player.team = None
 
 
@@ -461,12 +461,12 @@ class Team:
 class Party:
     def __init__(self, teamCount:int, playerCount:int):
         self.partyID:str|None = None
-        self.usernamePlayerMap: dict[str, Player] = {}
+        self.userIDToPlayer: dict[str, Player] = {}
         self.teams: list[Team] = []
         self.timerInitialised = False
         self.gameObj:Quiz|None = None
-        while not self.partyID or self.partyID in onlineParties: self.partyID = StringGenerator().AlphaNumeric(5, 30)
-        onlineParties[self.partyID] = self
+        while not self.partyID or self.partyID in liveCacheManager.activeParties: self.partyID = StringGenerator().AlphaNumeric(5, 30)
+        liveCacheManager.partyCreated(self)
         for _ in range(teamCount): self.teams.append(Team(f"{self.partyID}{_}"))
         self.maxPlayers = playerCount
 
@@ -476,21 +476,21 @@ class Party:
             partyTimerStartedAt = time()
             self.timerInitialised = True
             while time() - partyTimerStartedAt < 4 and sum([len(team.players) for team in self.teams]) > 1:
-                for player in self.usernamePlayerMap.values():
+                for player in self.userIDToPlayer.values():
                     player.viewerObj.queueTurboAction(str(4 - int(time() - partyTimerStartedAt)), "queueTimer", player.viewerObj.turboApp.methods.update)
                 sleep(1)
         if sum([len(team.players) for team in self.teams]) > 1:
             self.partyComplete()
         else:
             self.timerInitialised = False
-            for player in self.usernamePlayerMap.values():
+            for player in self.userIDToPlayer.values():
                 player.viewerObj.queueTurboAction("Waiting...", "queueTimer", player.viewerObj.turboApp.methods.update)
 
 
     def joinTeam(self, viewer: BaseViewer|None=None):
         player = Player(viewer)
-        if viewer: viewerIDToParty[viewer.viewerID] = self
-        self.usernamePlayerMap[player.userName] = player
+        if player.isHuman: liveCacheManager.userIDToPartyID[player.userID] = self.partyID
+        self.userIDToPlayer[player.userID] = player
         shuffle(self.teams)
         if self.gameObj is None and sum([len(team.players) for team in self.teams]) < 6:
             smallestTeamLength = len(self.teams[0].players)
@@ -500,7 +500,7 @@ class Party:
                     break
             else:
                 self.teams[0].playerJoin(player)
-            if viewer:
+            if player.isHuman:
                 if sum([len(team.players) for team in self.teams]) == 6: self.partyComplete()
                 else: Thread(target=self.startTimer).start()
             return True
@@ -508,9 +508,8 @@ class Party:
 
 
     def leaveTeam(self, viewer: BaseViewer, team:Team|None=None):
-        username = viewerIDToUsername.get(viewer.viewerID)
-        if viewer.viewerID in viewerIDToParty: del viewerIDToParty[viewer.viewerID]
-        player = self.usernamePlayerMap.get(username, Player(viewer))
+        player = self.userIDToPlayer.get(liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewer.viewerID), Player(viewer))
+        if player.userID in liveCacheManager.userIDToPartyID: del liveCacheManager.userIDToPartyID[player.userID]
         if team is None:
             for team in self.teams:
                 team.playerLeft(player)
@@ -523,8 +522,6 @@ class Party:
     def partyComplete(self):
         for _ in range(self.maxPlayers - sum([len(team.players) for team in self.teams])): self.joinTeam()
         self.gameObj = Quiz(self)
-        for player in self.usernamePlayerMap.values():
-            if player.isHuman: renderQuizMatchFoundPage(player.viewerObj)
         self.gameObj.startQuiz()
 
 
@@ -533,7 +530,7 @@ class Party:
 
 
     def destroyParty(self):
-        if self.partyID in onlineParties: del onlineParties[self.partyID]
+        liveCacheManager.partyDeleted(self)
 
 
 
@@ -563,7 +560,6 @@ class Question:
             shuffle(self.teamOptions[teamID])
 
 
-
 class Quiz:
     def __init__(self, party:Party):
         self.party = party
@@ -576,20 +572,20 @@ class Quiz:
         self.questionIndex = -1
 
     def renderPlayers(self):
-        for playerToRenderFor in self.party.usernamePlayerMap.values():
+        for playerToRenderFor in self.party.userIDToPlayer.values():
             if playerToRenderFor.isHuman:
-                for username in self.party.usernamePlayerMap:
+                for playerToRender in self.party.userIDToPlayer.values():
                     playerDiv = f"""
                             <div class="rounded-lg bg-[#eacfff] mx-4 my-2 flex justify-between items-center">
                                 <img class="mx-4 rounded-full border-4 border-white w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
                                 <div class="flex items-center gap-4">
                                     <div class="font-medium dark:text-white">
-                                        <div class="text-black text-bold text-xl m-4">Name: {username}</div>
+                                        <div class="text-black text-bold text-xl m-4">Name: {playerToRender.userName}</div>
                                     </div>
                                 </div>
                             </div>
                             """
-                    if playerToRenderFor.team == self.party.usernamePlayerMap[username].team:
+                    if playerToRenderFor.team == playerToRender.team:
                         playerToRenderFor.viewerObj.queueTurboAction(playerDiv, "selfTeam", playerToRenderFor.viewerObj.turboApp.methods.newDiv)
                     else:
                         playerToRenderFor.viewerObj.queueTurboAction(playerDiv, "otherTeam", playerToRenderFor.viewerObj.turboApp.methods.newDiv)
@@ -605,14 +601,14 @@ class Quiz:
         if self.endTime != 0: return
         self.questionIndex += 1
         currentQuestion = self.questions[self.questionIndex]
-        for player in self.party.usernamePlayerMap.values():
+        for player in self.party.userIDToPlayer.values():
             if not player.isHuman: continue
             player.viewerObj.queueTurboAction(currentQuestion.questionStatement, "questionText", player.viewerObj.turboApp.methods.update.value)
             options = ""
             for optionIndex in range(4):
                 options+= f"""
                 <form onsubmit="return submit_ws(this)">
-                {player.viewerObj.addCSRF("quizOption")}
+                {player.viewerObj.addCSRF(FormPurposes.quizOption.value)}
                 <input type="hidden" name="party" value="{self.party.partyID}">
                 <input type="hidden" name="option" value="{optionIndex}">
                 <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
@@ -624,8 +620,7 @@ class Quiz:
 
     def generateBotInputs(self):
         currentQuestion = self.questions[self.questionIndex]
-        for username in self.party.usernamePlayerMap:
-            player = self.party.usernamePlayerMap[username]
+        for player in self.party.userIDToPlayer.values():
             if not player.isHuman:
                 willAnswerCorrect = choices([True, False], [player.correctness, 1-player.correctness])[0]
                 option=0
@@ -641,44 +636,44 @@ class Quiz:
 
     def receiveUserInput(self, isHuman: bool, viewer: BaseViewer|Player, optionIndex):
         if isHuman:
-            username = viewerIDToUsername.get(viewer.viewerID, "")
-            if username not in self.party.usernamePlayerMap: return
-            player = self.party.usernamePlayerMap.get(username)
+            userID = liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewer.viewerID)
+            player = self.party.userIDToPlayer.get(userID)
+            if not player: return
         else:
             player = viewer
         optionIndex = int(optionIndex)
         currentQuestion = self.questions[self.questionIndex]
-        viewerTeam = player.team
-        if len(currentQuestion.teamOptions[viewerTeam.teamID]) > optionIndex >= 0 and player not in currentQuestion.optionsPressed:
+        if len(currentQuestion.teamOptions[player.team.teamID]) > optionIndex >= 0 and player not in currentQuestion.optionsPressed:
             currentQuestion.optionsPressed[player] = optionIndex
-            if currentQuestion.teamOptions[viewerTeam.teamID][optionIndex] in currentQuestion.correctAnswers: player.score += 10
+            if currentQuestion.teamOptions[player.team.teamID][optionIndex] in currentQuestion.correctAnswers: player.score += 10
             else: player.score -= 5
             if isHuman:
                 options = f"""<button class="col-span-2 rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full">
-                                    <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[viewerTeam.teamID][optionIndex]}</div>
+                                    <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[player.team.teamID][optionIndex]}</div>
                                 </button>"""
-                player.viewerObj.queueTurboAction(options, "options", viewer.turboApp.methods.update.value)
-            if len(currentQuestion.optionsPressed) == len(self.party.usernamePlayerMap):
-                self.updateHealth(viewerTeam, -5)
+                player.viewerObj.queueTurboAction(options, "options", player.viewerObj.turboApp.methods.update.value)
+            if len(currentQuestion.optionsPressed) == len(self.party.userIDToPlayer):
+                self.updateTeamHealth(player.team, -5)
                 sleep(1)
-                self.endQuestion()
+                self.endCurrentQuestion()
 
     def sendPostQuizQuestion(self, viewer: BaseViewer, questionIndex):
+        userID = liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewer.viewerID)
+        if userID not in self.party.userIDToPlayer: return
         questionIndex = int(questionIndex)
         postQuestion = f"""<div class="rounded-lg px-2 mx-6 bg-[#eacfff] text-green font-bold text-2xl p-4">
                 <div class="text-black font-bold text-2xl h-1/3 p-4 m-4">{self.questions[questionIndex].questionStatement}{self.questions[questionIndex].correctAnswers[0]}</div>
             </div>"""
         viewer.queueTurboAction(postQuestion, "postQuiz", viewer.turboApp.methods.update)
-        self.sendPostQuestionList(viewer)
+        self.sendPostQuizQuestionList(viewer)
 
-
-    def sendPostQuestionList(self, viewer:BaseViewer):
+    def sendPostQuizQuestionList(self, viewer:BaseViewer):
         questionList = """<ul class="grid grid-cols-1 gap-2 w-full h-full p-4">"""
         for questionIndex in range(0, self.questionIndex + 1):
             questionList += f"""
                                 <li>
                                     <form onsubmit="return submit_ws(this)">
-                                        {viewer.addCSRF('postQuestion')}
+                                        {viewer.addCSRF(FormPurposes.postQuizQuestion.value)}
                                         <input type="hidden" name="party" value="{self.party.partyID}">
                                         <input type="hidden" name="question" value="{questionIndex}">
                                         <button class="rounded-lg hover:scale-105 hover:text-white hover:transition duration-300 ease-in-out bg-gradient-to-r from-purple-500 to-violet-700 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">{questionIndex+1}</button>
@@ -688,7 +683,7 @@ class Quiz:
         questionList += "</ul>"
         viewer.queueTurboAction(questionList, "postQuizQuestionList", viewer.turboApp.methods.update)
 
-    def endQuestion(self):
+    def endCurrentQuestion(self):
         points = {}
         currentQuestion = self.questions[self.questionIndex]
         for player in currentQuestion.optionsPressed:
@@ -697,22 +692,22 @@ class Quiz:
             else: points[player.team.teamID] -= 1
         for team in self.party.teams:
             if team.teamID not in points:
-                self.updateHealth(team, -3)
+                self.updateTeamHealth(team, -3)
                 points[team.teamID] = 0
             elif points[team.teamID] <= 0:
-                self.updateHealth(team, -10)
+                self.updateTeamHealth(team, -10)
                 points[team.teamID] = 0
         teamA = self.party.teams[0]
         teamB = self.party.teams[1]
-        if points[teamA.teamID]<points[teamB.teamID]: self.updateHealth(teamA, 10*(1+self.questionIndex)*(points[teamA.teamID]-points[teamB.teamID]))
+        if points[teamA.teamID]<points[teamB.teamID]: self.updateTeamHealth(teamA, 10 * (1 + self.questionIndex) * (points[teamA.teamID] - points[teamB.teamID]))
         self.nextQuestion()
 
-    def updateHealth(self, teamChanged: Team, offset):
+    def updateTeamHealth(self, teamChanged: Team, offset):
         teamChanged.health += offset
         if teamChanged.health < 0:
             teamChanged.health = 0
             print(teamChanged.health)
-        for player in self.party.usernamePlayerMap.values():
+        for player in self.party.userIDToPlayer.values():
             if not player.isHuman: continue
             bar = f"""<svg class="rotate-[135deg] size-full" viewBox="0 0 36 36" xmlns="http://www.w3.org/2000/svg">
                         <circle cx="18" cy="18" r="16" fill="none"
@@ -732,7 +727,7 @@ class Quiz:
         if teamChanged.health == 0:
             self.endTime = time()
             _scoreRank:list[Player] = []
-            for player in self.party.usernamePlayerMap.values():
+            for player in self.party.userIDToPlayer.values():
                 if player.isHuman: renderQuizEndPage(player.viewerObj)
                 for alreadyAddedIndex in range(len(_scoreRank)):
                     if player.score > _scoreRank[alreadyAddedIndex].score:
@@ -755,9 +750,9 @@ class Quiz:
                                 </div>
                             </div>
                     </div>"""
-            for player in self.party.usernamePlayerMap.values():
+            for player in self.party.userIDToPlayer.values():
                 if player.isHuman:
-                    self.sendPostQuestionList(player.viewerObj)
+                    self.sendPostQuizQuestionList(player.viewerObj)
                     if player.team == teamChanged:
                         player.viewerObj.queueTurboAction("DEFEAT", "resultTextDiv", player.viewerObj.turboApp.methods.update)
                     else:
@@ -765,19 +760,124 @@ class Quiz:
                     player.viewerObj.queueTurboAction(leaderboardDiv, "quizLeaderboard", player.viewerObj.turboApp.methods.update)
 
     def startQuiz(self):
+        for player in self.party.userIDToPlayer.values():
+            if player.isHuman: renderQuizMatchFoundPage(player.viewerObj)
         started = time()
         self.initQuestions()
         sleep(3-(time()-started))
-        for player in self.party.usernamePlayerMap.values():
+        for player in self.party.userIDToPlayer.values():
             if player.isHuman: renderQuizGamePage(player.viewerObj)
         for team in self.party.teams:
             team.health = 100
-            self.updateHealth(team, 0)
+            self.updateTeamHealth(team, 0)
         self.renderPlayers()
         self.nextQuestion()
 
     def saveToDB(self):
         pass
+
+
+class UserCache:
+    def __init__(self):
+        self._dummyViewer = {"USERNAME": "", "PARTY": None, "VIEWERS": []}
+
+        self.activeParties: dict[str, Party] = {}
+        self.activeUserIDs = {"USERID1": self._dummyViewer}
+        self.userIDToPartyID = {}
+        self.viewerIDToUserID = {}
+        self.usernameToUserID = {}
+
+        self.ByUserID = "UID"
+        self.ByViewerID = "VID"
+        self.ByUserName = "UN"
+        self.ByCookie = "C"
+
+    def getUserName(self, By, value: str):
+        if not value: return
+        if By == self.ByUserID:
+            if value in self.activeUserIDs: return self.activeUserIDs[value]["USERNAME"]
+            received = SQLconn.execute(f"SELECT UserName from user_auth where UserID=\"{value}\" limit 1")
+            if received:
+                received = received[0]
+                return received.get("UserName")
+        elif By == self.ByViewerID:
+            if value in self.viewerIDToUserID:
+                userID = self.viewerIDToUserID[value]
+                return self.getUserName(self.ByUserID, userID)
+            received = SQLconn.execute(f"SELECT UserID from user_devices where ViewerID=\"{value}\" limit 1")
+            if received:
+                received = received[0]
+                return self.getUserName(self.ByUserID, received.get("UserID").decode())
+
+    def getUserID(self, By, value):
+        if not value: return
+        if By == self.ByUserName:
+            if value in self.usernameToUserID:
+                return self.usernameToUserID[value]
+            received = SQLconn.execute(f"SELECT UserID from user_auth where UserName=\"{value}\" limit 1")
+            if received:
+                received = received[0]
+                return received.get("UserID").decode()
+        elif By == self.ByViewerID:
+            if value in self.viewerIDToUserID:
+                return self.viewerIDToUserID[value]
+            received = SQLconn.execute(f"SELECT UserID from user_devices where ViewerID=\"{value}\" limit 1")
+            if received:
+                received = received[0]
+                return received.get("UserID").decode()
+
+    def getParty(self, By, value):
+        pass
+
+    def loginCall(self, viewer: BaseViewer, userID):
+        #self.logoutCall(viewer, True)
+        username = self.getUserName(self.ByUserID, userID)
+        if userID not in self.activeUserIDs:
+            self.activeUserIDs[userID] = self._dummyViewer
+            self.activeUserIDs[userID]["USERNAME"] = username
+        self.viewerIDToUserID[viewer.viewerID] = userID
+        self.usernameToUserID[username] = userID
+        if viewer not in self.activeUserIDs[userID]["VIEWERS"]: self.activeUserIDs[userID]["VIEWERS"].append(viewer)
+        received = SQLconn.execute(f"SELECT UserID, RemoteAddr, UserAgent, HostURL from user_devices where ViewerID=\"{viewer.viewerID}\"")
+        addEntry = False
+        if received:
+            received = received[0]
+            if received["UserID"].decode() != userID or received["RemoteAddr"] != viewer.cookie.remoteAddress or received["UserAgent"] != viewer.cookie.UA or received["HostURL"] != viewer.cookie.hostURL:
+                SQLconn.execute(f"DELETE from user_devices WHERE ViewerID=\"{viewer.viewerID}\"")
+                addEntry = True
+        else: addEntry = True
+        if addEntry:
+            SQLconn.execute(f"INSERT INTO user_devices values (\"{viewer.viewerID}\", \"{userID}\", \"{viewer.cookie.remoteAddress}\", \"{viewer.cookie.UA}\", \"{viewer.cookie.hostURL}\")")
+
+    def logoutCall(self, viewer: BaseViewer, logout: bool = False):
+        userID = self.getUserID(self.ByViewerID, viewer.viewerID)
+        username = self.getUserName(self.ByViewerID, viewer.viewerID)
+        if userID is not None and userID in self.userIDToPartyID:
+            party: Party = self.activeParties.get(self.userIDToPartyID[userID])
+            if party: party.leaveTeam(viewer)
+        if userID is not None and userID in self.activeUserIDs and viewer in self.activeUserIDs[userID]["VIEWERS"]:
+            self.activeUserIDs[userID]["VIEWERS"].remove(viewer)
+            if len(self.activeUserIDs[userID]["VIEWERS"]) == 0: del self.activeUserIDs[userID]
+        if viewer.viewerID in self.viewerIDToUserID: del self.viewerIDToUserID[viewer.viewerID]
+        if username in self.usernameToUserID: del self.usernameToUserID[username]
+        if logout: SQLconn.execute(f"DELETE from user_devices WHERE ViewerID=\"{viewer.viewerID}\"")
+
+    @staticmethod
+    def getKnownLoggedInUserID(viewer: BaseViewer):
+        remoteAddr = viewer.cookie.remoteAddress
+        userAgent = viewer.cookie.UA
+        hostURL = viewer.cookie.hostURL
+        received = SQLconn.execute(f"SELECT UserID, RemoteAddr, UserAgent, HostURL from user_devices where ViewerID=\"{viewer.viewerID}\"")
+        if received:
+            received = received[0]
+            if remoteAddr == received["RemoteAddr"] and userAgent == received["UserAgent"] and hostURL == received["HostURL"]:
+                return received["UserID"].decode()
+
+    def partyCreated(self, party: Party):
+        self.activeParties[party.partyID] = party
+
+    def partyDeleted(self, party: Party):
+        if party.partyID in self.activeParties: del self.activeParties[party.partyID]
 
 
 def registerUser(viewerObj:BaseViewer, form:dict):
@@ -812,28 +912,31 @@ def registerUser(viewerObj:BaseViewer, form:dict):
             if not SQLconn.execute(f"SELECT UserName from user_auth where UserID=\"{userID}\" limit 1"):
                 SQLconn.execute(f"INSERT INTO user_info values (\"{userID}\", now(), \"{name}\", {age})")
                 SQLconn.execute(f"INSERT INTO user_auth values (\"{userID}\", \"{username}\", \"{generate_password_hash(password)}\")")
-                viewerIDToUsername[viewerObj.viewerID] = username
+                liveCacheManager.loginCall(viewerObj, userID)
                 renderHomepage(viewerObj)
                 break
 
 def loginUser(viewerObj:BaseViewer, form:dict):
     username = form.get("username", "")
     password = form.get("password", "")
-    if not SQLconn.execute(f"SELECT UserName from user_auth where UserName=\"{username}\" limit 1"):
+    received = SQLconn.execute(f"SELECT UserID, PWHash from user_auth where UserName=\"{username}\" limit 1")
+    if not received:
         viewerObj.queueTurboAction("Username Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
         sendLoginForm(viewerObj)
-    elif not check_password_hash(SQLconn.execute(f"SELECT PWHash from user_auth where UserName=\"{username}\"")[0]["PWHash"].decode(), password):
-        viewerObj.queueTurboAction("Password Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
-        sendLoginForm(viewerObj)
     else:
-        viewerIDToUsername[viewerObj.viewerID] = username
-        renderHomepage(viewerObj)
+        received = received[0]
+        if not check_password_hash(received["PWHash"].decode(), password):
+            viewerObj.queueTurboAction("Password Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
+            sendLoginForm(viewerObj)
+        else:
+            liveCacheManager.loginCall(viewerObj, received["UserID"].decode())
+            renderHomepage(viewerObj)
 
 
 def formSubmitCallback(viewerObj: BaseViewer, form: dict):
     if form is not None:
         purpose = form.pop("PURPOSE")
-        print(viewerIDToUsername.get(viewerObj.viewerID), purpose, form)
+        print(liveCacheManager.getUserName(liveCacheManager.ByViewerID, viewerObj.viewerID), purpose, form)
 
         if purpose == FormPurposes.register.value:
             registerUser(viewerObj, form)
@@ -841,24 +944,23 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
         elif purpose == FormPurposes.login.value:
             loginUser(viewerObj, form)
 
-        elif purpose == FormPurposes.startQueue.value:
-            for party in onlineParties.values():
+        elif purpose == FormPurposes.startQuiz.value:
+            for party in liveCacheManager.activeParties.values():
                 if party.joinTeam(viewerObj): return
             newParty = Party(2, 6)
             newParty.joinTeam(viewerObj)
 
-        elif purpose == "quizOption":
+        elif purpose == FormPurposes.quizOption.value:
             partyID = form.pop("party", "")
-            party = onlineParties.get(partyID, None)
+            party = liveCacheManager.activeParties.get(partyID, None)
             if party: party.gameObj.receiveUserInput(True, viewerObj, form["option"])
 
 
-        elif purpose == "renderAuthPage":
-            if viewerIDToUsername.get(viewerObj.viewerID):
-                del viewerIDToUsername[viewerObj.viewerID]
+        elif purpose == FormPurposes.renderAuth.value:
+            liveCacheManager.logoutCall(viewerObj, True)
             renderAuthPage(viewerObj)
 
-        elif purpose == "renderQuiz":
+        elif purpose == FormPurposes.renderQuizLobby.value:
             renderQuizLobbyPage(viewerObj)
             players = f"""
             <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
@@ -870,7 +972,7 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 
             <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
                 <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
-                <div class="text-white text-lg font-semibold">{viewerIDToUsername.get(viewerObj.viewerID, "")}</div>
+                <div class="text-white text-lg font-semibold">{liveCacheManager.getUserName(liveCacheManager.ByViewerID, viewerObj.viewerID)}</div>
                 <div class="text-white text-md">{choice(["Iron", "Bronze", "Silver"])}{randrange(1,4)}</div>
                 <div class="text-white text-md">Level {randrange(1,5)}</div>
             </div>
@@ -883,9 +985,9 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             """
             viewerObj.queueTurboAction(players, "quizLobbyDiv", viewerObj.turboApp.methods.update)
 
-        elif purpose == "postQuestion":
+        elif purpose == FormPurposes.postQuizQuestion.value:
             partyID = form.pop("party", "")
-            party = onlineParties.get(partyID, None)
+            party = liveCacheManager.activeParties.get(partyID, None)
             if party: party.gameObj.sendPostQuizQuestion(viewerObj, form["question"])
 
 
@@ -894,7 +996,9 @@ def newVisitorCallback(viewerObj: BaseViewer):
 
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
-    if viewerIDToUsername.get(viewerObj.viewerID):
+    userID = liveCacheManager.getKnownLoggedInUserID(viewerObj)
+    if userID:
+        liveCacheManager.loginCall(viewerObj, userID)
         renderHomepage(viewerObj)
     else:
         renderAuthPage(viewerObj)
@@ -918,16 +1022,14 @@ def newVisitorCallback(viewerObj: BaseViewer):
 
 
 def visitorLeftCallback(viewerObj: BaseViewer):
-    if viewerObj.viewerID in viewerIDToParty: viewerIDToParty[viewerObj.viewerID].leaveTeam(viewerObj)
+    liveCacheManager.logoutCall(viewerObj)
     print("Visitor Left: ", viewerObj.viewerID)
 
 
 
 logger = LogManager()
 SQLconn = connectDB(logger)
-onlineParties:dict[str, Party] = {}
-viewerIDToParty:dict[str, Party] = {}
-viewerIDToUsername = {}
+liveCacheManager = UserCache()
 extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
 bodyBase = """<body style="background-color: #23003d;"> <div id="mainDiv"><div></body>"""
 

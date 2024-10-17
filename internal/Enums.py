@@ -38,7 +38,11 @@ class RequiredFiles(Enum):
 class FormPurposes(Enum):
     register = "register"
     login = "login"
-    startQueue = "startQueue"
+    startQuiz = "startQueue"
+    renderQuizLobby = "preQuiz"
+    quizOption = "quizOption"
+    postQuizQuestion = "postQuiz"
+    renderAuth = "renderAuth"
 
 
 class Routes(Enum):
