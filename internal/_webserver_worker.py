@@ -52,15 +52,13 @@ def navBar(viewerObj: BaseViewer):
 def renderLogo(viewerObj: BaseViewer, allowNavigation=True):
     logo = f"""
     <form onsubmit="return submit_ws(this)">
-        <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
+        <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6 bg-transparent">
             {viewerObj.addCSRF(FormPurposes.renderSubCategories.value) if allowNavigation else ""}
             <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
             <p class="text-3xl text-white font-bold">GAMBIT</p>
         </button>
     </form>"""
     viewerObj.queueTurboAction(logo, "navLogoButton", viewerObj.turboApp.methods.update)
-
-
 
 
 def renderHomepage(viewerObj: BaseViewer):
@@ -88,7 +86,7 @@ def renderHomepage(viewerObj: BaseViewer):
             <div id="imageBackground" class="relative py-12 w-full h-5/6">
                 <!-- Image -->
                <!-- <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover"> -->
-    
+
                 <video autoplay muted loop class="absolute rounded-3xl w-full h-5/6 object-cover z-0">
                     <source src="{Routes.cdnFileContent.value}?type={CDNFileType.video.value}&name=login_background_video1.mp4"
                     type="video/mp4"> </video>
@@ -99,12 +97,12 @@ def renderHomepage(viewerObj: BaseViewer):
                 START LEARNING
             </button>
                 </form>
-    
+
                 <!-- Headline Text -->
                 <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full relative z-10">
                     All Your Education Needs In One
                 </p>
-                
+
             </div>
         </div>
     </div>
@@ -256,7 +254,69 @@ def renderQuizGamePage(viewerObj: BaseViewer):
         </div>
 
         <div id="selfTeam_create"></div>
+    <div class="max-w-md mx-auto p-4">
+  <!-- Chat Container -->
+  <div class="bg-white rounded-lg shadow-md p-4">
+    <!-- Chat Header -->
+    <div class="flex items-center mb-4">
+      <div class="ml-3">
+        <p class="text-xl font-medium">Team chat</p>
+      </div>
+    </div>
 
+    <!-- Chat Messages -->
+    <div class="space-y-4">
+      <!-- Received Message -->
+      <div class="flex items-start">
+        <svg
+            xmlns="http://www.w3.org/2000/svg"
+            viewBox="0 0 100 100"
+            width="100"
+            height="100"
+            fill="#009688"
+            class="w-8 h-8 rounded-full"
+            >
+
+            <!-- Robot Face -->
+            <circle cx="50" cy="50" r="20" fill="#009688" />
+            <circle cx="50" cy="40" r="2" fill="#fff" />
+            <rect x="47" y="45" width="6" height="10" fill="#fff" />
+            <circle cx="50" cy="65" r="3" fill="#009688" />
+
+            <!-- Robot Eyes -->
+            <circle cx="45" cy="45" r="3" fill="#fff" />
+            <circle cx="55" cy="45" r="3" fill="#fff" />
+            <circle cx="45" cy="45" r="1" fill="#000" />
+            <circle cx="55" cy="45" r="1" fill="#000" />
+
+            <!-- Robot Antennas -->
+            <line x1="50" y1="30" x2="40" y2="20" stroke="#009688" stroke-width="2" />
+            <line x1="50" y1="30" x2="60" y2="20" stroke="#009688" stroke-width="2" />
+            </svg>
+        <div class="ml-3 bg-gray-100 p-3 rounded-lg">
+          <p class="text-sm text-gray-800">Hello! How can I help you today?</p>
+        </div>
+      </div>
+
+      <!-- Sent Message -->
+      <div class="flex items-end justify-end">
+        <div class="bg-blue-500 p-3 rounded-lg">
+          <p class="text-sm text-white">Sure, I have a question.</p>
+        </div>
+        <img src="https://pbs.twimg.com/profile_images/1707101905111990272/Z66vixO-_normal.jpg" alt="Other User Avatar" class="w-8 h-8 rounded-full ml-3" />
+      </div>
+    </div>
+
+    <div class="mt-4 flex items-center">
+      <input
+        type="text"
+        placeholder="Type your message..."
+        class="flex-1 py-2 px-3 rounded-full bg-gray-100 focus:outline-none"
+      />
+      <button class="bg-blue-500 text-white px-4 py-2 rounded-full ml-3 hover:bg-blue-600">Send</button>
+    </div>
+  </div>
+</div>
     </div>
 
     <div id="quizDiv" class="rounded-lg bg-[#490080] flex flex-col items-center justify-center w-full h-full">
@@ -340,7 +400,24 @@ def renderQuizEndPage(viewerObj: BaseViewer):
 
 def renderQuizLobbyPage(viewerObj: BaseViewer):
     quizLobby = f"""
+            <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
+            <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto bg-transparent">
 
+                </div>
+            </div>
+            <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
+            <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
+                <div class="p-4 inline-flex rounded-full">   
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
+                        <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
+                            Log out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
     <div class="bg-[#23003d] flex h-full w-full gap-8 px-6 py-6">
 
         <div class="w-full">
@@ -376,6 +453,7 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
     </div>
     """
     viewerObj.queueTurboAction(quizLobby, "fullPage", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
 
 
 def renderQuizMatchFoundPage(viewerObj: BaseViewer):
@@ -398,14 +476,13 @@ def renderQuizMatchFoundPage(viewerObj: BaseViewer):
 #         </div>
 #     </div>
 def renderContentMarketPlace(viewerObj: BaseViewer):
-
     contentMarketPlace = f"""
 
     <nav class="relative flex items-center justify-between h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
                 <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
             </div>
-        
+
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
                     <form onsubmit="return submit_ws(this)">
@@ -460,13 +537,12 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
 
 
 def renderSubCategories(viewerObj: BaseViewer):
-
     subCategories = f"""
         <nav class="relative flex items-center justify-between h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
                 <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
             </div>
-        
+
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
                     <form onsubmit="return submit_ws(this)">
@@ -478,7 +554,7 @@ def renderSubCategories(viewerObj: BaseViewer):
                 </div>
             </div>
         </nav>
-        
+
 <div class="px-12 w-full sm:px-12 md:px-12 lg:px-12">
     <div class="relative pt-6 pb-16 sm:pb-24">
         <div class="relative py-12 w-full h-5/6">
@@ -493,21 +569,21 @@ def renderSubCategories(viewerObj: BaseViewer):
                         <button class="bg-gray-400 rounded-lg text-center w-full h-full">MUSIC</button>
                     </div>
                 </form>
-                
+
                 <form onsubmit="return submit_ws(this)">
                     {viewerObj.addCSRF(FormPurposes.renderQuizLobby.value)}
                     <div class="bg-gray-200 rounded-lg">
                         <button class="bg-gray-400 rounded-lg text-center w-full h-full">QUIZ</button>
                     </div>
                 </form>
-                
+
                 <form onsubmit="return submit_ws(this)">
                     {viewerObj.addCSRF(FormPurposes.renderNotesPage.value)}
                     <div class="bg-gray-200 rounded-lg">
                         <button class="bg-gray-400 rounded-lg text-center w-full h-full">NOTES</button>
                     </div>
                 </form>
-                
+
                 <form onsubmit="return submit_ws(this)">
                     {viewerObj.addCSRF(FormPurposes.renderContentMarketplacePage.value)}
                     <div class="bg-gray-200 rounded-lg">
@@ -1597,7 +1673,6 @@ def test():
 
 
 try:
-    1/0
     open(r"C:\cert\privkey.pem", "r").close()
     print(f"https://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
     WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None, keyfile=r'C:\cert\privkey.pem', certfile=r'C:\cert\cert.pem').serve_forever()
