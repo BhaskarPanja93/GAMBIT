@@ -543,7 +543,9 @@ def renderNotesRepository(viewerObj: BaseViewer):
     <script>
         function findNote(text)
         {{
-            text = text.toLowerCase()
+            text = document.getElementById("noteSearch").value.toLowerCase();
+            console.log(text);
+            
             for (const [key, value] of Object.entries(document.getElementById("notesHolder").children)) 
             {{ 
                 if (value.getAttribute("title").toLowerCase().includes(text.toLowerCase()) || value.getAttribute("subject").toLowerCase().includes(text.toLowerCase()))
@@ -553,7 +555,9 @@ def renderNotesRepository(viewerObj: BaseViewer):
                     value.hidden=true;
                 }}
             }}
-        }}
+        }}    
+        document.getElementById("noteSearch").addEventListener("input", findNote);
+
     </script>
         <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
@@ -572,7 +576,7 @@ def renderNotesRepository(viewerObj: BaseViewer):
             </div>
         </div>
         <div class="w-full p-6 -mt-4 relative">
-            <input type="text" placeholder="Search..." class="bg-gray-800 w-full p-5 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/> 
+            <input type="text" id="noteSearch" onchange="findNote()" placeholder="Search..." class="bg-gray-800 w-full p-5 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/> 
             <button class="absolute right-4 mx-12 my-5">
                 <img src="/better-education-cdn-file?type=image&name=search_icon.png" alt="Search" class="w-6 h-6"/>
             </button>
