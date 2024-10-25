@@ -1,5 +1,3 @@
-from typing import final
-
 from gevent import monkey
 monkey.patch_all()
 
@@ -51,19 +49,26 @@ def navBar(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(navigation_bar, "navBar", viewerObj.turboApp.methods.update)
 
 
+def renderLogo(viewerObj: BaseViewer, allowNavigation=True):
+    logo = f"""
+    <form onsubmit="return submit_ws(this)">
+        <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
+            {viewerObj.addCSRF(FormPurposes.renderSubCategories.value) if allowNavigation else ""}
+            <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
+            <p class="text-3xl text-white font-bold">GAMBIT</p>
+        </button>
+    </form>"""
+    viewerObj.queueTurboAction(logo, "navLogoButton", viewerObj.turboApp.methods.update)
+
+
+
+
 def renderHomepage(viewerObj: BaseViewer):
     home = f"""
 
         <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-                    <a href="#" class="flex items-center space-x-4">
-                        <!-- Logo Image -->
-                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
-                        <!-- GAMBIT Text -->
-                        <p class="text-3xl text-white font-bold">GAMBIT</p>
-                    </a>
-                </div>
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
             </div>
             <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
@@ -78,37 +83,34 @@ def renderHomepage(viewerObj: BaseViewer):
             </div>
         </div>
 
-<div class="px-12 w-full sm:px-12 md:px-12 lg:px-12">
-    <div class="relative pt-6 pb-16 sm:pb-24">
-        <div id="imageBackground" class="relative py-12 w-full h-5/6">
-            <!-- Image -->
-           <!-- <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover"> -->
-
-            <video autoplay muted loop class="absolute rounded-3xl w-full h-5/6 object-cover z-0">
-                <source src="{Routes.cdnFileContent.value}?type={CDNFileType.video.value}&name=login_background_video1.mp4"
-                type="video/mp4"> </video>
-            <!-- Start Learning Button -->
-            <form onsubmit="return submit_ws(this)">
-                {viewerObj.addCSRF(FormPurposes.renderSubCategories.value)}
-                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 transition duration-300 ease-in-out" style="color: #23003d;">
-            START LEARNING
-        </button>
-            </form>
-
-            <!-- Headline Text -->
-            <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full relative z-10">
-                All Your Education Needs In One
-            </p>
-            
+    <div class="px-12 w-full sm:px-12 md:px-12 lg:px-12">
+        <div class="relative pt-6 pb-16 sm:pb-24">
+            <div id="imageBackground" class="relative py-12 w-full h-5/6">
+                <!-- Image -->
+               <!-- <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover"> -->
+    
+                <video autoplay muted loop class="absolute rounded-3xl w-full h-5/6 object-cover z-0">
+                    <source src="{Routes.cdnFileContent.value}?type={CDNFileType.video.value}&name=login_background_video1.mp4"
+                    type="video/mp4"> </video>
+                <!-- Start Learning Button -->
+                <form onsubmit="return submit_ws(this)">
+                    {viewerObj.addCSRF(FormPurposes.renderSubCategories.value)}
+                    <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 transition duration-300 ease-in-out" style="color: #23003d;">
+                START LEARNING
+            </button>
+                </form>
+    
+                <!-- Headline Text -->
+                <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full relative z-10">
+                    All Your Education Needs In One
+                </p>
+                
+            </div>
         </div>
     </div>
-</div>
-
-
-
 """
-
     viewerObj.queueTurboAction(home, "fullPage", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
 
 
 def renderAuthPage(viewerObj: BaseViewer):
@@ -126,15 +128,7 @@ def renderAuthPage(viewerObj: BaseViewer):
     <div class="relative flex flex-col items-center justify-start w-full z-10 p-7">
         <!-- GAMBIT Text and Join Now Button -->
         <div class="flex items-center justify-between w-full">
-            <div id="navLogoButton" class="flex items-center space-x-4">
-                <a href="#" class="flex items-center">
-                    <!-- Logo Image -->
-                    <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png"
-                         loading="lazy" width="202" height="80">
-                    <!-- GAMBIT Text -->
-                    <p class="text-3xl text-white font-bold">GAMBIT</p>
-                </a>
-            </div>
+            <div id="navLogoButton" class="flex items-center space-x-4"></div>
             <div class="p-4 inline-flex rounded-full">
                 <form onsubmit="return submit_ws(this)">
                     {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
@@ -237,6 +231,7 @@ def renderAuthPage(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(loginRegister, "fullPage", viewerObj.turboApp.methods.update)
     sendRegisterForm(viewerObj)
     sendLoginForm(viewerObj)
+    renderLogo(viewerObj, False)
 
 
 def renderQuizGamePage(viewerObj: BaseViewer):
@@ -408,14 +403,7 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
 
     <nav class="relative flex items-center justify-between h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-                    <a href="#" class="flex items-center space-x-4">
-                        <!-- Logo Image -->
-                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
-                        <!-- GAMBIT Text -->
-                        <p class="text-3xl text-white font-bold">GAMBIT</p>
-                    </a>
-                </div>
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
             </div>
         
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
@@ -468,6 +456,7 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
 </div>  
     """
     viewerObj.queueTurboAction(contentMarketPlace, "fullPage", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
 
 
 def renderSubCategories(viewerObj: BaseViewer):
@@ -475,14 +464,7 @@ def renderSubCategories(viewerObj: BaseViewer):
     subCategories = f"""
         <nav class="relative flex items-center justify-between h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-                    <a href="#" class="flex items-center space-x-4">
-                        <!-- Logo Image -->
-                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
-                        <!-- GAMBIT Text -->
-                        <p class="text-3xl text-white font-bold">GAMBIT</p>
-                    </a>
-                </div>
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
             </div>
         
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
@@ -540,21 +522,14 @@ def renderSubCategories(viewerObj: BaseViewer):
 
     """
     viewerObj.queueTurboAction(subCategories, "fullPage", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
 
 
 def renderNotesRepository(viewerObj: BaseViewer):
     notesRepository = f"""
-
         <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-                    <a href="#" class="flex items-center space-x-4">
-                        <!-- Logo Image -->
-                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
-                        <!-- GAMBIT Text -->
-                        <p class="text-3xl text-white font-bold">GAMBIT</p>
-                    </a>
-                </div>
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
             </div>
             <div class="text-white font-semibold text-3xl flex justify-center">THE ALL IN ONE EDUCATION</div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
@@ -689,6 +664,7 @@ def renderNotesRepository(viewerObj: BaseViewer):
         </div>
         """
     viewerObj.queueTurboAction(finalNotes, "notesHolder", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
 
 
 def renderMusicPage(viewerObj: BaseViewer):
@@ -696,14 +672,7 @@ def renderMusicPage(viewerObj: BaseViewer):
     
     <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
     <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-        <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-            <a href="#" class="flex items-center space-x-4">
-                <!-- Logo Image -->
-                <img class="w-auto h-14 sm:h-18" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=dice.png" loading="lazy" width="202" height="80">
-                <!-- GAMBIT Text -->
-                <p class="text-3xl text-white font-bold">GAMBIT</p>
-            </a>
-        </div>
+        <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
     </div>
     <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
     <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
@@ -822,8 +791,10 @@ def renderMusicPage(viewerObj: BaseViewer):
     </div>
 </div>
 """
-
     viewerObj.queueTurboAction(musicPage, "fullPage", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
+
+
 def sendRegisterForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF(FormPurposes.submitRegister.value)}
