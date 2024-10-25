@@ -764,6 +764,7 @@ def renderMusicPage(viewerObj: BaseViewer):
     </div>
 </div>
 """
+
     viewerObj.queueTurboAction(musicPage, "fullPage", viewerObj.turboApp.methods.update)
 def sendRegisterForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
