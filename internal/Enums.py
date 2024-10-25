@@ -42,7 +42,7 @@ class FormPurposes(Enum):
     submitQuizOption = "submitQuizOption"
     renderPostQuizQuestion = "renderPostQuizQuestion"
     renderQuizLobby = "preQuiz"
-    renderCategories = "renderCategories"
+    renderSubCategories = "renderCategories"
     renderAuthPage = "renderAuthPage"
     renderMusicPage = "renderMusicPage"
     renderNotesPage = "renderNotesPage"
@@ -53,8 +53,6 @@ class Routes(Enum):
     webHomePage = "/better-education"
     webWS = f"{webHomePage}-ws"
     internalConnection = f"{webHomePage}-conn"
-    cdnMemoryContent = f"{webHomePage}-cdn-mem"
-    cdnLiveContent = f"{webHomePage}-cdn-live"
     cdnFileContent = f"{webHomePage}-cdn-file"
 
 
@@ -64,6 +62,7 @@ class CoreValues(Enum):
 
 
 class CDNFileType(Enum):
+    pdf = "pdf"
     font = "font"
     image = "image"
     video = "video"
