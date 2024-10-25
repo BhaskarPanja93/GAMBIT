@@ -254,69 +254,6 @@ def renderQuizGamePage(viewerObj: BaseViewer):
         </div>
 
         <div id="selfTeam_create"></div>
-    <div class="max-w-md mx-auto p-4">
-  <!-- Chat Container -->
-  <div class="bg-white rounded-lg shadow-md p-4">
-    <!-- Chat Header -->
-    <div class="flex items-center mb-4">
-      <div class="ml-3">
-        <p class="text-xl font-medium">Team chat</p>
-      </div>
-    </div>
-
-    <!-- Chat Messages -->
-    <div class="space-y-4">
-      <!-- Received Message -->
-      <div class="flex items-start">
-        <svg
-            xmlns="http://www.w3.org/2000/svg"
-            viewBox="0 0 100 100"
-            width="100"
-            height="100"
-            fill="#009688"
-            class="w-8 h-8 rounded-full"
-            >
-
-            <!-- Robot Face -->
-            <circle cx="50" cy="50" r="20" fill="#009688" />
-            <circle cx="50" cy="40" r="2" fill="#fff" />
-            <rect x="47" y="45" width="6" height="10" fill="#fff" />
-            <circle cx="50" cy="65" r="3" fill="#009688" />
-
-            <!-- Robot Eyes -->
-            <circle cx="45" cy="45" r="3" fill="#fff" />
-            <circle cx="55" cy="45" r="3" fill="#fff" />
-            <circle cx="45" cy="45" r="1" fill="#000" />
-            <circle cx="55" cy="45" r="1" fill="#000" />
-
-            <!-- Robot Antennas -->
-            <line x1="50" y1="30" x2="40" y2="20" stroke="#009688" stroke-width="2" />
-            <line x1="50" y1="30" x2="60" y2="20" stroke="#009688" stroke-width="2" />
-            </svg>
-        <div class="ml-3 bg-gray-100 p-3 rounded-lg">
-          <p class="text-sm text-gray-800">Hello! How can I help you today?</p>
-        </div>
-      </div>
-
-      <!-- Sent Message -->
-      <div class="flex items-end justify-end">
-        <div class="bg-blue-500 p-3 rounded-lg">
-          <p class="text-sm text-white">Sure, I have a question.</p>
-        </div>
-        <img src="https://pbs.twimg.com/profile_images/1707101905111990272/Z66vixO-_normal.jpg" alt="Other User Avatar" class="w-8 h-8 rounded-full ml-3" />
-      </div>
-    </div>
-
-    <div class="mt-4 flex items-center">
-      <input
-        type="text"
-        placeholder="Type your message..."
-        class="flex-1 py-2 px-3 rounded-full bg-gray-100 focus:outline-none"
-      />
-      <button class="bg-blue-500 text-white px-4 py-2 rounded-full ml-3 hover:bg-blue-600">Send</button>
-    </div>
-  </div>
-</div>
     </div>
 
     <div id="quizDiv" class="rounded-lg bg-[#490080] flex flex-col items-center justify-center w-full h-full">
@@ -1321,15 +1258,15 @@ class UserCache:
     def getUserName(self, By, value: str):
         if not value: return
         if By == self.ByUserID:
-            if value in self.activeUserIDs: return self.activeUserIDs[value]["USERNAME"]
+            # if value in self.activeUserIDs: return self.activeUserIDs[value]["USERNAME"]
             received = SQLconn.execute(f"SELECT UserName from user_auth where UserID=\"{value}\" limit 1")
             if received:
                 received = received[0]
                 return received.get("UserName")
         elif By == self.ByViewerID:
-            if value in self.viewerIDToUserID:
-                userID = self.viewerIDToUserID[value]
-                return self.getUserName(self.ByUserID, userID)
+            # if value in self.viewerIDToUserID:
+            #     userID = self.viewerIDToUserID[value]
+            #     return self.getUserName(self.ByUserID, userID)
             received = SQLconn.execute(f"SELECT UserID from user_devices where ViewerID=\"{value}\" limit 1")
             if received:
                 received = received[0]
@@ -1338,15 +1275,15 @@ class UserCache:
     def getUserID(self, By, value):
         if not value: return
         if By == self.ByUserName:
-            if value in self.usernameToUserID:
-                return self.usernameToUserID[value]
+            # if value in self.usernameToUserID:
+            #     return self.usernameToUserID[value]
             received = SQLconn.execute(f"SELECT UserID from user_auth where UserName=\"{value}\" limit 1")
             if received:
                 received = received[0]
                 return received.get("UserID").decode()
         elif By == self.ByViewerID:
-            if value in self.viewerIDToUserID:
-                return self.viewerIDToUserID[value]
+            # if value in self.viewerIDToUserID:
+            #     return self.viewerIDToUserID[value]
             received = SQLconn.execute(f"SELECT UserID from user_devices where ViewerID=\"{value}\" limit 1")
             if received:
                 received = received[0]
@@ -1423,10 +1360,10 @@ def registerUser(viewerObj:BaseViewer, form:dict):
     elif SQLconn.execute(f"SELECT UserName from user_auth where UserName=\"{username}\" limit 1"):
         viewerObj.queueTurboAction("Username Taken", "registrationWarning", viewerObj.turboApp.methods.update.value)
         sendRegisterForm(viewerObj)
-    elif email.count("@")!=1 or email.count(".")!=1:
+    elif email.count("@")!=1 or email.split("@")[1].count(".")!=1 or not email.split("@")[1].split(".")[0] or not email.split("@")[1].split(".")[1]:
         viewerObj.queueTurboAction("Email not valid", "registrationWarning", viewerObj.turboApp.methods.update.value)
         sendRegisterForm(viewerObj)
-    elif password == "":
+    elif password == "" or len(password)<8:
         viewerObj.queueTurboAction("Passwords Not Valid", "registrationWarning", viewerObj.turboApp.methods.update.value)
         sendRegisterForm(viewerObj)
     elif password!=confirm_password:
@@ -1673,6 +1610,7 @@ def test():
 
 
 try:
+    1/0
     open(r"C:\cert\privkey.pem", "r").close()
     print(f"https://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
     WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None, keyfile=r'C:\cert\privkey.pem', certfile=r'C:\cert\cert.pem').serve_forever()
