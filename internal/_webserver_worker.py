@@ -569,6 +569,7 @@ def renderNotesRepository(viewerObj: BaseViewer):
                             <textarea id="description" cols="30" rows="20" placeholder="write notes here..."
                                       class="w-full font-serif  p-4 text-white bg-gray-700 outline-none rounded-md"></textarea>
                         </div>
+                        
 
 
                         <!-- Dropdown menu -->
