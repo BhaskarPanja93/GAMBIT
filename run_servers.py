@@ -14,10 +14,10 @@ Runner(toRun, toCheck, interval).start()
 # Runner(toRun, toCheck, interval).start()
 
 
-toRun = {RequiredFiles.cdnServerRunnable.value: []}
-toCheck = RequiredFiles.cdnServerRequired.value
-interval = 1
-Runner(toRun, toCheck, interval).start()
+# toRun = {RequiredFiles.cdnServerRunnable.value: []}
+# toCheck = RequiredFiles.cdnServerRequired.value
+# interval = 1
+# Runner(toRun, toCheck, interval).start()
 
 
 # toRun = {RequiredFiles.connServerRunnable.value: []}

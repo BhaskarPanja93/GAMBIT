@@ -36,13 +36,17 @@ class RequiredFiles(Enum):
 
 
 class FormPurposes(Enum):
-    register = "register"
-    login = "login"
+    submitRegister = "submitRegister"
+    submitLogin = "submitLogin"
     startQuiz = "startQueue"
+    submitQuizOption = "submitQuizOption"
+    renderPostQuizQuestion = "renderPostQuizQuestion"
     renderQuizLobby = "preQuiz"
-    quizOption = "quizOption"
-    postQuizQuestion = "postQuiz"
-    renderAuth = "renderAuth"
+    renderCategories = "renderCategories"
+    renderAuthPage = "renderAuthPage"
+    renderMusicPage = "renderMusicPage"
+    renderNotesPage = "renderNotesPage"
+    renderContentMarketplacePage = "renderContentMarketplacePage"
 
 
 class Routes(Enum):

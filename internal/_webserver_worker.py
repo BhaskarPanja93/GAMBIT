@@ -2,8 +2,7 @@ from gevent import monkey
 monkey.patch_all()
 
 from random import choice, randrange, choices
-from requests import get
-from flask import request
+from flask import request, send_from_directory
 from random import shuffle
 from threading import Thread
 from time import time, sleep
@@ -74,7 +73,7 @@ def renderHomepage(viewerObj: BaseViewer):
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
                     <form onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF(FormPurposes.renderAuth.value)}
+                        {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
                             Log out
                         </button>
@@ -92,7 +91,7 @@ def renderHomepage(viewerObj: BaseViewer):
             
             <!-- Start Learning Button -->
             <form onsubmit="return submit_ws(this)">
-                {viewerObj.addCSRF(FormPurposes.renderQuizLobby.value)}
+                {viewerObj.addCSRF(FormPurposes.renderCategories.value)}
                 <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 hover:transition duration-300 ease-in-out" style="color: #23003d;">
                     START LEARNING
                 </button>
@@ -139,7 +138,7 @@ def renderAuthPage(viewerObj: BaseViewer):
             </div>
             <div class="p-4 inline-flex rounded-full">
                 <form onsubmit="return submit_ws(this)">
-                    {viewerObj.addCSRF(FormPurposes.renderAuth.value)}
+                    {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                     <button type="submit"
                             class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
                         Join Now
@@ -162,7 +161,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                     <div id="loginFormContainer"
                          class="hidden w-full rounded-lg bg-transparent flex items-center justify-center h-96 shadow-2xl">
                         <form onsubmit="return submit_ws(this)">
-                            {viewerObj.addCSRF(FormPurposes.login.value)}
+                            {viewerObj.addCSRF(FormPurposes.submitLogin.value)}
                             <input type="text" autocomplete="off"
                                    class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                                    name="username" placeholder="Username">
@@ -186,7 +185,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                     <div id="registerFormContainer"
                          class="hidden w-full rounded-lg bg-transparent flex items-center justify-center h-96 shadow-2xl">
                         <form class="w-full px-6" onsubmit="return submit_ws(this)">
-                            {viewerObj.addCSRF(FormPurposes.register.value)}
+                            {viewerObj.addCSRF(FormPurposes.submitRegister.value)}
 
                             <input type="text" autocomplete="off"
                                    class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -423,7 +422,7 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
                     <form onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF(FormPurposes.renderAuth.value)}
+                        {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
                             Log out
                         </button>
@@ -477,7 +476,7 @@ def renderSubCategories(viewerObj: BaseViewer):
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
                     <form onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF(FormPurposes.renderAuth.value)}
+                        {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
                             Log out
                         </button>
@@ -486,36 +485,40 @@ def renderSubCategories(viewerObj: BaseViewer):
             </div>
         </nav>
         
-    <div class="hidden rounded-lg bg-gray-700 mt-12 w-5/6 mx-auto">
+    <div class="rounded-lg bg-gray-700 mt-12 w-5/6 mx-auto">
         <div class="rounded-lg bg-gray-700 mt-12 w-5/6 mx-auto">
-            <div class="bg-gray-700 grid grid-cols-3 grid-rows-3 grid-flow-col gap-8 p-8 rounded-lg h-5/6">
+            <div class="bg-gray-700 grid grid-cols-2 grid-rows-3 grid-flow-col gap-8 p-8 rounded-lg h-5/6">
                 <div class="col-span-3 flex justify-center items-center text-white text-5xl font-bold h-full">
                     SUB-CATEGORIES
                 </div>
                 <!-- First container -->
-                <div class="bg-gray-200 rounded-lg">
-                    <button class="bg-gray-400 rounded-lg text-center w-full h-full">MUSIC</button>
-                </div>
+                <form onsubmit="return submit_ws(this)">
+                    {viewerObj.addCSRF(FormPurposes.renderMusicPage.value)}
+                    <div class="bg-gray-200 rounded-lg">
+                        <button class="bg-gray-400 rounded-lg text-center w-full h-full">MUSIC</button>
+                    </div>
+                </form>
                 
-                <div class="bg-gray-200 rounded-lg">
-                    <button class="bg-gray-400 rounded-lg text-center w-full h-full">QUIZ PAGE</button>
-                </div>
+                <form onsubmit="return submit_ws(this)">
+                    {viewerObj.addCSRF(FormPurposes.renderQuizLobby.value)}
+                    <div class="bg-gray-200 rounded-lg">
+                        <button class="bg-gray-400 rounded-lg text-center w-full h-full">QUIZ</button>
+                    </div>
+                </form>
                 
-                <div class="bg-gray-200 rounded-lg">
-                    <button class="bg-gray-400 rounded-lg text-center w-full h-full">NOTES REPOSITORY</button>
-                </div>
+                <form onsubmit="return submit_ws(this)">
+                    {viewerObj.addCSRF(FormPurposes.renderNotesPage.value)}
+                    <div class="bg-gray-200 rounded-lg">
+                        <button class="bg-gray-400 rounded-lg text-center w-full h-full">NOTES</button>
+                    </div>
+                </form>
                 
-                <div class="bg-gray-200 rounded-lg">
-                    <button class="bg-gray-400 rounded-lg text-center w-full h-full">CONTENT MARKETPLACE</button>
-                </div>
-                
-                <div class="bg-gray-200 rounded-lg">
-                    <button class="bg-gray-400 rounded-lg text-center w-full h-full">RANKED QUIZ</button>
-                </div>
-                
-                <div class="bg-gray-200 rounded-lg">
-                    <button class="bg-gray-400 rounded-lg text-center w-full h-full">PLACEHOLDER</button>
-                </div>     
+                <form onsubmit="return submit_ws(this)">
+                    {viewerObj.addCSRF(FormPurposes.renderContentMarketplacePage.value)}
+                    <div class="bg-gray-200 rounded-lg">
+                        <button class="bg-gray-400 rounded-lg text-center w-full h-full">MARKETPLACE</button>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
@@ -543,7 +546,7 @@ def renderNotesRepository(viewerObj: BaseViewer):
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
                     <form onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF(FormPurposes.renderAuth.value)}
+                        {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
                             Log out
                         </button>
@@ -564,7 +567,7 @@ def renderNotesRepository(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
 def sendRegisterForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
-                        {viewerObj.addCSRF(FormPurposes.register.value)}
+                        {viewerObj.addCSRF(FormPurposes.submitRegister.value)}
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="name" placeholder="Name">
@@ -596,7 +599,7 @@ def sendRegisterForm(viewerObj:BaseViewer):
 
 def sendLoginForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
-                    {viewerObj.addCSRF(FormPurposes.login.value)}
+                    {viewerObj.addCSRF(FormPurposes.submitLogin.value)}
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
                            name="username" placeholder="Username">
@@ -788,7 +791,7 @@ class Quiz:
             for optionIndex in range(4):
                 options+= f"""
                 <form onsubmit="return submit_ws(this)">
-                {player.viewerObj.addCSRF(FormPurposes.quizOption.value)}
+                {player.viewerObj.addCSRF(FormPurposes.submitQuizOption.value)}
                 <input type="hidden" name="party" value="{self.party.partyID}">
                 <input type="hidden" name="option" value="{optionIndex}">
                 <button class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full hover: font-bold hover:scale-105 hover:transition duration-300 ease-in-out ">
@@ -853,7 +856,7 @@ class Quiz:
             questionList += f"""
                                 <li>
                                     <form onsubmit="return submit_ws(this)">
-                                        {viewer.addCSRF(FormPurposes.postQuizQuestion.value)}
+                                        {viewer.addCSRF(FormPurposes.renderPostQuizQuestion.value)}
                                         <input type="hidden" name="party" value="{self.party.partyID}">
                                         <input type="hidden" name="question" value="{questionIndex}">
                                         <button class="rounded-lg hover:scale-105 hover:text-white hover:transition duration-300 ease-in-out bg-gradient-to-r from-purple-500 to-violet-700 text-dark font-bold py-2 px-4 h-full w-full active:bg-blue-700" onclick="this.classList.toggle('bg-blue-400')">{questionIndex+1}</button>
@@ -1118,10 +1121,10 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
         purpose = form.pop("PURPOSE")
         print(liveCacheManager.getUserName(liveCacheManager.ByViewerID, viewerObj.viewerID), purpose, form)
 
-        if purpose == FormPurposes.register.value:
+        if purpose == FormPurposes.submitRegister.value:
             registerUser(viewerObj, form)
 
-        elif purpose == FormPurposes.login.value:
+        elif purpose == FormPurposes.submitLogin.value:
             loginUser(viewerObj, form)
 
         elif purpose == FormPurposes.startQuiz.value:
@@ -1130,13 +1133,13 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             newParty = Party(2, 6)
             newParty.joinTeam(viewerObj)
 
-        elif purpose == FormPurposes.quizOption.value:
+        elif purpose == FormPurposes.submitQuizOption.value:
             partyID = form.pop("party", "")
             party = liveCacheManager.activeParties.get(partyID, None)
             if party: party.gameObj.receiveUserInput(True, viewerObj, form["option"])
 
 
-        elif purpose == FormPurposes.renderAuth.value:
+        elif purpose == FormPurposes.renderAuthPage.value:
             liveCacheManager.logoutCall(viewerObj, True)
             renderAuthPage(viewerObj)
 
@@ -1165,10 +1168,16 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             """
             viewerObj.queueTurboAction(players, "quizLobbyDiv", viewerObj.turboApp.methods.update)
 
-        elif purpose == FormPurposes.postQuizQuestion.value:
+        elif purpose == FormPurposes.renderPostQuizQuestion.value:
             partyID = form.pop("party", "")
             party = liveCacheManager.activeParties.get(partyID, None)
             if party: party.gameObj.sendPostQuizQuestion(viewerObj, form["question"])
+
+        elif purpose == FormPurposes.renderCategories.value:
+            renderSubCategories(viewerObj)
+
+        elif purpose == FormPurposes.renderContentMarketplacePage.value:
+            renderContentMarketPlace(viewerObj)
 
 
 def newVisitorCallback(viewerObj: BaseViewer):
@@ -1177,11 +1186,11 @@ def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
     userID = liveCacheManager.getKnownLoggedInUserID(viewerObj)
-    # if userID:
-    #     liveCacheManager.loginCall(viewerObj, userID)
-    #     renderHomepage(viewerObj)
-    # else:
-    #     renderAuthPage(viewerObj)
+    if userID:
+        liveCacheManager.loginCall(viewerObj, userID)
+        renderHomepage(viewerObj)
+    else:
+        renderAuthPage(viewerObj)
     # sleep(2)
     # renderHomepage(viewerObj)
     # sleep(2)
@@ -1201,7 +1210,7 @@ def newVisitorCallback(viewerObj: BaseViewer):
     # sleep(2)
     # renderContentMarketPlace(viewerObj)
     # renderSubCategories(viewerObj)
-    renderNotesRepository(viewerObj)
+    # renderNotesRepository(viewerObj)
 
 def visitorLeftCallback(viewerObj: BaseViewer):
     liveCacheManager.logoutCall(viewerObj)
@@ -1220,18 +1229,43 @@ baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLe
                                extraHeads, bodyBase, CoreValues.title.value, False)
 
 
-@baseApp.get(Routes.internalConnection.value)
-def _internalConn():
+
+@baseApp.get(Routes.cdnMemoryContent.value)
+def _memContent():
     return ""
 
 
-@baseApp.errorhandler(404)
-def not_found(e):
-    return get(f"http://127.0.0.1:{ServerSecrets.cdnPort.value}/{request.url.replace(request.root_url, '')}").content
-    #return redirect(f"http://127.0.0.1:{ServerSecrets.cdnPort.value}/{request.url.replace(request.root_url, '')}")
+@baseApp.get(Routes.cdnLiveContent.value)
+def _liveContent():
+    return ""
+
+
+@baseApp.get(Routes.cdnFileContent.value)
+def _fileContent():
+    fileType = request.args.get("type", "").strip()
+    fileName = request.args.get("name", "").strip()
+    if fileType == CDNFileType.font.value:
+         return send_from_directory(folderLocation+"/static/font", fileName, as_attachment=True)
+    elif fileType == CDNFileType.image.value:
+        return send_from_directory(folderLocation + "/static/image", fileName, as_attachment=True)
+    elif fileType == CDNFileType.video.value:
+        return send_from_directory(folderLocation + "/static/video", fileName, as_attachment=True)
+    elif fileType == CDNFileType.html.value:
+        return send_from_directory(folderLocation + "/static/html", fileName, as_attachment=True)
+    elif fileType == CDNFileType.css.value:
+        return send_from_directory(folderLocation + "/static/css", fileName, as_attachment=True)
+    elif fileType == CDNFileType.js.value:
+        return send_from_directory(folderLocation + "/static/js", fileName, as_attachment=True)
+    return ""
+
+
+@baseApp.get("/favicon.ico")
+def _favicon():
+    return send_from_directory(folderLocation+"/static/image", "favicon.png", as_attachment=True)
 
 
 try:
+    1/0
     open(r"C:\cert\privkey.pem", "r").close()
     print(f"https://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
     WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None, keyfile=r'C:\cert\privkey.pem', certfile=r'C:\cert\cert.pem').serve_forever()
