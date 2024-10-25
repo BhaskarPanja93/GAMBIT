@@ -1,6 +1,7 @@
 from gevent import monkey
 monkey.patch_all()
 
+import os
 import wave
 from random import choice, randrange, choices
 from flask import request, send_from_directory, Response
@@ -673,7 +674,7 @@ def renderMusicPage(viewerObj: BaseViewer):
                          src="https://upload.wikimedia.org/wikipedia/en/f/f1/Tycho_-_Epoch.jpg" alt=""/>
                     <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
 
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('LOFI')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
                                  class="bi bi-play-circle-fill" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
@@ -696,7 +697,7 @@ def renderMusicPage(viewerObj: BaseViewer):
                     <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
 
 
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('JAZZ')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
                                  class="bi bi-play-circle-fill" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
@@ -720,7 +721,7 @@ def renderMusicPage(viewerObj: BaseViewer):
                     <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
 
 
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('AMBIENT')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
                                  class="bi bi-play-circle-fill" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
@@ -745,7 +746,7 @@ def renderMusicPage(viewerObj: BaseViewer):
                     <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
 
 
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('CLASSICAL')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
                                  class="bi bi-play-circle-fill" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
@@ -810,6 +811,68 @@ def sendLoginForm(viewerObj:BaseViewer):
                 </form>"""
     viewerObj.queueTurboAction(form, "loginFormContainer", viewerObj.turboApp.methods.update)
 
+
+
+class MusicStream:
+    def __init__(self, fileName, category, onComplete):
+        self.onComplete = onComplete
+        self.category = category
+        self.fileName = fileName
+        self.wf = wave.open(self.fileName, 'rb')
+        self.currentData = b""
+        Thread(target=self.read).start()
+        print(f"New Song Started [{category}]: {fileName}")
+
+
+    def read(self):
+        while True:
+            self.currentData = self.wf.readframes(self.wf.getframerate()//10)
+            if not self.currentData:
+                self.onComplete(self.category, self)
+                break
+            else: sleep(1/10)
+
+
+    def header(self):
+        channels = 2
+        bitsPerSample = 16
+        sampleRate = self.wf.getframerate()
+        datasize = 2000 * 10 ** 6
+        o = bytes("RIFF", 'ascii')
+        o += (datasize + 36).to_bytes(4, 'little')
+        o += bytes("WAVE", 'ascii')
+        o += bytes("fmt ", 'ascii')
+        o += (16).to_bytes(4, 'little')
+        o += (1).to_bytes(2, 'little')
+        o += channels.to_bytes(2, 'little')
+        o += sampleRate.to_bytes(4, 'little')
+        o += (sampleRate * channels * bitsPerSample // 8).to_bytes(4, 'little')
+        o += (channels * bitsPerSample // 8).to_bytes(2, 'little')
+        o += bitsPerSample.to_bytes(2, 'little')
+        o += bytes("data", 'ascii')
+        o += datasize.to_bytes(4, 'little')
+        return o
+
+
+class MusicCollection:
+    def __init__(self):
+        self.activeStreams:dict[str,MusicStream|None] = {}
+        self.musicFiles:dict[str, list[str]] = {"CLASSICAL":[], "JAZZ":[], "AMBIENT":[], "LOFI":[]}
+        for cat in self.musicFiles:
+            for fileName in os.listdir(f"{folderLocation}/static/audio/{cat}"):
+                self.musicFiles[cat].append(f"{folderLocation}\\static\\audio\\{cat}\\{fileName}")
+            self.categoryNext(cat, None)
+
+
+    def categoryNext(self, category:str, stream:MusicStream|None):
+        if category not in self.activeStreams: self.activeStreams[category] = None
+        if stream: self.musicFiles[category].append(stream.fileName)
+        self.activeStreams[category] = MusicStream(self.musicFiles[category].pop(0), category, self.categoryNext)
+
+
+    def getData(self, category:str):
+        if category in self.activeStreams:
+            return self.activeStreams[category]
 
 
 class Player:
@@ -1388,11 +1451,11 @@ def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
     userID = liveCacheManager.getKnownLoggedInUserID(viewerObj)
-    # if userID:
-    #     liveCacheManager.loginCall(viewerObj, userID)
-    #     renderHomepage(viewerObj)
-    # else:
-    #     renderAuthPage(viewerObj)
+    if userID:
+        liveCacheManager.loginCall(viewerObj, userID)
+        renderHomepage(viewerObj)
+    else:
+        renderAuthPage(viewerObj)
     # sleep(2)
     # renderHomepage(viewerObj)
     # sleep(2)
@@ -1424,22 +1487,23 @@ logger = LogManager()
 SQLconn = connectDB(logger)
 liveCacheManager = UserCache()
 
-extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>
+extraHeads = f"""
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
-function muteMusic()
-{{
-    document.getElementById("musicPlayer").muted = true;
-}}
-function unmuteMusic()
-{{
-   document.getElementById("musicPlayer").muted = false; 
-}}
-function changeMusic(category)
-{{
-   document.getElementById("musicPlayer").children[0].src = "/music/"+category; 
-   document.getElementById("musicPlayer").load();
-   document.getElementById("musicPlayer").play();
-}}
+    function muteMusic()
+    {{
+        document.getElementById("musicPlayer").muted = true;
+    }}
+    function unmuteMusic()
+    {{
+       document.getElementById("musicPlayer").muted = false; 
+    }}
+    function changeMusic(category)
+    {{
+       document.getElementById("musicPlayer").children[0].src = "/music/"+category; 
+       document.getElementById("musicPlayer").load();
+       document.getElementById("musicPlayer").play();
+    }}
 </script>"""
 
 bodyBase = """
@@ -1448,20 +1512,11 @@ bodyBase = """
 <div id="mainDiv"><div>
 </body>"""
 
+
+musicCollection = MusicCollection()
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
                                Routes.webHomePage.value, Routes.webWS.value, ServerSecrets.webFernetKey.value,
                                extraHeads, bodyBase, CoreValues.title.value, False)
-
-
-
-@baseApp.get(Routes.cdnMemoryContent.value)
-def _memContent():
-    return ""
-
-
-@baseApp.get(Routes.cdnLiveContent.value)
-def _liveContent():
-    return ""
 
 
 @baseApp.get(Routes.cdnFileContent.value)
@@ -1486,70 +1541,6 @@ def _fileContent():
 @baseApp.get("/favicon.ico")
 def _favicon():
     return send_from_directory(folderLocation+"/static/image", "favicon.png", as_attachment=True)
-
-
-class MusicStream:
-    def __init__(self, fileName, category, onComplete):
-        self.onComplete = onComplete
-        self.category = category
-        self.fileName = fileName
-        self.wf = wave.open(self.fileName, 'rb')
-        self.currentData = b""
-        Thread(target=self.read).start()
-        print(f"New Song Started [{category}]: {fileName}")
-
-
-    def read(self):
-        while True:
-            self.currentData = self.wf.readframes(self.wf.getframerate()//10)
-            if not self.currentData:
-                self.onComplete(self.category, self)
-                break
-            else: sleep(1/10)
-
-
-    def header(self):
-        channels = 2
-        bitsPerSample = 16
-        sampleRate = self.wf.getframerate()
-        datasize = 2000 * 10 ** 6
-        o = bytes("RIFF", 'ascii')
-        o += (datasize + 36).to_bytes(4, 'little')
-        o += bytes("WAVE", 'ascii')
-        o += bytes("fmt ", 'ascii')
-        o += (16).to_bytes(4, 'little')
-        o += (1).to_bytes(2, 'little')
-        o += channels.to_bytes(2, 'little')
-        o += sampleRate.to_bytes(4, 'little')
-        o += (sampleRate * channels * bitsPerSample // 8).to_bytes(4, 'little')
-        o += (channels * bitsPerSample // 8).to_bytes(2, 'little')
-        o += bitsPerSample.to_bytes(2, 'little')
-        o += bytes("data", 'ascii')
-        o += datasize.to_bytes(4, 'little')
-        return o
-
-
-class MusicCollection:
-    def __init__(self):
-        self.activeStreams:dict[str,MusicStream|None] = {}
-        self.musicFiles:dict[str, list[str]] = {
-            "CAT1": ["static/audio/test1.wav", "static/audio/test.wav"],
-        }
-        for cat in self.musicFiles: self.categoryNext(cat, None)
-
-
-    def categoryNext(self, category:str, stream:MusicStream|None):
-        if category not in self.activeStreams: self.activeStreams[category] = None
-        if stream: self.musicFiles[category].append(stream.fileName)
-        self.activeStreams[category] = MusicStream(self.musicFiles[category].pop(0), category, self.categoryNext)
-
-
-    def getData(self, category:str):
-        if category in self.activeStreams:
-            return self.activeStreams[category]
-
-
-musicCollection = MusicCollection()
 
 
 @baseApp.route('/music/<streamCategory>')

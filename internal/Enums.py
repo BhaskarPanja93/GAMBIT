@@ -53,8 +53,6 @@ class Routes(Enum):
     webHomePage = "/better-education"
     webWS = f"{webHomePage}-ws"
     internalConnection = f"{webHomePage}-conn"
-    cdnMemoryContent = f"{webHomePage}-cdn-mem"
-    cdnLiveContent = f"{webHomePage}-cdn-live"
     cdnFileContent = f"{webHomePage}-cdn-file"
 
 
