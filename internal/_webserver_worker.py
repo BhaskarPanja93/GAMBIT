@@ -1,6 +1,7 @@
 from gevent import monkey
 monkey.patch_all()
 
+import os
 import wave
 from random import choice, randrange, choices
 from flask import request, send_from_directory, Response
@@ -48,19 +49,26 @@ def navBar(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(navigation_bar, "navBar", viewerObj.turboApp.methods.update)
 
 
+def renderLogo(viewerObj: BaseViewer, allowNavigation=True):
+    logo = f"""
+    <form onsubmit="return submit_ws(this)">
+        <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
+            {viewerObj.addCSRF(FormPurposes.renderSubCategories.value) if allowNavigation else ""}
+            <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
+            <p class="text-3xl text-white font-bold">GAMBIT</p>
+        </button>
+    </form>"""
+    viewerObj.queueTurboAction(logo, "navLogoButton", viewerObj.turboApp.methods.update)
+
+
+
+
 def renderHomepage(viewerObj: BaseViewer):
     home = f"""
 
         <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-                    <a href="#" class="flex items-center space-x-4">
-                        <!-- Logo Image -->
-                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
-                        <!-- GAMBIT Text -->
-                        <p class="text-3xl text-white font-bold">GAMBIT</p>
-                    </a>
-                </div>
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
             </div>
             <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
@@ -75,37 +83,34 @@ def renderHomepage(viewerObj: BaseViewer):
             </div>
         </div>
 
-<div class="px-12 w-full sm:px-12 md:px-12 lg:px-12">
-    <div class="relative pt-6 pb-16 sm:pb-24">
-        <div id="imageBackground" class="relative py-12 w-full h-5/6">
-            <!-- Image -->
-           <!-- <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover"> -->
-
-            <video autoplay muted loop class="absolute rounded-3xl w-full h-5/6 object-cover z-0">
-                <source src="{Routes.cdnFileContent.value}?type={CDNFileType.video.value}&name=login_background_video1.mp4"
-                type="video/mp4"> </video>
-            <!-- Start Learning Button -->
-            <form onsubmit="return submit_ws(this)">
-                {viewerObj.addCSRF(FormPurposes.renderCategories.value)}
-                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 transition duration-300 ease-in-out" style="color: #23003d;">
-            START LEARNING
-        </button>
-            </form>
-
-            <!-- Headline Text -->
-            <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full relative z-10">
-                All Your Education Needs In One
-            </p>
-            
+    <div class="px-12 w-full sm:px-12 md:px-12 lg:px-12">
+        <div class="relative pt-6 pb-16 sm:pb-24">
+            <div id="imageBackground" class="relative py-12 w-full h-5/6">
+                <!-- Image -->
+               <!-- <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover"> -->
+    
+                <video autoplay muted loop class="absolute rounded-3xl w-full h-5/6 object-cover z-0">
+                    <source src="{Routes.cdnFileContent.value}?type={CDNFileType.video.value}&name=login_background_video1.mp4"
+                    type="video/mp4"> </video>
+                <!-- Start Learning Button -->
+                <form onsubmit="return submit_ws(this)">
+                    {viewerObj.addCSRF(FormPurposes.renderSubCategories.value)}
+                    <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 transition duration-300 ease-in-out" style="color: #23003d;">
+                START LEARNING
+            </button>
+                </form>
+    
+                <!-- Headline Text -->
+                <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full relative z-10">
+                    All Your Education Needs In One
+                </p>
+                
+            </div>
         </div>
     </div>
-</div>
-
-
-
 """
-
     viewerObj.queueTurboAction(home, "fullPage", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
 
 
 def renderAuthPage(viewerObj: BaseViewer):
@@ -123,15 +128,7 @@ def renderAuthPage(viewerObj: BaseViewer):
     <div class="relative flex flex-col items-center justify-start w-full z-10 p-7">
         <!-- GAMBIT Text and Join Now Button -->
         <div class="flex items-center justify-between w-full">
-            <div id="navLogoButton" class="flex items-center space-x-4">
-                <a href="#" class="flex items-center">
-                    <!-- Logo Image -->
-                    <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png"
-                         loading="lazy" width="202" height="80">
-                    <!-- GAMBIT Text -->
-                    <p class="text-3xl text-white font-bold">GAMBIT</p>
-                </a>
-            </div>
+            <div id="navLogoButton" class="flex items-center space-x-4"></div>
             <div class="p-4 inline-flex rounded-full">
                 <form onsubmit="return submit_ws(this)">
                     {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
@@ -234,6 +231,7 @@ def renderAuthPage(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(loginRegister, "fullPage", viewerObj.turboApp.methods.update)
     sendRegisterForm(viewerObj)
     sendLoginForm(viewerObj)
+    renderLogo(viewerObj, False)
 
 
 def renderQuizGamePage(viewerObj: BaseViewer):
@@ -405,14 +403,7 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
 
     <nav class="relative flex items-center justify-between h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-                    <a href="#" class="flex items-center space-x-4">
-                        <!-- Logo Image -->
-                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
-                        <!-- GAMBIT Text -->
-                        <p class="text-3xl text-white font-bold">GAMBIT</p>
-                    </a>
-                </div>
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
             </div>
         
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
@@ -465,6 +456,7 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
 </div>  
     """
     viewerObj.queueTurboAction(contentMarketPlace, "fullPage", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
 
 
 def renderSubCategories(viewerObj: BaseViewer):
@@ -472,14 +464,7 @@ def renderSubCategories(viewerObj: BaseViewer):
     subCategories = f"""
         <nav class="relative flex items-center justify-between h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-                    <a href="#" class="flex items-center space-x-4">
-                        <!-- Logo Image -->
-                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
-                        <!-- GAMBIT Text -->
-                        <p class="text-3xl text-white font-bold">GAMBIT</p>
-                    </a>
-                </div>
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
             </div>
         
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
@@ -537,21 +522,14 @@ def renderSubCategories(viewerObj: BaseViewer):
 
     """
     viewerObj.queueTurboAction(subCategories, "fullPage", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
 
 
 def renderNotesRepository(viewerObj: BaseViewer):
     notesRepository = f"""
-
         <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-                    <a href="#" class="flex items-center space-x-4">
-                        <!-- Logo Image -->
-                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
-                        <!-- GAMBIT Text -->
-                        <p class="text-3xl text-white font-bold">GAMBIT</p>
-                    </a>
-                </div>
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
             </div>
             <div class="text-white font-semibold text-3xl flex justify-center">THE ALL IN ONE EDUCATION</div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
@@ -576,19 +554,60 @@ def renderNotesRepository(viewerObj: BaseViewer):
 <!-- component -->
 <div class="text-gray-600 body-font">
     <div class="container px-5 py-24 mx-auto">
-        <div class="flex flex-wrap -m-4">
+    <form>
+            <div class="rounded-lg bg-gray-800 h-full md:px-6 pt-6 pb-6">
+                <div class=" bg-gray-800 rounded-md px-6 py-10 w-full mx-auto h-full">
+                    <h1 class="text-center text-2xl font-bold text-white mb-10">CREATE NOTES HERE</h1>
+                    <div class="space-y-4">
+                        <div>
+                            <label for="title" class="text-lx font-serif">Title:</label>
+                            <input type="text" placeholder="title" id="title"
+                                   class="ml-2 outline-none py-1 px-2 text-md bg-gray-700 rounded-md"/>
+                        </div>
+                        <div>
+                            <label for="description" class="block mb-2 text-lg font-serif">Notes Description</label>
+                            <textarea id="description" cols="30" rows="20" placeholder="write notes here..."
+                                      class="w-full font-serif  p-4 text-white bg-gray-700 outline-none rounded-md"></textarea>
+                        </div>
+
+
+                        <!-- Dropdown menu -->
+                        <select class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
+                                name="cars" id="cars">
+                            <option value="english">english</option>
+                            <option value="maths">maths</option>
+                            <option value="science">science</option>
+                        </select>
+
+                        <button class=" px-6 py-2 mx-auto block rounded-md text-lg font-semibold text-indigo-100 bg-indigo-600">
+                            PUBLISH
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </form>
+        <div id="notesHolder" class="flex flex-wrap -m-4">
         
-        
-        <!-- Each Note starts here -->
-            <div class="p-4 md:w-1/3">
+        <!-- Each Note -->
+            
+        </div>
+    </div>
+</div>
+"""
+    finalNotes = ""
+    viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
+    for noteObj in SQLconn.execute(f"SELECT NoteID from notes where UserID=\"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\""):
+        noteObj = SQLconn.execute(f"SELECT SubjectID, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID']}\" limit 1")[0]
+        subjectName = SQLconn.execute(f"SELECT Name from subjects where SubjectID=\"{noteObj['SubjectID']}\"")
+        finalNotes += f"""
+        <div class="p-4 md:w-1/3">
                 <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
                     <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
-                         src="https://images.unsplash.com/photo-1618172193622-ae2d025f4032?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=crop&w=1064&q=80"
-                         alt="blog">
+                         src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=note_{noteObj["NoteID"]}" alt="Note">
                     <div class="p-6">
-                        <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">SUBJECT OF NOTES (MATHS)</h2>
-                        <h1 class="title-font text-lg font-medium text-gray-600 mb-3">Note Heading - 1</h1>
-                        <div class="leading-relaxed mb-3">Small description of the notes written to give readers some idea. Another line of text.</div>
+                        <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">{subjectName}</h2>
+                        <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
+                        <div class="leading-relaxed mb-3">{noteObj['Description']}</div>
                         <div class="flex items-center flex-wrap">
                             <button class="bg-gradient-to-r from-cyan-400 to-blue-400 hover:scale-105 drop-shadow-md  shadow-cla-blue px-4 py-1 rounded-lg">
                                 Learn more
@@ -597,76 +616,10 @@ def renderNotesRepository(viewerObj: BaseViewer):
                     </div>
                 </div>
             </div>
-            
-            <!-- Each Note ends here -->
-            
-            <div class="p-4 md:w-1/3">
-                <div class="h-full rounded-xl shadow-cla-violate bg-gradient-to-r from-pink-50 to-red-50 overflow-hidden">
-                    <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
-                         src="https://images.unsplash.com/photo-1624628639856-100bf817fd35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8M2QlMjBpbWFnZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60"
-                         alt="blog">
-                    <div class="p-6">
-                        <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">SUBJECT OF NOTES (SCIENCE)</h2>
-                        <h1 class="title-font text-lg font-medium text-gray-600 mb-3">Note Heading - 2</h1>
-                        <div class="leading-relaxed mb-3">Small description of the notes written to give readers some idea. Another line of text.</div>
-                        <div class="flex items-center flex-wrap">
-                            <button class="bg-gradient-to-r from-orange-300 to-amber-400 hover:scale-105 drop-shadow-md shadow-cla-violate px-4 py-1 rounded-lg">
-                                Learn more
-                            </button>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="p-4 md:w-1/3">
-                <div class="h-full rounded-xl shadow-cla-violate bg-gradient-to-r from-pink-50 to-red-50 overflow-hidden">
-                    <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
-                         src="https://images.unsplash.com/photo-1624628639856-100bf817fd35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8M2QlMjBpbWFnZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60"
-                         alt="blog">
-                    <div class="p-6">
-                        <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">SUBJECT OF NOTES (SCIENCE)</h2>
-                        <h1 class="title-font text-lg font-medium text-gray-600 mb-3">Note Heading - 2</h1>
-                        <div class="leading-relaxed mb-3">Small description of the notes written to give readers some idea. Another line of text.</div>
-                        <div class="flex items-center flex-wrap">
-                            <button class="bg-gradient-to-r from-orange-300 to-amber-400 hover:scale-105 drop-shadow-md shadow-cla-violate px-4 py-1 rounded-lg">
-                                Learn more
-                            </button>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-            <div class="p-4 md:w-1/3">
-                <div class="h-full rounded-xl shadow-cla-violate bg-gradient-to-r from-pink-50 to-red-50 overflow-hidden">
-                    <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
-                         src="https://images.unsplash.com/photo-1624628639856-100bf817fd35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8M2QlMjBpbWFnZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60"
-                         alt="blog">
-                    <div class="p-6">
-                        <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">SUBJECT OF NOTES (SCIENCE)</h2>
-                        <h1 class="title-font text-lg font-medium text-gray-600 mb-3">Note Heading - 2</h1>
-                        <div class="leading-relaxed mb-3">Small description of the notes written to give readers some idea. Another line of text.</div>
-                        <div class="flex items-center flex-wrap">
-                            <button class="bg-gradient-to-r from-orange-300 to-amber-400 hover:scale-105 drop-shadow-md shadow-cla-violate px-4 py-1 rounded-lg">
-                                Learn more
-                            </button>
-
-                        </div>
-                    </div>
-                </div>
-            </div>
-            
-
-            
-            
-            
-            
         </div>
-    </div>
-</div>
-"""
-    viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
+        """
+    viewerObj.queueTurboAction(finalNotes, "notesHolder", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
 
 
 def renderMusicPage(viewerObj: BaseViewer):
@@ -674,14 +627,7 @@ def renderMusicPage(viewerObj: BaseViewer):
     
     <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
     <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-        <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
-            <a href="#" class="flex items-center space-x-4">
-                <!-- Logo Image -->
-                <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
-                <!-- GAMBIT Text -->
-                <p class="text-3xl text-white font-bold">GAMBIT</p>
-            </a>
-        </div>
+        <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
     </div>
     <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
     <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
@@ -709,7 +655,7 @@ def renderMusicPage(viewerObj: BaseViewer):
                          src="https://upload.wikimedia.org/wikipedia/en/f/f1/Tycho_-_Epoch.jpg" alt=""/>
                     <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
 
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('LOFI')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
                                  class="bi bi-play-circle-fill" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
@@ -732,7 +678,7 @@ def renderMusicPage(viewerObj: BaseViewer):
                     <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
 
 
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('JAZZ')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
                                  class="bi bi-play-circle-fill" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
@@ -756,7 +702,7 @@ def renderMusicPage(viewerObj: BaseViewer):
                     <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
 
 
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('AMBIENT')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
                                  class="bi bi-play-circle-fill" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
@@ -781,7 +727,7 @@ def renderMusicPage(viewerObj: BaseViewer):
                     <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
 
 
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('CLASSICAL')">
                             <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
                                  class="bi bi-play-circle-fill" viewBox="0 0 16 16">
                                 <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
@@ -800,8 +746,10 @@ def renderMusicPage(viewerObj: BaseViewer):
     </div>
 </div>
 """
-
     viewerObj.queueTurboAction(musicPage, "fullPage", viewerObj.turboApp.methods.update)
+    renderLogo(viewerObj)
+
+
 def sendRegisterForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF(FormPurposes.submitRegister.value)}
@@ -846,6 +794,68 @@ def sendLoginForm(viewerObj:BaseViewer):
                 </form>"""
     viewerObj.queueTurboAction(form, "loginFormContainer", viewerObj.turboApp.methods.update)
 
+
+
+class MusicStream:
+    def __init__(self, fileName, category, onComplete):
+        self.onComplete = onComplete
+        self.category = category
+        self.fileName = fileName
+        self.wf = wave.open(self.fileName, 'rb')
+        self.currentData = b""
+        Thread(target=self.read).start()
+        print(f"New Song Started [{category}]: {fileName}")
+
+
+    def read(self):
+        while True:
+            self.currentData = self.wf.readframes(self.wf.getframerate()//10)
+            if not self.currentData:
+                self.onComplete(self.category, self)
+                break
+            else: sleep(1/10)
+
+
+    def header(self):
+        channels = 2
+        bitsPerSample = 16
+        sampleRate = self.wf.getframerate()
+        datasize = 2000 * 10 ** 6
+        o = bytes("RIFF", 'ascii')
+        o += (datasize + 36).to_bytes(4, 'little')
+        o += bytes("WAVE", 'ascii')
+        o += bytes("fmt ", 'ascii')
+        o += (16).to_bytes(4, 'little')
+        o += (1).to_bytes(2, 'little')
+        o += channels.to_bytes(2, 'little')
+        o += sampleRate.to_bytes(4, 'little')
+        o += (sampleRate * channels * bitsPerSample // 8).to_bytes(4, 'little')
+        o += (channels * bitsPerSample // 8).to_bytes(2, 'little')
+        o += bitsPerSample.to_bytes(2, 'little')
+        o += bytes("data", 'ascii')
+        o += datasize.to_bytes(4, 'little')
+        return o
+
+
+class MusicCollection:
+    def __init__(self):
+        self.activeStreams:dict[str,MusicStream|None] = {}
+        self.musicFiles:dict[str, list[str]] = {"CLASSICAL":[], "JAZZ":[], "AMBIENT":[], "LOFI":[]}
+        for cat in self.musicFiles:
+            for fileName in os.listdir(f"{folderLocation}/static/audio/{cat}"):
+                self.musicFiles[cat].append(f"{folderLocation}\\static\\audio\\{cat}\\{fileName}")
+            self.categoryNext(cat, None)
+
+
+    def categoryNext(self, category:str, stream:MusicStream|None):
+        if category not in self.activeStreams: self.activeStreams[category] = None
+        if stream: self.musicFiles[category].append(stream.fileName)
+        self.activeStreams[category] = MusicStream(self.musicFiles[category].pop(0), category, self.categoryNext)
+
+
+    def getData(self, category:str):
+        if category in self.activeStreams:
+            return self.activeStreams[category]
 
 
 class Player:
@@ -1411,11 +1421,17 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             party = liveCacheManager.activeParties.get(partyID, None)
             if party: party.gameObj.sendPostQuizQuestion(viewerObj, form["question"])
 
-        elif purpose == FormPurposes.renderCategories.value:
+        elif purpose == FormPurposes.renderSubCategories.value:
             renderSubCategories(viewerObj)
 
         elif purpose == FormPurposes.renderContentMarketplacePage.value:
             renderContentMarketPlace(viewerObj)
+
+        elif purpose == FormPurposes.renderMusicPage.value:
+            renderMusicPage(viewerObj)
+
+        elif purpose == FormPurposes.renderNotesPage.value:
+            renderNotesRepository(viewerObj)
 
 
 def newVisitorCallback(viewerObj: BaseViewer):
@@ -1424,11 +1440,11 @@ def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
     userID = liveCacheManager.getKnownLoggedInUserID(viewerObj)
-    # if userID:
-    #     liveCacheManager.loginCall(viewerObj, userID)
-    #     renderHomepage(viewerObj)
-    # else:
-    #     renderAuthPage(viewerObj)
+    if userID:
+        liveCacheManager.loginCall(viewerObj, userID)
+        renderHomepage(viewerObj)
+    else:
+        renderAuthPage(viewerObj)
     # sleep(2)
     # renderHomepage(viewerObj)
     # sleep(2)
@@ -1448,7 +1464,7 @@ def newVisitorCallback(viewerObj: BaseViewer):
     # sleep(2)
     # renderContentMarketPlace(viewerObj)
     # renderSubCategories(viewerObj)
-    renderNotesRepository(viewerObj)
+    #renderNotesRepository(viewerObj)
     # renderMusicPage(viewerObj)
 
 def visitorLeftCallback(viewerObj: BaseViewer):
@@ -1460,22 +1476,24 @@ logger = LogManager()
 SQLconn = connectDB(logger)
 liveCacheManager = UserCache()
 
-extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>
+extraHeads = f"""
+<script src="https://cdn.tailwindcss.com"></script>
 <script>
-function muteMusic()
-{{
-    document.getElementById("musicPlayer").muted = true;
-}}
-function unmuteMusic()
-{{
-   document.getElementById("musicPlayer").muted = false; 
-}}
-function changeMusic(category)
-{{
-   document.getElementById("musicPlayer").children[0].src = "/music/"+category; 
-   document.getElementById("musicPlayer").load();
-   document.getElementById("musicPlayer").play();
-}}
+    function muteMusic()
+    {{
+        document.getElementById("musicPlayer").muted = true;
+    }}
+    function unmuteMusic()
+    {{
+       document.getElementById("musicPlayer").muted = false; 
+    }}
+    function changeMusic(category)
+    {{
+       document.getElementById("musicPlayer").children[0].src = "/music/"+category; 
+       document.getElementById("musicPlayer").volume = 0.1;
+       document.getElementById("musicPlayer").load();
+       document.getElementById("musicPlayer").play();
+    }}
 </script>"""
 
 bodyBase = """
@@ -1484,27 +1502,20 @@ bodyBase = """
 <div id="mainDiv"><div>
 </body>"""
 
+
+musicCollection = MusicCollection()
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
                                Routes.webHomePage.value, Routes.webWS.value, ServerSecrets.webFernetKey.value,
                                extraHeads, bodyBase, CoreValues.title.value, False)
-
-
-
-@baseApp.get(Routes.cdnMemoryContent.value)
-def _memContent():
-    return ""
-
-
-@baseApp.get(Routes.cdnLiveContent.value)
-def _liveContent():
-    return ""
 
 
 @baseApp.get(Routes.cdnFileContent.value)
 def _fileContent():
     fileType = request.args.get("type", "").strip()
     fileName = request.args.get("name", "").strip()
-    if fileType == CDNFileType.font.value:
+    if fileType == CDNFileType.pdf.value:
+         return send_from_directory(folderLocation+"/static/pdf", fileName, as_attachment=True)
+    elif fileType == CDNFileType.font.value:
          return send_from_directory(folderLocation+"/static/font", fileName, as_attachment=True)
     elif fileType == CDNFileType.image.value:
         return send_from_directory(folderLocation + "/static/image", fileName, as_attachment=True)
@@ -1522,70 +1533,6 @@ def _fileContent():
 @baseApp.get("/favicon.ico")
 def _favicon():
     return send_from_directory(folderLocation+"/static/image", "favicon.png", as_attachment=True)
-
-
-class MusicStream:
-    def __init__(self, fileName, category, onComplete):
-        self.onComplete = onComplete
-        self.category = category
-        self.fileName = fileName
-        self.wf = wave.open(self.fileName, 'rb')
-        self.currentData = b""
-        Thread(target=self.read).start()
-        print(f"New Song Started [{category}]: {fileName}")
-
-
-    def read(self):
-        while True:
-            self.currentData = self.wf.readframes(self.wf.getframerate()//10)
-            if not self.currentData:
-                self.onComplete(self.category, self)
-                break
-            else: sleep(1/10)
-
-
-    def header(self):
-        channels = 2
-        bitsPerSample = 16
-        sampleRate = self.wf.getframerate()
-        datasize = 2000 * 10 ** 6
-        o = bytes("RIFF", 'ascii')
-        o += (datasize + 36).to_bytes(4, 'little')
-        o += bytes("WAVE", 'ascii')
-        o += bytes("fmt ", 'ascii')
-        o += (16).to_bytes(4, 'little')
-        o += (1).to_bytes(2, 'little')
-        o += channels.to_bytes(2, 'little')
-        o += sampleRate.to_bytes(4, 'little')
-        o += (sampleRate * channels * bitsPerSample // 8).to_bytes(4, 'little')
-        o += (channels * bitsPerSample // 8).to_bytes(2, 'little')
-        o += bitsPerSample.to_bytes(2, 'little')
-        o += bytes("data", 'ascii')
-        o += datasize.to_bytes(4, 'little')
-        return o
-
-
-class MusicCollection:
-    def __init__(self):
-        self.activeStreams:dict[str,MusicStream|None] = {}
-        self.musicFiles:dict[str, list[str]] = {
-            "CAT1": ["static/audio/test1.wav", "static/audio/test.wav"],
-        }
-        for cat in self.musicFiles: self.categoryNext(cat, None)
-
-
-    def categoryNext(self, category:str, stream:MusicStream|None):
-        if category not in self.activeStreams: self.activeStreams[category] = None
-        if stream: self.musicFiles[category].append(stream.fileName)
-        self.activeStreams[category] = MusicStream(self.musicFiles[category].pop(0), category, self.categoryNext)
-
-
-    def getData(self, category:str):
-        if category in self.activeStreams:
-            return self.activeStreams[category]
-
-
-musicCollection = MusicCollection()
 
 
 @baseApp.route('/music/<streamCategory>')
@@ -1616,7 +1563,6 @@ def test():
 
 
 try:
-    1/0
     open(r"C:\cert\privkey.pem", "r").close()
     print(f"https://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
     WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None, keyfile=r'C:\cert\privkey.pem', certfile=r'C:\cert\cert.pem').serve_forever()
