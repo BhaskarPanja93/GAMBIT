@@ -57,8 +57,8 @@ def navBar(viewerObj: BaseViewer):
 
 def renderHomepage(viewerObj: BaseViewer):
     home = f"""
-<div class="px-12 w-full sm:px-12">
-        <nav class="relative flex items-center justify-between h-20 w-full bg-black" aria-label="Global">
+
+        <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
                 <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
                     <a href="#" class="flex items-center space-x-4">
@@ -69,38 +69,41 @@ def renderHomepage(viewerObj: BaseViewer):
                     </a>
                 </div>
             </div>
-        
+            <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
                     <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
-                        <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
+                        <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
                             Log out
                         </button>
                     </form>
                 </div>
             </div>
-        </nav>
+        </div>
 
-
+<div class="px-12 w-full sm:px-12 md:px-12 lg:px-12">
     <div class="relative pt-6 pb-16 sm:pb-24">
-
-        <div id="imageBackground" class="py-12 relative image-container w-full">
+        <div id="imageBackground" class="relative py-12 w-full h-5/6">
             <!-- Image -->
-            <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover">
-            
+           <!-- <img src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=background-image.jpg" style="opacity: 0.7;" alt="Home screen image" class="rounded-3xl w-full h-5/6 object-cover"> -->
+
+            <video autoplay muted loop class="absolute rounded-3xl w-full h-5/6 object-cover z-0">
+                <source src="{Routes.cdnFileContent.value}?type={CDNFileType.video.value}&name=login_background_video1.mp4"
+                type="video/mp4"> </video>
             <!-- Start Learning Button -->
             <form onsubmit="return submit_ws(this)">
                 {viewerObj.addCSRF(FormPurposes.renderCategories.value)}
-                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 hover:transition duration-300 ease-in-out" style="color: #23003d;">
-                    START LEARNING
-                </button>
+                <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 transition duration-300 ease-in-out" style="color: #23003d;">
+            START LEARNING
+        </button>
             </form>
 
             <!-- Headline Text -->
-            <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full">
+            <p class="flex justify-center absolute top-2/3 left-1/2 transform -translate-x-1/2 translate-y-1 text-white font-bold text-7xl w-full relative z-10">
                 All Your Education Needs In One
             </p>
+            
         </div>
     </div>
 </div>
@@ -485,8 +488,9 @@ def renderSubCategories(viewerObj: BaseViewer):
             </div>
         </nav>
         
-    <div class="rounded-lg bg-gray-700 mt-12 w-5/6 mx-auto">
-        <div class="rounded-lg bg-gray-700 mt-12 w-5/6 mx-auto">
+<div class="px-12 w-full sm:px-12 md:px-12 lg:px-12">
+    <div class="relative pt-6 pb-16 sm:pb-24">
+        <div class="relative py-12 w-full h-5/6">
             <div class="bg-gray-700 grid grid-cols-2 grid-rows-3 grid-flow-col gap-8 p-8 rounded-lg h-5/6">
                 <div class="col-span-3 flex justify-center items-center text-white text-5xl font-bold h-full">
                     SUB-CATEGORIES
@@ -522,6 +526,7 @@ def renderSubCategories(viewerObj: BaseViewer):
             </div>
         </div>
     </div>
+</div>
 
 
     """
@@ -1189,8 +1194,8 @@ def newVisitorCallback(viewerObj: BaseViewer):
     if userID:
         liveCacheManager.loginCall(viewerObj, userID)
         renderHomepage(viewerObj)
-    else:
-        renderAuthPage(viewerObj)
+    # else:
+    #     renderAuthPage(viewerObj)
     # sleep(2)
     # renderHomepage(viewerObj)
     # sleep(2)
