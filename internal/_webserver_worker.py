@@ -553,41 +553,8 @@ def renderNotesRepository(viewerObj: BaseViewer):
         
 <!-- component -->
 <div class="text-gray-600 body-font">
-    <div class="container px-5 py-24 mx-auto">
-    <form>
-            <div class="rounded-lg bg-gray-800 h-full md:px-6 pt-6 pb-6">
-                <div class=" bg-gray-800 rounded-md px-6 py-10 w-full mx-auto h-full">
-                    <h1 class="text-center text-2xl font-bold text-white mb-10">CREATE NOTES HERE</h1>
-                    <div class="space-y-4">
-                        <div>
-                            <label for="title" class="text-lx font-serif">Title:</label>
-                            <input type="text" placeholder="title" id="title"
-                                   class="ml-2 outline-none py-1 px-2 text-md bg-gray-700 rounded-md"/>
-                        </div>
-                        <div>
-                            <label for="description" class="block mb-2 text-lg font-serif">Notes Description</label>
-                            <textarea id="description" cols="30" rows="20" placeholder="write notes here..."
-                                      class="w-full font-serif  p-4 text-white bg-gray-700 outline-none rounded-md"></textarea>
-                        </div>
-                        
-
-
-                        <!-- Dropdown menu -->
-                        <select class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800"
-                                name="cars" id="cars">
-                            <option value="english">english</option>
-                            <option value="maths">maths</option>
-                            <option value="science">science</option>
-                        </select>
-
-                        <button class=" px-6 py-2 mx-auto block rounded-md text-lg font-semibold text-indigo-100 bg-indigo-600">
-                            PUBLISH
-                        </button>
-                    </div>
-                </div>
-            </div>
-        </form>
-        <div id="notesHolder" class="flex flex-wrap -m-4">
+    <div id="notedUpload" class="container px-5 py-24 mx-auto">
+    <div id="notesHolder" class="flex flex-wrap -m-4">
         
         <!-- Each Note -->
             
@@ -598,29 +565,64 @@ def renderNotesRepository(viewerObj: BaseViewer):
     finalNotes = ""
     viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
     for noteObj in SQLconn.execute(f"SELECT NoteID from notes where UserID=\"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\""):
-        noteObj = SQLconn.execute(f"SELECT SubjectID, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID']}\" limit 1")[0]
-        subjectName = SQLconn.execute(f"SELECT Name from subjects where SubjectID=\"{noteObj['SubjectID']}\"")
+        noteObj = SQLconn.execute(f"SELECT Subject, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID']}\" limit 1")[0]
         finalNotes += f"""
         <div class="p-4 md:w-1/3">
-                <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
-                    <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
-                         src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=note_{noteObj["NoteID"]}" alt="Note">
-                    <div class="p-6">
-                        <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">{subjectName}</h2>
-                        <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
-                        <div class="leading-relaxed mb-3">{noteObj['Description']}</div>
-                        <div class="flex items-center flex-wrap">
-                            <button class="bg-gradient-to-r from-cyan-400 to-blue-400 hover:scale-105 drop-shadow-md  shadow-cla-blue px-4 py-1 rounded-lg">
-                                Learn more
-                            </button>
-                        </div>
+            <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
+                <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
+                     src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=note_{noteObj["NoteID"]}" alt="Note">
+                <div class="p-6">
+                    <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">{noteObj['Subject']}</h2>
+                    <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
+                    <div class="leading-relaxed mb-3">{noteObj['Description']}</div>
+                    <div class="flex items-center flex-wrap">
+                        <button class="bg-gradient-to-r from-cyan-400 to-blue-400 hover:scale-105 drop-shadow-md  shadow-cla-blue px-4 py-1 rounded-lg">
+                            Learn more
+                        </button>
                     </div>
                 </div>
+            </div>
             </div>
         </div>
         """
     viewerObj.queueTurboAction(finalNotes, "notesHolder", viewerObj.turboApp.methods.update)
     renderLogo(viewerObj)
+
+def renderNotesUploader(viewerObj: BaseViewer):
+    form = f"""
+    <form onsubmit="return submit_ws(this)">
+        {viewerObj.addCSRF(FormPurposes.submitNote.value)}
+        <div class="rounded-lg bg-gray-800 h-full md:px-6 pt-6 pb-6">
+            <div class=" bg-gray-800 rounded-md px-6 py-10 w-full mx-auto h-full">
+                <h1 class="text-center text-2xl font-bold text-white mb-10">CREATE NOTES HERE</h1>
+                <div class="space-y-4">
+                    <div>
+                        <label for="title" class="text-lx font-serif">Header:</label>
+                        <input type="text" placeholder="Header" name="header" class="ml-2 outline-none py-1 px-2 text-md bg-gray-700 rounded-md"/>
+                    </div>
+                    <div>
+                        <label for="description" class="block mb-2 text-lg font-serif">Notes Description</label>
+                        <textarea name="description" cols="30" rows="20" placeholder="Write notes here..." class="w-full font-serif p-4 text-white bg-gray-700 outline-none rounded-md"></textarea>
+                    </div>
+                    
+                    <!-- Dropdown menu -->
+                    <select class="text-white bg-blue-700 hover:bg-blue-800 focus:ring-4 focus:outline-none focus:ring-blue-300 font-medium rounded-lg text-sm px-5 py-2.5 text-center inline-flex items-center dark:bg-blue-600 dark:hover:bg-blue-700 dark:focus:ring-blue-800" name="subject">
+                        <option value="english">English</option>
+                        <option value="maths">Maths</option>
+                        <option value="science">Science</option>
+                    </select>
+
+                    <button type="submit" class=" px-6 py-2 mx-auto block rounded-md text-lg font-semibold text-indigo-100 bg-indigo-600">
+                        PUBLISH
+                    </button>
+                </div>
+            </div>
+        </div>
+    </form>
+    """
+    viewerObj.queueTurboAction(form, "notedUpload", viewerObj.turboApp.methods.update)
+    renderNotesUploader(viewerObj)
+
 
 
 def renderMusicPage(viewerObj: BaseViewer):
@@ -1365,6 +1367,16 @@ def loginUser(viewerObj:BaseViewer, form:dict):
             renderHomepage(viewerObj)
 
 
+def publishNote(viewerObj:BaseViewer, form:dict):
+    while True:
+        noteID = StringGenerator().AlphaNumeric(50,50)
+        if not SQLconn.execute(f"SELECT NoteID from notes where NoteID=\"{noteID}\" limit 1"):
+            SQLconn.execute(f"INSERT INTO notes values (\"{noteID}\", \"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\")")
+            SQLconn.execute(f"INSERT INTO note_relevance values (\"{noteID}\", \"{form['subject']}\", \"{form['header']}\", \"{form['description']}\")")
+            open(f"{folderLocation}\\static\\text\\{noteID}", "rb").write(form['content'].encode())
+
+
+
 def formSubmitCallback(viewerObj: BaseViewer, form: dict):
     if form is not None:
         purpose = form.pop("PURPOSE")
@@ -1433,6 +1445,11 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 
         elif purpose == FormPurposes.renderNotesPage.value:
             renderNotesRepository(viewerObj)
+
+        elif purpose == FormPurposes.submitNote.value:
+            publishNote(viewerObj, form)
+            renderNotesUploader(viewerObj)
+
 
 
 def newVisitorCallback(viewerObj: BaseViewer):
@@ -1514,8 +1531,8 @@ baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLe
 def _fileContent():
     fileType = request.args.get("type", "").strip()
     fileName = request.args.get("name", "").strip()
-    if fileType == CDNFileType.pdf.value:
-         return send_from_directory(folderLocation+"/static/pdf", fileName, as_attachment=True)
+    if fileType == CDNFileType.text.value:
+         return send_from_directory(folderLocation+"/static/text", fileName, as_attachment=True)
     elif fileType == CDNFileType.font.value:
          return send_from_directory(folderLocation+"/static/font", fileName, as_attachment=True)
     elif fileType == CDNFileType.image.value:

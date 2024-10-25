@@ -38,6 +38,7 @@ class RequiredFiles(Enum):
 class FormPurposes(Enum):
     submitRegister = "submitRegister"
     submitLogin = "submitLogin"
+    submitNote = "submitNote"
     startQuiz = "startQueue"
     submitQuizOption = "submitQuizOption"
     renderPostQuizQuestion = "renderPostQuizQuestion"
@@ -62,7 +63,7 @@ class CoreValues(Enum):
 
 
 class CDNFileType(Enum):
-    pdf = "pdf"
+    text = "text"
     font = "font"
     image = "image"
     video = "video"
