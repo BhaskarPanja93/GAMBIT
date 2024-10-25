@@ -42,6 +42,7 @@ class FormPurposes(Enum):
     startQuiz = "startQueue"
     submitQuizOption = "submitQuizOption"
     renderPostQuizQuestion = "renderPostQuizQuestion"
+    displayNoteContent = "displayNoteContent"
     renderQuizLobby = "preQuiz"
     renderSubCategories = "renderCategories"
     renderAuthPage = "renderAuthPage"

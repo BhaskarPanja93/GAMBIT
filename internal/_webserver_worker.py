@@ -593,10 +593,9 @@ def renderNotesRepository(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
     for noteObj in SQLconn.execute(f"SELECT NoteID from notes where UserID=\"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\""):
         sleep(0.5)
-        print("++++++")
         noteObj = SQLconn.execute(f"SELECT NoteID, Subject, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID'].decode()}\" limit 1")[0]
         finalNotes += f"""
-        <div class="p-4 md:w-1/3" title="{noteObj['Header']}" subject="{noteObj['Subject']}">
+        <div id="{noteObj['NoteID']}" class="p-4 md:w-1/3" title="{noteObj['Header']}" subject="{noteObj['Subject']}">
             <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
                 <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
                      src="" alt="Note">
@@ -605,15 +604,12 @@ def renderNotesRepository(viewerObj: BaseViewer):
                     <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
                     <div class="leading-relaxed mb-3">{noteObj['Description']}</div>
                     <div class="flex items-center flex-wrap">
-                        <button class="bg-gradient-to-r from-cyan-400 to-blue-400 hover:scale-105 drop-shadow-md  shadow-cla-blue px-4 py-1 rounded-lg">
-                            Learn more
-                        </button>
+                        
                     </div>
                 </div>
             </div>
         </div>
         """
-    print(finalNotes)
     viewerObj.queueTurboAction(finalNotes, "notesHolder", viewerObj.turboApp.methods.update)
     renderNotesUploader(viewerObj)
     renderLogo(viewerObj)
