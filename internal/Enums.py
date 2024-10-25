@@ -42,7 +42,7 @@ class FormPurposes(Enum):
     submitQuizOption = "submitQuizOption"
     renderPostQuizQuestion = "renderPostQuizQuestion"
     renderQuizLobby = "preQuiz"
-    renderCategories = "renderCategories"
+    renderSubCategories = "renderCategories"
     renderAuthPage = "renderAuthPage"
     renderMusicPage = "renderMusicPage"
     renderNotesPage = "renderNotesPage"
@@ -62,6 +62,7 @@ class CoreValues(Enum):
 
 
 class CDNFileType(Enum):
+    pdf = "pdf"
     font = "font"
     image = "image"
     video = "video"

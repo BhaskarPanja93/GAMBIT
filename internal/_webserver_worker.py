@@ -1,3 +1,5 @@
+from typing import final
+
 from gevent import monkey
 monkey.patch_all()
 
@@ -87,7 +89,7 @@ def renderHomepage(viewerObj: BaseViewer):
                 type="video/mp4"> </video>
             <!-- Start Learning Button -->
             <form onsubmit="return submit_ws(this)">
-                {viewerObj.addCSRF(FormPurposes.renderCategories.value)}
+                {viewerObj.addCSRF(FormPurposes.renderSubCategories.value)}
                 <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 transition duration-300 ease-in-out" style="color: #23003d;">
             START LEARNING
         </button>
@@ -577,7 +579,7 @@ def renderNotesRepository(viewerObj: BaseViewer):
 <!-- component -->
 <div class="text-gray-600 body-font">
     <div class="container px-5 py-24 mx-auto">
-        <div class="flex flex-wrap -m-4">
+        <div id="notesHolder" class="flex flex-wrap -m-4">
         
         
         <!-- Each Note starts here -->
@@ -658,16 +660,35 @@ def renderNotesRepository(viewerObj: BaseViewer):
                 </div>
             </div>
             
-
-            
-            
-            
-            
         </div>
     </div>
 </div>
 """
+    finalNotes = ""
     viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
+    for noteObj in SQLconn.execute(f"SELECT NoteID from notes where UserID=\"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\""):
+        noteObj = SQLconn.execute(f"SELECT SubjectID, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID']}\" limit 1")[0]
+        subjectName = SQLconn.execute(f"SELECT Name from subjects where SubjectID=\"{noteObj['SubjectID']}\"")
+        finalNotes += f"""
+        <div class="p-4 md:w-1/3">
+                <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
+                    <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
+                         src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=note_{noteObj["NoteID"]}" alt="Note">
+                    <div class="p-6">
+                        <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">{subjectName}</h2>
+                        <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
+                        <div class="leading-relaxed mb-3">{noteObj['Description']}</div>
+                        <div class="flex items-center flex-wrap">
+                            <button class="bg-gradient-to-r from-cyan-400 to-blue-400 hover:scale-105 drop-shadow-md  shadow-cla-blue px-4 py-1 rounded-lg">
+                                Learn more
+                            </button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        """
+    viewerObj.queueTurboAction(finalNotes, "notesHolder", viewerObj.turboApp.methods.update)
 
 
 def renderMusicPage(viewerObj: BaseViewer):
@@ -678,7 +699,7 @@ def renderMusicPage(viewerObj: BaseViewer):
         <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
             <a href="#" class="flex items-center space-x-4">
                 <!-- Logo Image -->
-                <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
+                <img class="w-auto h-14 sm:h-18" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=dice.png" loading="lazy" width="202" height="80">
                 <!-- GAMBIT Text -->
                 <p class="text-3xl text-white font-bold">GAMBIT</p>
             </a>
@@ -1474,11 +1495,17 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             party = liveCacheManager.activeParties.get(partyID, None)
             if party: party.gameObj.sendPostQuizQuestion(viewerObj, form["question"])
 
-        elif purpose == FormPurposes.renderCategories.value:
+        elif purpose == FormPurposes.renderSubCategories.value:
             renderSubCategories(viewerObj)
 
         elif purpose == FormPurposes.renderContentMarketplacePage.value:
             renderContentMarketPlace(viewerObj)
+
+        elif purpose == FormPurposes.renderMusicPage.value:
+            renderMusicPage(viewerObj)
+
+        elif purpose == FormPurposes.renderNotesPage.value:
+            renderNotesRepository(viewerObj)
 
 
 def newVisitorCallback(viewerObj: BaseViewer):
@@ -1511,7 +1538,7 @@ def newVisitorCallback(viewerObj: BaseViewer):
     # sleep(2)
     # renderContentMarketPlace(viewerObj)
     # renderSubCategories(viewerObj)
-    renderNotesRepository(viewerObj)
+    #renderNotesRepository(viewerObj)
     # renderMusicPage(viewerObj)
 
 def visitorLeftCallback(viewerObj: BaseViewer):
@@ -1537,6 +1564,7 @@ extraHeads = f"""
     function changeMusic(category)
     {{
        document.getElementById("musicPlayer").children[0].src = "/music/"+category; 
+       document.getElementById("musicPlayer").volume = 0.1;
        document.getElementById("musicPlayer").load();
        document.getElementById("musicPlayer").play();
     }}
@@ -1559,7 +1587,9 @@ baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLe
 def _fileContent():
     fileType = request.args.get("type", "").strip()
     fileName = request.args.get("name", "").strip()
-    if fileType == CDNFileType.font.value:
+    if fileType == CDNFileType.pdf.value:
+         return send_from_directory(folderLocation+"/static/pdf", fileName, as_attachment=True)
+    elif fileType == CDNFileType.font.value:
          return send_from_directory(folderLocation+"/static/font", fileName, as_attachment=True)
     elif fileType == CDNFileType.image.value:
         return send_from_directory(folderLocation + "/static/image", fileName, as_attachment=True)
@@ -1607,7 +1637,6 @@ def test():
 
 
 try:
-    1/0
     open(r"C:\cert\privkey.pem", "r").close()
     print(f"https://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
     WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None, keyfile=r'C:\cert\privkey.pem', certfile=r'C:\cert\cert.pem').serve_forever()
