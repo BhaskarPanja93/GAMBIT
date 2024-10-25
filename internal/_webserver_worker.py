@@ -1600,17 +1600,8 @@ def audio(streamCategory):
     return Response(sound(streamCategory))
 
 
-@baseApp.get("/test")
-def test():
-    return """
-        <audio id="musicPlayer" controls preload="none" autoplay>
-            <source src="/music/CAT1" type="audio/x-wav;codec=pcm">
-        </audio>
-    """
-
 
 try:
-    1/0
     open(r"C:\cert\privkey.pem", "r").close()
     print(f"https://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
     WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None, keyfile=r'C:\cert\privkey.pem', certfile=r'C:\cert\cert.pem').serve_forever()
