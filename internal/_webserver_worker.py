@@ -1,8 +1,9 @@
 from gevent import monkey
 monkey.patch_all()
 
+import wave
 from random import choice, randrange, choices
-from flask import request, send_from_directory
+from flask import request, send_from_directory, Response
 from random import shuffle
 from threading import Thread
 from time import time, sleep
@@ -608,6 +609,7 @@ def sendLoginForm(viewerObj:BaseViewer):
                     <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit</button>
                 </form>"""
     viewerObj.queueTurboAction(form, "loginFormContainer", viewerObj.turboApp.methods.update)
+
 
 
 class Player:
@@ -1217,7 +1219,6 @@ def visitorLeftCallback(viewerObj: BaseViewer):
     print("Visitor Left: ", viewerObj.viewerID)
 
 
-
 logger = LogManager()
 SQLconn = connectDB(logger)
 liveCacheManager = UserCache()
@@ -1262,6 +1263,96 @@ def _fileContent():
 @baseApp.get("/favicon.ico")
 def _favicon():
     return send_from_directory(folderLocation+"/static/image", "favicon.png", as_attachment=True)
+
+
+class MusicStream:
+    def __init__(self, fileName, category, onComplete):
+        self.onComplete = onComplete
+        self.category = category
+        self.fileName = fileName
+        self.wf = wave.open(self.fileName, 'rb')
+        self.currentData = b""
+        Thread(target=self.read).start()
+        print(f"New Song Started [{category}]: {fileName}")
+
+
+    def read(self):
+        while True:
+            self.currentData = self.wf.readframes(self.wf.getframerate()//10)
+            if not self.currentData:
+                self.onComplete(self.category, self)
+                break
+            else: sleep(1/10)
+
+
+    def header(self):
+        channels = 2
+        bitsPerSample = 16
+        sampleRate = self.wf.getframerate()
+        datasize = 2000 * 10 ** 6
+        o = bytes("RIFF", 'ascii')
+        o += (datasize + 36).to_bytes(4, 'little')
+        o += bytes("WAVE", 'ascii')
+        o += bytes("fmt ", 'ascii')
+        o += (16).to_bytes(4, 'little')
+        o += (1).to_bytes(2, 'little')
+        o += channels.to_bytes(2, 'little')
+        o += sampleRate.to_bytes(4, 'little')
+        o += (sampleRate * channels * bitsPerSample // 8).to_bytes(4, 'little')
+        o += (channels * bitsPerSample // 8).to_bytes(2, 'little')
+        o += bitsPerSample.to_bytes(2, 'little')
+        o += bytes("data", 'ascii')
+        o += datasize.to_bytes(4, 'little')
+        return o
+
+
+class MusicCollection:
+    def __init__(self):
+        self.activeStreams:dict[str,MusicStream|None] = {}
+        self.musicFiles:dict[str, list[str]] = {
+            "CAT1": ["static/audio/test.wav", "static/audio/test.wav", "static/audio/test.wav"],
+        }
+        for cat in self.musicFiles: self.categoryNext(cat, None)
+
+
+    def categoryNext(self, category:str, stream:MusicStream|None):
+        if category not in self.activeStreams: self.activeStreams[category] = None
+        if stream: self.musicFiles[category].append(stream.fileName)
+        self.activeStreams[category] = MusicStream(self.musicFiles[category].pop(0), category, self.categoryNext)
+
+
+    def getData(self, category:str):
+        if category in self.activeStreams:
+            return self.activeStreams[category]
+
+
+musicCollection = MusicCollection()
+
+
+@baseApp.route('/music/<streamCategory>')
+def audio(streamCategory):
+    def sound(streamCategory):
+        if streamCategory not in musicCollection.activeStreams: return print("Invalid stream category")
+        first_run = True
+        current = musicCollection.getData(streamCategory)
+        while True:
+            if first_run:
+                data = current.header()+current.currentData
+                first_run = False
+            else:
+                sleep(1/10)
+                data = current.currentData
+            yield data
+    return Response(sound(streamCategory))
+
+
+@baseApp.get("/test")
+def test():
+    return """
+        <audio id="musicPlayer" preload="none" autoplay>
+            <source src="/music/CAT1" type="audio/x-wav;codec=pcm">
+        </audio>
+    """
 
 
 try:
