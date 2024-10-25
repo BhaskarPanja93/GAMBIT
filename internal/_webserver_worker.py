@@ -1422,8 +1422,30 @@ def visitorLeftCallback(viewerObj: BaseViewer):
 logger = LogManager()
 SQLconn = connectDB(logger)
 liveCacheManager = UserCache()
-extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>"""
-bodyBase = """<body style="background-color: #000000;"> <div id="mainDiv"><div></body>"""
+
+extraHeads = f"""<script src="https://cdn.tailwindcss.com"></script>
+<script>
+function muteMusic()
+{{
+    document.getElementById("musicPlayer").muted = true;
+}}
+function unmuteMusic()
+{{
+   document.getElementById("musicPlayer").muted = false; 
+}}
+function changeMusic(category)
+{{
+   document.getElementById("musicPlayer").children[0].src = "/music/"+category; 
+   document.getElementById("musicPlayer").load();
+   document.getElementById("musicPlayer").play();
+}}
+</script>"""
+
+bodyBase = """
+<body style="background-color: #000000;"> 
+<audio id="musicPlayer" preload="none"> <source src="" type="audio/x-wav;codec=pcm"> </audio>
+<div id="mainDiv"><div>
+</body>"""
 
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
                                Routes.webHomePage.value, Routes.webWS.value, ServerSecrets.webFernetKey.value,
@@ -1510,7 +1532,7 @@ class MusicCollection:
     def __init__(self):
         self.activeStreams:dict[str,MusicStream|None] = {}
         self.musicFiles:dict[str, list[str]] = {
-            "CAT1": ["static/audio/test.wav", "static/audio/test.wav", "static/audio/test.wav"],
+            "CAT1": ["static/audio/test1.wav", "static/audio/test.wav"],
         }
         for cat in self.musicFiles: self.categoryNext(cat, None)
 
@@ -1534,8 +1556,9 @@ def audio(streamCategory):
     def sound(streamCategory):
         if streamCategory not in musicCollection.activeStreams: return print("Invalid stream category")
         first_run = True
-        current = musicCollection.getData(streamCategory)
+
         while True:
+            current = musicCollection.getData(streamCategory)
             if first_run:
                 data = current.header()+current.currentData
                 first_run = False
@@ -1549,7 +1572,7 @@ def audio(streamCategory):
 @baseApp.get("/test")
 def test():
     return """
-        <audio id="musicPlayer" preload="none" autoplay>
+        <audio id="musicPlayer" controls preload="none" autoplay>
             <source src="/music/CAT1" type="audio/x-wav;codec=pcm">
         </audio>
     """
