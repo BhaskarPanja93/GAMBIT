@@ -263,8 +263,6 @@ def renderQuizGamePage(viewerObj: BaseViewer):
         <div class="rounded-lg px-2 mx-6 bg-[#eacfff] text-green font-bold text-2xl p-4">
             <div class="bg-[#eacfff] font-bold text-2xl h-1/3 p-4 m-4" style="color:#23003d" id="questionText"> </div>
         </div>
-
-
         <div class="text-white font-bold text-2xl p-4">Select an option</div>
 
         <div id="options" class="grid grid-cols-2 gap-4 px-12 py-4 place-content-stretch h-1/2 w-5/6"></div>
