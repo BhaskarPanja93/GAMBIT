@@ -527,6 +527,21 @@ def renderSubCategories(viewerObj: BaseViewer):
 
 def renderNotesRepository(viewerObj: BaseViewer):
     notesRepository = f"""
+    <script>
+        function findNote(text)
+        {{
+            text = text.toLowerCase()
+            for (const [key, value] of Object.entries(document.getElementById("notesHolder").children)) 
+            {{ 
+                if (value.getAttribute("title").toLowerCase().includes(text.toLowerCase()) || value.getAttribute("subject").toLowerCase().includes(text.toLowerCase()))
+                {{
+                    value.hidden=false;
+                }} else {{
+                    value.hidden=true;
+                }}
+            }}
+        }}
+    </script>
         <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
                 <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
@@ -551,26 +566,23 @@ def renderNotesRepository(viewerObj: BaseViewer):
         </div>
         
         
-<!-- component -->
-<div class="text-gray-600 body-font">
-    <div id="notedUpload" class="container px-5 py-24 mx-auto">
-    <div id="notesHolder" class="flex flex-wrap -m-4">
-        
-        <!-- Each Note -->
-            
-        </div>
-    </div>
+    <!-- component -->
+    <div class="text-gray-600 body-font">
+    <div id="notesUpload" class="container px-5 py-24 mx-auto"></div>
+    <div id="notesHolder" class="flex flex-wrap -m-4"></div>
 </div>
 """
     finalNotes = ""
     viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
     for noteObj in SQLconn.execute(f"SELECT NoteID from notes where UserID=\"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\""):
-        noteObj = SQLconn.execute(f"SELECT Subject, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID']}\" limit 1")[0]
+        sleep(0.5)
+        print("++++++")
+        noteObj = SQLconn.execute(f"SELECT NoteID, Subject, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID'].decode()}\" limit 1")[0]
         finalNotes += f"""
-        <div class="p-4 md:w-1/3">
+        <div class="p-4 md:w-1/3" title="{noteObj['Header']}" subject="{noteObj['Subject']}">
             <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
                 <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
-                     src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=note_{noteObj["NoteID"]}" alt="Note">
+                     src="" alt="Note">
                 <div class="p-6">
                     <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">{noteObj['Subject']}</h2>
                     <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
@@ -582,10 +594,11 @@ def renderNotesRepository(viewerObj: BaseViewer):
                     </div>
                 </div>
             </div>
-            </div>
         </div>
         """
+    print(finalNotes)
     viewerObj.queueTurboAction(finalNotes, "notesHolder", viewerObj.turboApp.methods.update)
+    renderNotesUploader(viewerObj)
     renderLogo(viewerObj)
 
 def renderNotesUploader(viewerObj: BaseViewer):
@@ -601,8 +614,12 @@ def renderNotesUploader(viewerObj: BaseViewer):
                         <input type="text" placeholder="Header" name="header" class="ml-2 outline-none py-1 px-2 text-md bg-gray-700 rounded-md"/>
                     </div>
                     <div>
-                        <label for="description" class="block mb-2 text-lg font-serif">Notes Description</label>
-                        <textarea name="description" cols="30" rows="20" placeholder="Write notes here..." class="w-full font-serif p-4 text-white bg-gray-700 outline-none rounded-md"></textarea>
+                        <label for="description" class="text-lx font-serif">Description:</label>
+                        <input type="text" placeholder="Description" name="description" class="ml-2 outline-none py-1 px-2 text-md bg-gray-700 rounded-md"/>
+                    </div>
+                    <div>
+                        <label for="content" class="block mb-2 text-lg font-serif">Content</label>
+                        <textarea name="content" cols="30" rows="20" placeholder="Write notes here..." class="w-full font-serif p-4 text-white bg-gray-700 outline-none rounded-md"></textarea>
                     </div>
                     
                     <!-- Dropdown menu -->
@@ -620,8 +637,7 @@ def renderNotesUploader(viewerObj: BaseViewer):
         </div>
     </form>
     """
-    viewerObj.queueTurboAction(form, "notedUpload", viewerObj.turboApp.methods.update)
-    renderNotesUploader(viewerObj)
+    viewerObj.queueTurboAction(form, "notesUpload", viewerObj.turboApp.methods.update)
 
 
 
@@ -1373,9 +1389,8 @@ def publishNote(viewerObj:BaseViewer, form:dict):
         if not SQLconn.execute(f"SELECT NoteID from notes where NoteID=\"{noteID}\" limit 1"):
             SQLconn.execute(f"INSERT INTO notes values (\"{noteID}\", \"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\")")
             SQLconn.execute(f"INSERT INTO note_relevance values (\"{noteID}\", \"{form['subject']}\", \"{form['header']}\", \"{form['description']}\")")
-            open(f"{folderLocation}\\static\\text\\{noteID}", "rb").write(form['content'].encode())
-
-
+            open(f"{folderLocation}\\static\\text\\{noteID}", "wb").write(form['content'].encode())
+            break
 
 def formSubmitCallback(viewerObj: BaseViewer, form: dict):
     if form is not None:
@@ -1445,6 +1460,7 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 
         elif purpose == FormPurposes.renderNotesPage.value:
             renderNotesRepository(viewerObj)
+            renderNotesUploader(viewerObj)
 
         elif purpose == FormPurposes.submitNote.value:
             publishNote(viewerObj, form)
@@ -1581,6 +1597,7 @@ def test():
 
 
 try:
+    1/0
     open(r"C:\cert\privkey.pem", "r").close()
     print(f"https://127.0.0.1:{ServerSecrets.webPort.value}{Routes.webHomePage.value}")
     WSGIServer(('0.0.0.0', ServerSecrets.webPort.value,), baseApp, log=None, keyfile=r'C:\cert\privkey.pem', certfile=r'C:\cert\cert.pem').serve_forever()
