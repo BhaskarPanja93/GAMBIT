@@ -76,7 +76,7 @@ def renderHomepage(viewerObj: BaseViewer):
                     <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF(FormPurposes.renderAuth.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
-                            Join Now
+                            Log out
                         </button>
                     </form>
                 </div>
@@ -160,7 +160,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                         <div class="w-full text-white font-bold text-4xl relative z-10">Login</div>
                     </button>
                     <div id="loginFormContainer"
-                         class="hidden w-full rounded-lg bg-gradient-to-r from-gray-500/80 to-gray-700/80 flex items-center justify-center h-96 shadow-2xl">
+                         class="hidden w-full rounded-lg bg-transparent flex items-center justify-center h-96 shadow-2xl">
                         <form onsubmit="return submit_ws(this)">
                             {viewerObj.addCSRF(FormPurposes.login.value)}
                             <input type="text" autocomplete="off"
@@ -184,7 +184,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                     </button>
 
                     <div id="registerFormContainer"
-                         class="hidden w-full rounded-lg bg-gradient-to-r from-gray-500 to-gray-700 flex items-center justify-center h-96 shadow-2xl">
+                         class="hidden w-full rounded-lg bg-transparent flex items-center justify-center h-96 shadow-2xl">
                         <form class="w-full px-6" onsubmit="return submit_ws(this)">
                             {viewerObj.addCSRF(FormPurposes.register.value)}
 
@@ -221,7 +221,7 @@ def renderAuthPage(viewerObj: BaseViewer):
         <div id="registrationWarning"
              class="text-2xl flex col-span-2 items-center justify-center text-white rounded-lg px-4 py-2 text-center font-semibold w-full"></div>
     </div>
-</div>  
+</div>
 
 
 
@@ -425,7 +425,7 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
                     <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF(FormPurposes.renderAuth.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
-                            Join Now
+                            Log out
                         </button>
                     </form>
                 </div>
@@ -479,7 +479,7 @@ def renderSubCategories(viewerObj: BaseViewer):
                     <form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF(FormPurposes.renderAuth.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
-                            Join Now
+                            Log out
                         </button>
                     </form>
                 </div>
@@ -524,6 +524,44 @@ def renderSubCategories(viewerObj: BaseViewer):
     """
     viewerObj.queueTurboAction(subCategories, "fullPage", viewerObj.turboApp.methods.update)
 
+
+def renderNotesRepository(viewerObj: BaseViewer):
+    notesRepository = f"""
+
+        <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
+            <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
+                    <a href="#" class="flex items-center space-x-4">
+                        <!-- Logo Image -->
+                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
+                        <!-- GAMBIT Text -->
+                        <p class="text-3xl text-white font-bold">GAMBIT</p>
+                    </a>
+                </div>
+            </div>
+            <div class="text-white font-semibold text-3xl flex justify-center">THE ALL IN ONE EDUCATION</div>
+            <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
+                <div class="p-4 inline-flex rounded-full">   
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF(FormPurposes.renderAuth.value)}
+                        <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
+                            Log out
+                        </button>
+                    </form>
+                </div>
+            </div>
+        </div>
+        <div class="w-full p-6 -mt-4 relative">
+            <input type="text" placeholder="Search..." class="bg-gray-800 w-full p-5 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/> 
+            <button class="absolute right-4 mx-12 my-5">
+                <img src="/better-education-cdn-file?type=image&name=search_icon.png" alt="Search" class="w-6 h-6"/>
+            </button>
+        </div>
+        
+        
+        <div class=""></div>
+        """
+    viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
 def sendRegisterForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF(FormPurposes.register.value)}
@@ -1139,11 +1177,11 @@ def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
     userID = liveCacheManager.getKnownLoggedInUserID(viewerObj)
-    if userID:
-        liveCacheManager.loginCall(viewerObj, userID)
-        renderHomepage(viewerObj)
-    else:
-        renderAuthPage(viewerObj)
+    # if userID:
+    #     liveCacheManager.loginCall(viewerObj, userID)
+    #     renderHomepage(viewerObj)
+    # else:
+    #     renderAuthPage(viewerObj)
     # sleep(2)
     # renderHomepage(viewerObj)
     # sleep(2)
@@ -1163,6 +1201,7 @@ def newVisitorCallback(viewerObj: BaseViewer):
     # sleep(2)
     # renderContentMarketPlace(viewerObj)
     # renderSubCategories(viewerObj)
+    renderNotesRepository(viewerObj)
 
 def visitorLeftCallback(viewerObj: BaseViewer):
     liveCacheManager.logoutCall(viewerObj)
