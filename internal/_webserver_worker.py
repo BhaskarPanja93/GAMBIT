@@ -20,37 +20,29 @@ from json import loads
 def navBar(viewerObj: BaseViewer):
     navigation_bar = f"""
 
-    <nav class="bg-neutral-300">
-        <div class="max-w-7xl mx-auto px-2 sm:px-6 lg:px-8">
-            <div class="relative flex items-center justify-between h-16">
-                <div class="flex-1 flex items-center justify-center sm:items-stretch sm:justify-start">
-                    <div class="flex-shrink-0 flex items-center">
-                        <a href="#" class="text-white text-2xl">Gambit</a>
-                    </div>
-                    <div class="hidden sm:block sm:ml-6">
-                        <div class="flex space
-                        -x-4">
-                            <a href="#" class="text-white px-3 py-2 rounded-md text-sm font-medium">Home</a>
-                            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">About</a>
-                            <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Contact</a>
-                        </div>
-                    </div>  
+        <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
+            <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
+                <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
+                    <a href="#" class="flex items-center space-x-4">
+                        <!-- Logo Image -->
+                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
+                        <!-- GAMBIT Text -->
+                        <p class="text-3xl text-white font-bold">GAMBIT</p>
+                    </a>
                 </div>
-                <div class="hidden sm:block sm:ml-6">
-                    <div class="flex space
-                    -x-4">
-                        <a href="#" class="text-gray-300 hover:bg-blue-300 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Login</a>
-                        <a href="#" class="text-gray-300 hover:bg-gray-700 hover:text-white px-3 py-2 rounded-md text-sm font-medium">Register</a>
-                    </div>
+            </div>
+            <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
+            <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
+                <div class="p-4 inline-flex rounded-full">   
+                    <form onsubmit="return submit_ws(this)">
+                        {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
+                        <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
+                            Log out
+                        </button>
+                    </form>
                 </div>
             </div>
         </div>
-        <div class="origin-top-right absolute right-0 mt-2 w-56 rounded-md shadow-lg">
-    <div class="rounded-md bg-white shadow-xs">
-      <!-- Snipped  -->
-    </div>
-  </div>
-    </nav>
     """
 
     viewerObj.queueTurboAction(navigation_bar, "navBar", viewerObj.turboApp.methods.update)
@@ -444,20 +436,33 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
                 <img src="/better-education-cdn-file?type=image&name=search_icon.png" alt="Search" class="w-6 h-6"/>
             </button>
         </div>
-        <div class="grid grid-cols-3 gap-4 p-12">
-            <div class="bg-gray-200 p-4 rounded-lg">
-                <!-- Content for the first column -->
-                <p>Bhaskar do this</p>
-            </div>
-            <div class="bg-gray-200 p-4 rounded-lg">
-                <!-- Content for the second column -->
-                <p>Bhaskar do this</p>
-            </div>
-            <div class="bg-gray-200 p-4 rounded-lg">
-                <!-- Content for the third column -->
-                <p>Bhaskar do this</p>
-            </div>
-        </div>      
+
+
+<!-- Video display goes here -->
+
+<div class="heading text-center font-semibold text-2xl m-5 text-gray-100">VIDEOS HERE</div>
+
+<div class="holder mx-auto w-10/12 grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
+    <!-- each -->
+    <div class="rounded-lg each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative">
+        <img class="rounded-lg w-full" src="https://i.ytimg.com/vi/qew27BNl7io/maxresdefault.jpg" alt=""/>
+        <div class="badge absolute top-0 right-0 bg-indigo-500 m-1 text-gray-200 p-1 px-2 text-xs font-bold rounded">
+            10:53
+        </div>
+        <div class="info-box text-xs flex p-1 font-semibold text-gray-500 bg-gray-300">
+            <span class="mr-1 p-1 px-2 font-bold">105 views</span>
+            <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">105 Likes</span>
+            <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">105 Dislikes</span>
+        </div>
+        <div class="desc p-4 text-gray-800">
+            <a href="https://www.youtube.com/watch?v=s0NECwUerE8" target="_new"
+               class="title font-bold block cursor-pointer hover:underline">Video Title Here</a>
+            <a href="" target="_new"
+               class="badge bg-indigo-500 text-blue-100 rounded px-1 text-xs font-bold cursor-pointer">@youtube_channel_link_here</a>
+            <span class="description text-sm block py-2 border-gray-400 mb-2">Video Description Here</span>
+        </div>
+    </div>
+</div>  
     """
     viewerObj.queueTurboAction(contentMarketPlace, "fullPage", viewerObj.turboApp.methods.update)
 
@@ -568,9 +573,198 @@ def renderNotesRepository(viewerObj: BaseViewer):
         </div>
         
         
-        <div class=""></div>
+<!-- component -->
+<div class="p-24 flex flex-wrap items-center justify-center">
+    
+    <div class="flex-shrink-0 m-6 relative overflow-hidden bg-orange-500 rounded-lg max-w-xs shadow-lg">
+      <svg class="absolute bottom-0 left-0 mb-8" viewBox="0 0 375 283" fill="none" style="transform: scale(1.5); opacity: 0.1;">
+        <rect x="159.52" y="175" width="152" height="152" rx="8" transform="rotate(-45 159.52 175)" fill="white"/>
+        <rect y="107.48" width="152" height="152" rx="8" transform="rotate(-45 0 107.48)" fill="white"/>
+      </svg>
+      <div class="relative pt-10 px-10 flex items-center justify-center">
+        <div class="block absolute w-48 h-48 bottom-0 left-0 -mb-24 ml-3" style="background: radial-gradient(black, transparent 60%); transform: rotate3d(0, 0, 1, 20deg) scale3d(1, 0.6, 1); opacity: 0.2;"></div>
+        <img class="relative w-40" src="https://user-images.githubusercontent.com/2805249/64069899-8bdaa180-cc97-11e9-9b19-1a9e1a254c18.png" alt="">
+      </div>
+      <div class="relative text-white px-6 pb-6 mt-6">
+        <span class="block opacity-75 -mb-1">Indoor</span>
+        <div class="flex justify-between">
+          <span class="block font-semibold text-xl">Peace Lily</span>
+          <span class="block bg-white rounded-full text-orange-500 text-xs font-bold px-3 py-2 leading-none flex items-center">$36.00</span>
+        </div>
+      </div>
+    </div>
+    <div class="flex-shrink-0 m-6 relative overflow-hidden bg-teal-500 rounded-lg max-w-xs shadow-lg">
+      <svg class="absolute bottom-0 left-0 mb-8" viewBox="0 0 375 283" fill="none" style="transform: scale(1.5); opacity: 0.1;">
+        <rect x="159.52" y="175" width="152" height="152" rx="8" transform="rotate(-45 159.52 175)" fill="white"/>
+        <rect y="107.48" width="152" height="152" rx="8" transform="rotate(-45 0 107.48)" fill="white"/>
+      </svg>
+      <div class="relative pt-10 px-10 flex items-center justify-center">
+        <div class="block absolute w-48 h-48 bottom-0 left-0 -mb-24 ml-3" style="background: radial-gradient(black, transparent 60%); transform: rotate3d(0, 0, 1, 20deg) scale3d(1, 0.6, 1); opacity: 0.2;"></div>
+        <img class="relative w-40" src="https://user-images.githubusercontent.com/2805249/64069998-305de300-cc9a-11e9-8ae7-5a0fe00299f2.png" alt="">
+      </div>
+      <div class="relative text-white px-6 pb-6 mt-6">
+        <span class="block opacity-75 -mb-1">Outdoor</span>
+        <div class="flex justify-between">
+          <span class="block font-semibold text-xl">Monstera</span>
+          <span class="block bg-white rounded-full text-teal-500 text-xs font-bold px-3 py-2 leading-none flex items-center">$45.00</span>
+        </div>
+      </div>
+    </div>
+    <div class="flex-shrink-0 m-6 relative overflow-hidden bg-purple-500 rounded-lg max-w-xs shadow-lg">
+      <svg class="absolute bottom-0 left-0 mb-8" viewBox="0 0 375 283" fill="none" style="transform: scale(1.5); opacity: 0.1;">
+        <rect x="159.52" y="175" width="152" height="152" rx="8" transform="rotate(-45 159.52 175)" fill="white"/>
+        <rect y="107.48" width="152" height="152" rx="8" transform="rotate(-45 0 107.48)" fill="white"/>
+      </svg>
+      <div class="relative pt-10 px-10 flex items-center justify-center">
+        <div class="block absolute w-48 h-48 bottom-0 left-0 -mb-24 ml-3" style="background: radial-gradient(black, transparent 60%); transform: rotate3d(0, 0, 1, 20deg) scale3d(1, 0.6, 1); opacity: 0.2;"></div>
+        <img class="relative w-40" src="https://user-images.githubusercontent.com/2805249/64069899-8bdaa180-cc97-11e9-9b19-1a9e1a254c18.png" alt="">
+      </div>
+      <div class="relative text-white px-6 pb-6 mt-6">
+        <span class="block opacity-75 -mb-1">Outdoor</span>
+        <div class="flex justify-between">
+          <span class="block font-semibold text-xl">Oak Tree</span>
+          <span class="block bg-white rounded-full text-purple-500 text-xs font-bold px-3 py-2 leading-none flex items-center">$68.50</span>
+        </div>
+      </div>
+    </div>
+    
+  </div>
         """
     viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
+
+
+def renderMusicPage(viewerObj: BaseViewer):
+    musicPage = f"""
+    
+    <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
+    <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
+        <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
+            <a href="#" class="flex items-center space-x-4">
+                <!-- Logo Image -->
+                <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
+                <!-- GAMBIT Text -->
+                <p class="text-3xl text-white font-bold">GAMBIT</p>
+            </a>
+        </div>
+    </div>
+    <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
+    <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
+        <div class="p-4 inline-flex rounded-full">   
+            <form onsubmit="return submit_ws(this)">
+                {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
+                <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
+                    Log out
+                </button>
+            </form>
+        </div>
+    </div>
+</div>
+
+
+<!-- MUSIC LAYOUT -->
+<div class="grid place-items-center min-h-screen bg-gradient-to-t from-gray-700 to-gray-900 p-5">
+    <div>
+        <h1 class="text-4xl sm:text-5xl md:text-7xl font-bold text-gray-200 mb-5">Choose your playlist</h1>
+        <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
+            <!-- CARD 1 -->
+            <div class="bg-gray-900 shadow-lg rounded p-3">
+                <div class="group relative">
+                    <img class="w-full md:w-72 block rounded h-3/5"
+                         src="https://upload.wikimedia.org/wikipedia/en/f/f1/Tycho_-_Epoch.jpg" alt=""/>
+                    <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
+
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                                 class="bi bi-play-circle-fill" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
+                            </svg>
+                        </button>
+
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-white text-lg">Lo-Fi</h3>
+                </div>
+            </div>
+            <!-- END OF CARD 1 -->
+
+            <!-- CARD 2 -->
+            <div class="bg-gray-900 shadow-lg rounded p-3">
+                <div class="group relative">
+                    <img class="w-full md:w-72 block rounded h-3/5"
+                         src="https://upload.wikimedia.org/wikipedia/en/c/ca/Tycho_-_Awake.png" alt=""/>
+                    <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
+
+
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                                 class="bi bi-play-circle-fill" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
+                            </svg>
+                        </button>
+
+
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-white text-lg">Jazz</h3>
+                </div>
+            </div>
+            <!-- END OF CARD 2 -->
+
+            <!-- CARD 3 -->
+            <div class="bg-gray-900 shadow-lg rounded p-3">
+                <div class="group relative">
+                    <img class="w-full md:w-72 block rounded h-3/5"
+                         src="https://upload.wikimedia.org/wikipedia/en/1/11/Dive_tycho_album.jpg" alt=""/>
+                    <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
+
+
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                                 class="bi bi-play-circle-fill" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
+                            </svg>
+                        </button>
+
+
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-white text-lg">Ambient</h3>
+                </div>
+            </div>
+            <!-- END OF CARD 3 -->
+
+            <!-- CARD 4 -->
+            <div class="bg-gray-900 shadow-lg rounded p-3">
+                <div class="group relative">
+                    <img class="w-full md:w-72 block rounded h-3/5"
+                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/The_Telescopes_-_Third_Wave_vinyl_photo.jpg/640px-The_Telescopes_-_Third_Wave_vinyl_photo.jpg"
+                         alt=""/>
+                    <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
+
+
+                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition">
+                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
+                                 class="bi bi-play-circle-fill" viewBox="0 0 16 16">
+                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
+                            </svg>
+                        </button>
+
+
+                    </div>
+                </div>
+                <div class="p-5">
+                    <h3 class="text-white text-lg">Classical</h3>
+                </div>
+            </div>
+            <!-- END OF CARD 4 -->
+        </div>
+    </div>
+</div>
+"""
+    viewerObj.queueTurboAction(musicPage, "fullPage", viewerObj.turboApp.methods.update)
 def sendRegisterForm(viewerObj:BaseViewer):
     form = f"""<form onsubmit="return submit_ws(this)">
                         {viewerObj.addCSRF(FormPurposes.submitRegister.value)}
@@ -1193,9 +1387,9 @@ def newVisitorCallback(viewerObj: BaseViewer):
     initial = "<div id=\"fullPage\"></div>"
     viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
     userID = liveCacheManager.getKnownLoggedInUserID(viewerObj)
-    if userID:
-        liveCacheManager.loginCall(viewerObj, userID)
-        renderHomepage(viewerObj)
+    # if userID:
+    #     liveCacheManager.loginCall(viewerObj, userID)
+    #     renderHomepage(viewerObj)
     # else:
     #     renderAuthPage(viewerObj)
     # sleep(2)
@@ -1218,6 +1412,7 @@ def newVisitorCallback(viewerObj: BaseViewer):
     # renderContentMarketPlace(viewerObj)
     # renderSubCategories(viewerObj)
     # renderNotesRepository(viewerObj)
+    renderMusicPage(viewerObj)
 
 def visitorLeftCallback(viewerObj: BaseViewer):
     liveCacheManager.logoutCall(viewerObj)
