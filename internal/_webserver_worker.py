@@ -395,9 +395,9 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
 
 def renderQuizMatchFoundPage(viewerObj: BaseViewer):
     matchFound = f"""
-        <div class="bg-[#23003d] flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
-            <div id="quizDiv" class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex flex-col items-center justify-center w-full h-full">
-                <h1 class="text-7xl text-white font-bold">MATCH FOUND</h1>
+        <div class="rounded-lg bg-[#23003d] flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
+            <div id="quizDiv" class="rounded-lg bg-gradient-to-t from-gray-700 to-gray-900 flex flex-col items-center justify-center w-full h-full">
+                <h1 class=" text-7xl text-white font-bold">MATCH FOUND</h1>
         </div>
         </div>
 
