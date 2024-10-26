@@ -127,15 +127,7 @@ def renderAuthPage(viewerObj: BaseViewer):
         <!-- GAMBIT Text and Join Now Button -->
         <div class="flex items-center justify-between w-full">
             <div id="navLogoButton" class="flex items-center space-x-4"></div>
-            <div class="p-4 inline-flex rounded-full">
-                <form onsubmit="return submit_ws(this)">
-                    {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
-                    <button type="submit"
-                            class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
-                        Join Now
-                    </button>
-                </form>
-            </div>
+            <div class="p-4 inline-flex rounded-full"></div>
         </div>
         <div class="flex justify-center text-3xl text-white font-semibold">THE ALL IN ONE EDUCATION PLATFORM</div>
 
@@ -669,14 +661,9 @@ def renderAvailableNotes(viewerObj: BaseViewer):
                             <div class="flex items-center flex-wrap">
                                                        
                             <button class="bg-gradient-to-r from-cyan-400 to-blue-400 hover:scale-105 drop-shadow-md shadow-cla-blue px-4 py-1 rounded-lg">
-                                <a href="{Routes.cdnFileContent.value}?type={CDNFileType.text.value}&name={noteObj['NoteID'].decode()}" class="text-white">View</a>
-                                
+                                <a href="{Routes.cdnFileContent.value}?type={CDNFileType.text.value}&name={noteObj['NoteID'].decode()}.txt" class="text-white">View</a>
                             </button>
-                            
                             </div>
-                            
-                        
-
                         </div>
                     </div>
                 </div>
@@ -1318,7 +1305,6 @@ class Quiz:
             teamData.append(team.teamID)
         for player in self.party.userIDToPlayer.values():
             playerData[player.userID] = {"Team":player.team.teamID,"Score":player.score}
-        print(f"INSERT INTO quiz values (\"{self.matchID}\", NOW(), {self.party.teams[0].score}, {self.party.teams[1].score}, '{teamData}', '{playerData}')")
         SQLconn.execute(f"INSERT INTO quiz values (\"{self.matchID}\", NOW(), {self.party.teams[0].score}, {self.party.teams[1].score}, '{dumps(teamData)}', '{dumps(playerData)}')")
 
 
@@ -1484,7 +1470,7 @@ def publishNote(viewerObj:BaseViewer, form:dict):
         if not SQLconn.execute(f"SELECT NoteID from notes where NoteID=\"{noteID}\" limit 1"):
             SQLconn.execute(f"INSERT INTO notes values (\"{noteID}\", \"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\")")
             SQLconn.execute(f"INSERT INTO note_relevance values (\"{noteID}\", \"{form['subject']}\", \"{form['header']}\", \"{form['description']}\")")
-            open(f"{folderLocation}\\static\\text\\{noteID}", "wb").write(form['content'].encode())
+            open(f"{folderLocation}\\static\\text\\{noteID}.txt", "wb").write(form['content'].encode())
             break
 
 def formSubmitCallback(viewerObj: BaseViewer, form: dict):
