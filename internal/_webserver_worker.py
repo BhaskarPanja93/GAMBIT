@@ -463,8 +463,8 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
 
 <div id="marketplaceHolder" class="holder mx-auto w-10/12 grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
     <!-- each -->
-    <div class="rounded-lg each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative" subject="english" title="dynamo">
-        <img class="rounded-lg w-full" src="https://i.ytimg.com/vi/qew27BNl7io/maxresdefault.jpg" alt=""/>
+    <div class="rounded-lg each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative" subject="Operating Systems" title="Operating System Syllabus Discussion for all College/University & Competitive exams">
+        <img class="rounded-lg w-full" src="https://cdn.hashnode.com/res/hashnode/image/upload/v1700577267403/a4f278fb-2ff6-40e8-af45-dadc5aa794be.jpeg" alt=""/>
         <div class="badge absolute top-0 right-0 bg-indigo-500 m-1 text-gray-200 p-1 px-2 text-xs font-bold rounded">
             10:53
         </div>
@@ -474,14 +474,58 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
             <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">105 Dislikes</span>
         </div>
         <div class="desc p-4 text-gray-800">
-            <a href="https://www.youtube.com/watch?v=s0NECwUerE8" target="_new"
-               class="title font-bold block cursor-pointer hover:underline">Video Title Here</a>
+            <a href="https://youtube.com/watch?v=bkSWJJZNgf8" target="_new"
+               class="title font-bold block cursor-pointer hover:underline">Multiprogramming and Multitasking Operating System</a>
+            <a href="" target="_new"
+               class="badge bg-indigo-500 text-blue-100 rounded px-1 text-xs font-bold cursor-pointer">@youtube_channel_link_here</a>
+            <span class="description text-sm block py-2 border-gray-400 mb-2">Video Description Here</span>
+        </div>
+    </div>
+  
+
+    <!-- each -->
+    <div class="rounded-lg each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative" subject="Operating Systems" title="Multiprogramming and Multitasking Operating System">
+        <img class="rounded-lg w-full" src="https://cdn.automationforum.co/uploads/2018/12/operating-sys.png" alt=""/>
+        <div class="badge absolute top-0 right-0 bg-indigo-500 m-1 text-gray-200 p-1 px-2 text-xs font-bold rounded">
+            10:53
+        </div>
+        <div class="info-box text-xs flex p-1 font-semibold text-gray-500 bg-gray-300">
+            <span class="mr-1 p-1 px-2 font-bold">105 views</span>
+            <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">105 Likes</span>
+            <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">105 Dislikes</span>
+        </div>
+        <div class="desc p-4 text-gray-800">
+            <a href="https://youtube.com/watch?v=3MqyDWDpZoI" target="_new"
+               class="title font-bold block cursor-pointer hover:underline">Multiprogramming and Multitasking Operating System</a>
+            <a href="" target="_new"
+               class="badge bg-indigo-500 text-blue-100 rounded px-1 text-xs font-bold cursor-pointer">@youtube_channel_link_here</a>
+            <span class="description text-sm block py-2 border-gray-400 mb-2">Video Description Here</span>
+        </div>
+    </div>
+ 
+
+    <!-- each -->
+    <div class="rounded-lg each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative" subject="Programming" title="Roadmap of DSA | Syllabus of Data structure">
+        <img class="rounded-lg w-full" src="https://media.geeksforgeeks.org/wp-content/cdn-uploads/20230706095706/intro-data-structure-%E2%80%93-1.png" alt=""/>
+        <div class="badge absolute top-0 right-0 bg-indigo-500 m-1 text-gray-200 p-1 px-2 text-xs font-bold rounded">
+            10:53
+        </div>
+        <div class="info-box text-xs flex p-1 font-semibold text-gray-500 bg-gray-300">
+            <span class="mr-1 p-1 px-2 font-bold">105 views</span>
+            <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">105 Likes</span>
+            <span class="mr-1 p-1 px-2 font-bold border-l border-gray-400">105 Dislikes</span>
+        </div>
+        <div class="desc p-4 text-gray-800">
+            <a href=" https://youtube.com/watch?v=qNGyI95E5AE" target="_new"
+               class="title font-bold block cursor-pointer hover:underline">Roadmap of DSA | Syllabus of Data structure</a>
             <a href="" target="_new"
                class="badge bg-indigo-500 text-blue-100 rounded px-1 text-xs font-bold cursor-pointer">@youtube_channel_link_here</a>
             <span class="description text-sm block py-2 border-gray-400 mb-2">Video Description Here</span>
         </div>
     </div>
 </div>  
+
+
     """
     viewerObj.queueTurboAction(contentMarketPlace, "fullPage", viewerObj.turboApp.methods.update)
     renderLogo(viewerObj)
@@ -613,7 +657,7 @@ def renderAvailableNotes(viewerObj: BaseViewer):
         if noteObjs:
             noteObj = noteObjs[0]
             finalNotes += f"""
-                <div id="{noteObj['NoteID']}" class="p-4 md:w-1/3" title="{noteObj['Header']}" subject="{noteObj['Subject']}">
+                <div id="{noteObj['NoteID'].decode()}" class="p-4 md:w-1/3" title="{noteObj['Header']}" subject="{noteObj['Subject']}">
                     <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
                         <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
                              src="https://images.unsplash.com/photo-1624628639856-100bf817fd35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8M2QlMjBpbWFnZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60"
@@ -623,7 +667,16 @@ def renderAvailableNotes(viewerObj: BaseViewer):
                             <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
                             <div class="leading-relaxed mb-3">{noteObj['Description']}</div>
                             <div class="flex items-center flex-wrap">
+                                                       
+                            <button class="bg-gradient-to-r from-cyan-400 to-blue-400 hover:scale-105 drop-shadow-md shadow-cla-blue px-4 py-1 rounded-lg">
+                                <a href="{Routes.cdnFileContent.value}?type={CDNFileType.text.value}&name={noteObj['NoteID'].decode()}" class="text-white">View</a>
+                                
+                            </button>
+                            
                             </div>
+                            
+                        
+
                         </div>
                     </div>
                 </div>
