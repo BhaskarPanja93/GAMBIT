@@ -414,7 +414,25 @@ def renderQuizMatchFoundPage(viewerObj: BaseViewer):
 #     </div>
 def renderContentMarketPlace(viewerObj: BaseViewer):
     contentMarketPlace = f"""
+    <script>
+        function findMarketplaceSearch(text)
+        {{
+            text = document.getElementById("marketplaceSearch").value.toLowerCase();
+            console.log(text);
+            
+            for (const [key, value] of Object.entries(document.getElementById("marketplaceHolder").children)) 
+            {{ 
+                if (value.getAttribute("title").toLowerCase().includes(text.toLowerCase()) || value.getAttribute("subject").toLowerCase().includes(text.toLowerCase()))
+                {{
+                    value.hidden=false;
+                }} else {{
+                    value.hidden=true;
+                }}
+            }}
+        }}    
+        document.getElementById("marketplaceSearch").addEventListener("input", findMarketplaceSearch);
 
+    </script>
     <nav class="relative flex items-center justify-between h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
                 <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
@@ -436,10 +454,7 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
             <div class="text-gray-300 text-xl my-7">Explore a wide range of educational videos. offering easy-to-follow tutorials and expert insights. <br>Learn at your own pace with engaging content designed for all levels.</div>
         </div>
         <div class="w-full p-6 -mt-4 relative">
-            <input type="text" placeholder="Search..." class="bg-gray-800 w-full p-5 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/> 
-            <button class="absolute right-4 mx-12 my-5">
-                <img src="/better-education-cdn-file?type=image&name=search_icon.png" alt="Search" class="w-6 h-6"/>
-            </button>
+            <input type="text" id="marketplaceSearch" placeholder="Search..." class="bg-gray-800 w-full p-5 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/>  
         </div>
 
 
@@ -447,9 +462,9 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
 
 <div class="heading text-center font-semibold text-2xl m-5 text-gray-100">VIDEOS HERE</div>
 
-<div class="holder mx-auto w-10/12 grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
+<div id="marketplaceHolder" class="holder mx-auto w-10/12 grid sm:grid-cols-1 md:grid-cols-3 lg:grid-cols-4">
     <!-- each -->
-    <div class="rounded-lg each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative">
+    <div class="rounded-lg each mb-10 m-2 shadow-lg border-gray-800 bg-gray-100 relative" subject="english" title="dynamo">
         <img class="rounded-lg w-full" src="https://i.ytimg.com/vi/qew27BNl7io/maxresdefault.jpg" alt=""/>
         <div class="badge absolute top-0 right-0 bg-indigo-500 m-1 text-gray-200 p-1 px-2 text-xs font-bold rounded">
             10:53
@@ -575,44 +590,44 @@ def renderNotesRepository(viewerObj: BaseViewer):
                 </div>
             </div>
         </div>
-        <div class="w-full p-6 -mt-4 relative">
-            <input type="text" id="noteSearch" onchange="findNote()" placeholder="Search..." class="bg-gray-800 w-full p-5 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/> 
-            <button class="absolute right-4 mx-12 my-5">
-                <img src="/better-education-cdn-file?type=image&name=search_icon.png" alt="Search" class="w-6 h-6"/>
-            </button>
-        </div>
         
         
     <!-- component -->
     <div class="text-gray-600 body-font">
     <div id="notesUpload" class="container px-5 py-24 mx-auto"></div>
+        <div class="w-full p-6 -mt-4 relative">
+            <input type="text" id="noteSearch" placeholder="Search..." class="bg-gray-800 w-full p-5 text-lg border rounded-lg focus:outline-none focus:ring-2 focus:ring-gray-500"/> 
+        </div>
     <div id="notesHolder" class="flex flex-wrap -m-4"></div>
 </div>
 """
-    finalNotes = ""
+
     viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
+    renderNotesUploader(viewerObj)
+    renderLogo(viewerObj)
+    finalNotes = ""
     for noteObj in SQLconn.execute(f"SELECT NoteID from notes where UserID=\"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\""):
         sleep(0.5)
-        noteObj = SQLconn.execute(f"SELECT NoteID, Subject, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID'].decode()}\" limit 1")[0]
-        finalNotes += f"""
-        <div id="{noteObj['NoteID']}" class="p-4 md:w-1/3" title="{noteObj['Header']}" subject="{noteObj['Subject']}">
-            <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
-                <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
-                     src="" alt="Note">
-                <div class="p-6">
-                    <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">{noteObj['Subject']}</h2>
-                    <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
-                    <div class="leading-relaxed mb-3">{noteObj['Description']}</div>
-                    <div class="flex items-center flex-wrap">
-                        
+        noteObjs = SQLconn.execute(f"SELECT NoteID, Subject, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID'].decode()}\" limit 1")
+        if noteObjs:
+            noteObj = noteObjs[0]
+            finalNotes += f"""
+            <div id="{noteObj['NoteID']}" class="p-4 md:w-1/3" title="{noteObj['Header']}" subject="{noteObj['Subject']}">
+                <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
+                    <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
+                         src="https://images.unsplash.com/photo-1624628639856-100bf817fd35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8M2QlMjBpbWFnZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60"
+                         alt="blog">
+                    <div class="p-6">
+                        <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">{noteObj['Subject']}</h2>
+                        <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
+                        <div class="leading-relaxed mb-3">{noteObj['Description']}</div>
+                        <div class="flex items-center flex-wrap">
+                        </div>
                     </div>
                 </div>
             </div>
-        </div>
-        """
+            """
     viewerObj.queueTurboAction(finalNotes, "notesHolder", viewerObj.turboApp.methods.update)
-    renderNotesUploader(viewerObj)
-    renderLogo(viewerObj)
 
 def renderNotesUploader(viewerObj: BaseViewer):
     form = f"""
@@ -876,6 +891,7 @@ class MusicCollection:
         for cat in self.musicFiles:
             for fileName in os.listdir(f"{folderLocation}/static/audio/{cat}"):
                 self.musicFiles[cat].append(f"{folderLocation}\\static\\audio\\{cat}\\{fileName}")
+            shuffle(self.musicFiles[cat])
             self.categoryNext(cat, None)
 
 
