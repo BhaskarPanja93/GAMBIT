@@ -1,6 +1,6 @@
 from gevent import monkey
 monkey.patch_all()
-
+from json import dumps
 import os
 import wave
 from random import choice, randrange, choices
@@ -1100,6 +1100,7 @@ class Quiz:
 
         self.startTime = time()
         self.matchID = StringGenerator().AlphaNumeric(50, 50)
+        self.addedToDB = False
         self.endTime = 0.0
 
         self.questions: list[Question] = []
@@ -1259,6 +1260,7 @@ class Quiz:
                 player.viewerObj.queueTurboAction(str(teamChanged.health), f"otherTeamHealthText", player.viewerObj.turboApp.methods.update.value)
 
         if teamChanged.health == 0:
+            self.saveToDB()
             self.endTime = time()
             _scoreRank:list[Player] = []
             for player in self.party.userIDToPlayer.values():
@@ -1308,7 +1310,16 @@ class Quiz:
         self.nextQuestion()
 
     def saveToDB(self):
-        pass
+        if self.addedToDB: return
+        self.addedToDB = True
+        playerData = {}
+        teamData = []
+        for team in self.party.teams:
+            teamData.append(team.teamID)
+        for player in self.party.userIDToPlayer.values():
+            playerData[player.userID] = {"Team":player.team.teamID,"Score":player.score}
+        print(f"INSERT INTO quiz values (\"{self.matchID}\", NOW(), {self.party.teams[0].score}, {self.party.teams[1].score}, '{teamData}', '{playerData}')")
+        SQLconn.execute(f"INSERT INTO quiz values (\"{self.matchID}\", NOW(), {self.party.teams[0].score}, {self.party.teams[1].score}, '{dumps(teamData)}', '{dumps(playerData)}')")
 
 
 class UserCache:
@@ -1498,7 +1509,6 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             party = liveCacheManager.activeParties.get(partyID, None)
             if party: party.gameObj.receiveUserInput(True, viewerObj, form["option"])
 
-
         elif purpose == FormPurposes.renderAuthPage.value:
             liveCacheManager.logoutCall(viewerObj, True)
             renderAuthPage(viewerObj)
@@ -1606,7 +1616,6 @@ extraHeads = f"""
             document.getElementById("musicPlayer").muted = true;
         }} else {{
             document.getElementById("musicPlayer").children[0].src = "/music/"+category; 
-            document.getElementById("musicPlayer").volume = 0.1;
             document.getElementById("musicPlayer").load();
             document.getElementById("musicPlayer").play();
         }}
