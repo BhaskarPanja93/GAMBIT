@@ -418,7 +418,6 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
         function findMarketplaceSearch(text)
         {{
             text = document.getElementById("marketplaceSearch").value.toLowerCase();
-            console.log(text);
             
             for (const [key, value] of Object.entries(document.getElementById("marketplaceHolder").children)) 
             {{ 
@@ -559,7 +558,6 @@ def renderNotesRepository(viewerObj: BaseViewer):
         function findNote(text)
         {{
             text = document.getElementById("noteSearch").value.toLowerCase();
-            console.log(text);
             
             for (const [key, value] of Object.entries(document.getElementById("notesHolder").children)) 
             {{ 
@@ -605,29 +603,33 @@ def renderNotesRepository(viewerObj: BaseViewer):
     viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
     renderNotesUploader(viewerObj)
     renderLogo(viewerObj)
+    renderAvailableNotes(viewerObj)
+
+
+def renderAvailableNotes(viewerObj: BaseViewer):
     finalNotes = ""
     for noteObj in SQLconn.execute(f"SELECT NoteID from notes where UserID=\"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\""):
-        sleep(0.5)
         noteObjs = SQLconn.execute(f"SELECT NoteID, Subject, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID'].decode()}\" limit 1")
         if noteObjs:
             noteObj = noteObjs[0]
             finalNotes += f"""
-            <div id="{noteObj['NoteID']}" class="p-4 md:w-1/3" title="{noteObj['Header']}" subject="{noteObj['Subject']}">
-                <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
-                    <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
-                         src="https://images.unsplash.com/photo-1624628639856-100bf817fd35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8M2QlMjBpbWFnZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60"
-                         alt="blog">
-                    <div class="p-6">
-                        <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">{noteObj['Subject']}</h2>
-                        <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
-                        <div class="leading-relaxed mb-3">{noteObj['Description']}</div>
-                        <div class="flex items-center flex-wrap">
+                <div id="{noteObj['NoteID']}" class="p-4 md:w-1/3" title="{noteObj['Header']}" subject="{noteObj['Subject']}">
+                    <div class="h-full rounded-xl shadow-cla-blue bg-gradient-to-r from-indigo-50 to-blue-50 overflow-hidden">
+                        <img class="lg:h-48 md:h-36 w-full object-cover object-center scale-110 transition-all duration-400 hover:scale-100"
+                             src="https://images.unsplash.com/photo-1624628639856-100bf817fd35?ixlib=rb-1.2.1&ixid=MnwxMjA3fDB8MHxzZWFyY2h8MXx8M2QlMjBpbWFnZXxlbnwwfHwwfHw%3D&auto=format&fit=crop&w=600&q=60"
+                             alt="blog">
+                        <div class="p-6">
+                            <h2 class="tracking-widest text-xs title-font font-medium text-gray-400 mb-1">{noteObj['Subject']}</h2>
+                            <h1 class="title-font text-lg font-medium text-gray-600 mb-3">{noteObj['Header']}</h1>
+                            <div class="leading-relaxed mb-3">{noteObj['Description']}</div>
+                            <div class="flex items-center flex-wrap">
+                            </div>
                         </div>
                     </div>
                 </div>
-            </div>
-            """
+                """
     viewerObj.queueTurboAction(finalNotes, "notesHolder", viewerObj.turboApp.methods.update)
+
 
 def renderNotesUploader(viewerObj: BaseViewer):
     form = f"""
@@ -1490,10 +1492,12 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
         elif purpose == FormPurposes.renderNotesPage.value:
             renderNotesRepository(viewerObj)
             renderNotesUploader(viewerObj)
+            renderAvailableNotes(viewerObj)
 
         elif purpose == FormPurposes.submitNote.value:
             publishNote(viewerObj, form)
             renderNotesUploader(viewerObj)
+            renderAvailableNotes(viewerObj)
 
 
 
@@ -1542,20 +1546,18 @@ liveCacheManager = UserCache()
 extraHeads = f"""
 <script src="https://cdn.tailwindcss.com"></script>
 <script>
-    function muteMusic()
-    {{
-        document.getElementById("musicPlayer").muted = true;
-    }}
-    function unmuteMusic()
-    {{
-       document.getElementById("musicPlayer").muted = false; 
-    }}
     function changeMusic(category)
     {{
-       document.getElementById("musicPlayer").children[0].src = "/music/"+category; 
-       document.getElementById("musicPlayer").volume = 0.1;
-       document.getElementById("musicPlayer").load();
-       document.getElementById("musicPlayer").play();
+        if (document.getElementById("musicPlayer").children[0].src.includes("/music/"+category) && document.getElementById("musicPlayer").muted==false)
+        {{ 
+            document.getElementById("musicPlayer").muted = true;
+        }} else {{
+            document.getElementById("musicPlayer").children[0].src = "/music/"+category; 
+            document.getElementById("musicPlayer").volume = 0.1;
+            document.getElementById("musicPlayer").load();
+            document.getElementById("musicPlayer").play();
+        }}
+        
     }}
 </script>"""
 
