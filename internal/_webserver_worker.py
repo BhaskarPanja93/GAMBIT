@@ -1058,7 +1058,7 @@ class Quiz:
                 for playerToRender in self.party.userIDToPlayer.values():
                     playerDiv = f"""
                             <div class="rounded-lg bg-[#eacfff] mx-4 my-2 flex justify-between items-center">
-                                <img class="mx-4 rounded-full border-4 border-white w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
+                                <img class="mx-4 rounded-full border-4 border-white w-28 h-28" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profile_{playerToRender.userName[0].upper()}.png" alt="Extra large avatar">
                                 <div class="flex items-center gap-4">
                                     <div class="font-medium dark:text-white">
                                         <div class="text-black text-bold text-xl m-4">Name: {playerToRender.userName}</div>
@@ -1224,7 +1224,7 @@ class Quiz:
                 leaderboardDiv += f"""<div class="rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 mx-6 my-6 flex justify-between items-center h-20 p-2 w-5/6">
                             <div class="font-medium text-bold text-3xl text-white">{rank}</div>
                             <div class="w-full p-4 flex items-center justify-start"> <!-- Updated ID and alignment -->
-                                <img class="mr-4 rounded-full w-16 h-16" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
+                                <img class="mr-4 rounded-full w-16 h-16" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profile_{player.userName[0].upper()}.png" alt="Extra large avatar">
                                 <div class="rounded-lg bg-red-white mr-8 font-medium text-[#23003d]">
                                     <div class="px-2 text-white text-bold text-xl">{player.userName}</div>
                                     <div class="px-2 text-white text-bold text-xl">Points: {player.score}</div>
@@ -1461,7 +1461,7 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
             </div>
 
             <div class="bg-[#490080] h-full rounded-lg flex flex-col justify-between items-center py-6">
-                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profilepic.webp" alt="Extra large avatar">
+                <img class="rounded-full w-48 h-48 mb-4" src="{Routes.cdnFileContent.value}?type={CDNFileType.image.value}&name=profile_{liveCacheManager.getUserName(liveCacheManager.ByViewerID, viewerObj.viewerID)[0].upper()}.png" alt="Extra large avatar">
                 <div class="text-white text-lg font-semibold">{liveCacheManager.getUserName(liveCacheManager.ByViewerID, viewerObj.viewerID)}</div>
                 <div class="text-white text-md">{choice(["Iron", "Bronze", "Silver"])}{randrange(1,4)}</div>
                 <div class="text-white text-md">Level {randrange(1,5)}</div>
