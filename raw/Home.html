@@ -1,0 +1,391 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Gambit - Gamification of Education</title>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <script src="https://cdn.skypack.dev/three@0.129.0/build/three.module.js"></script>
+    <script src="https://cdn.skypack.dev/three@0.129.0/examples/jsm/loaders/GLTFLoader.js" type="module"></script>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+
+
+    <style>
+
+        <!-- Cursor -->
+        body{
+            cursor: none;
+            overflow: hidden;
+        }
+
+        .particle {
+            position: absolute;
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background-color: orange;
+            pointer-events: none;
+            animation: fadeOut 1s ease-out forwards;
+        }
+
+        @keyframes fadeOut {
+            0% {
+                transform: scale(1);
+                opacity: 1;
+            }
+            100% {
+                transform: scale(0);
+                opacity: 0;
+            }
+        }
+
+        /* Orange glow Box */
+
+        .glowing-box {
+            background: linear-gradient(to bottom, #ffc298, #f97316);
+            padding: 1.5rem;
+            color: white;
+            box-shadow: 0 0 15px 5px rgba(53, 53, 53, 0.8);
+            border-radius: 8px;
+            position: relative;
+            z-index: 2;
+        }
+
+        .glowing-box:hover {
+            background: linear-gradient(to bottom, #ffd8bb, #ff9954);
+            transform: scale(1.05);
+            box-shadow: 0 0 10px 5px rgba(255, 165, 0, 0.39);
+            transition: all 0.3s ease-in-out;
+        }
+
+        /* Change wrapper gradient animation*/
+
+        @keyframes moveGradient {
+            0% {
+                background-position: 0% 0%;
+            }
+            50% {
+                background-position: 0% 100%;
+            }
+            100% {
+                background-position: 0% 0%;
+            }
+        }
+
+
+        .gradient-move {
+            background: linear-gradient(to bottom, #6c7688, #19212c);
+            background-size: 100% 200%;
+            animation: moveGradient 4s linear infinite;
+        }
+
+    /* Change text color animation */
+
+        @keyframes changeColor {
+            0% {
+                color: #6B21A8; /* Purple */
+            }
+            10% {
+                color: #5d00ff; /* Violet */
+            }
+            20% {
+                color: #0f00ff; /* Dark Blue */
+            }
+            30% {
+                color: #0080ff; /* Blue */
+            }
+            40% {
+                color: #00dcff; /* Cyan */
+            }
+            50% {
+                color: #00ffea; /* Turquoise */
+            }
+            60% {
+                color: #00ffbb; /* Teal */
+            }
+            70% {
+                color: #00eaff; /* Green */
+            }
+            80% {
+                color: #0076ff; /* Orange */
+            }
+            90% {
+                color: #2e00ff; /* Red */
+            }
+            100% {
+                color: #8d00ff; /* Back to Purple */
+            }
+        }
+
+        .color-change {
+            animation: changeColor 6s linear infinite;
+        }
+
+
+    /* Wrapper Animation */
+        .wrapper{
+            position: relative;
+        }
+
+        .box {
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            z-index: 0;
+        }
+
+        .box div{
+            position: absolute;
+            width: 60px;
+            height: 60px;
+            background-color: transparent;
+            border: 6px solid rgba(255,255,255,0.8);
+            z-index: -1;
+        }
+
+        .box div:nth-child(1){
+            top: 12%;
+            left: 42%;
+            animation: animate 10s linear infinite;
+        }
+
+        .box div:nth-child(2){
+            top: 70%;
+            left: 50%;
+            animation: animate 7s linear infinite;
+        }
+
+        .box div:nth-child(3){
+            top: 17%;
+            left: 6%;
+            animation: animate 9s linear infinite;
+        }
+
+        .box div:nth-child(4){
+            top: 20%;
+            left: 60%;
+            animation: animate 10s linear infinite;
+        }
+
+        .box div:nth-child(5){
+            top: 67%;
+            left: 10%;
+            animation: animate 6s linear infinite;
+        }
+
+        .box div:nth-child(6){
+            top: 80%;
+            left: 70%;
+            animation: animate 12s linear infinite;
+        }
+
+        .box div:nth-child(7){
+            top: 60%;
+            left: 80%;
+            animation: animate 15s linear infinite;
+        }
+
+        .box div:nth-child(8){
+            top: 32%;
+            left: 25%;
+            animation: animate 16s linear infinite;
+        }
+
+        .box div:nth-child(9){
+            top: 90%;
+            left: 25%;
+            animation: animate 9s linear infinite;
+        }
+
+        .box div:nth-child(10){
+            top: 20%;
+            left: 80%;
+            animation: animate 5s linear infinite;
+        }
+
+        .box div:nth-child(11) {
+            top: 10%;
+            left: 10%;
+            animation: animate 6.5s linear infinite;
+        }
+
+        .box div:nth-child(12) {
+            top: 55%;
+            left: 15%;
+            animation: animate 3.8s linear infinite;
+        }
+
+        .box div:nth-child(13) {
+            top: 40%;
+            left: 70%;
+            animation: animate 6.2s linear infinite;
+        }
+
+        .box div:nth-child(14) {
+            top: 85%;
+            left: 50%;
+            animation: animate 4.1s linear infinite;
+        }
+
+        .box div:nth-child(15) {
+            top: 75%;
+            left: 65%;
+            animation: animate 5.8s linear infinite;
+        }
+
+        .box div:nth-child(16) {
+            top: 30%;
+            left: 80%;
+            animation: animate 4.4s linear infinite;
+        }
+
+        .box div:nth-child(17) {
+            top: 60%;
+            left: 25%;
+            animation: animate 6.3s linear infinite;
+        }
+
+        .box div:nth-child(18) {
+            top: 50%;
+            left: 90%;
+            animation: animate 5.2s linear infinite;
+        }
+
+        .box div:nth-child(19) {
+            top: 10%;
+            left: 55%;
+            animation: animate 7.3s linear infinite;
+        }
+
+        .box div:nth-child(20) {
+            top: 90%;
+            left: 80%;
+            animation: animate 4.8s linear infinite;
+        }
+
+        @keyframes animate {
+            0%{
+                transform: scale(0) translateY(0) rotate(0deg);
+                opacity: 0.5;
+            }
+
+            100%{
+                transform: scale(1.3) translateY(-90px) rotate(360deg);
+                opacity: 0;
+            }
+        }
+
+    /* 3D Container */
+
+        #container3D {
+            background-color: rgba(255, 0, 0, 0.8);
+            z-index: 100;
+        }
+        @media (min-width: 1024px) { /* Large screens and above */
+            #container3D {
+                justify-self: end; /* Align the container to the right */
+            }
+        }
+
+
+    </style>
+
+</head>
+<body>
+<div class="wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
+
+    <!-- Animation div-->
+    <div class="box">
+        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+    </div>
+
+    <!-- Main Div -->
+    <div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden" >
+        <!-- Navigation Bar -->
+        <nav class="bg-transparent py-4" style="z-index: 2;">
+            <div class="mx-auto px-2 sm:px-4 lg:px-20 mt-[2vw] flex justify-between items-center">
+                <div class="flex items-center">
+                    <a href="logo.png" class="mr-2">
+                        <img src="logo.png" alt="Logo" class="h-8 w-8">
+                    </a>
+                    <div class="text-white font-bold text-2xl">Gambit</div>
+                </div>
+                <a href="#signup" class="glowing-box py-3 px-7 rounded-3xl font-bold hover:from-orange-400 hover:to-yellow-400">Log Out</a>
+            </div>
+        </nav>
+
+        <!-- Content -->
+        <section class="text-white text-center py-20 mt-10 mb-0" style="z-index: 3;">
+            <div class="mx-auto px-2 sm:px-3 lg:px-20 flex flex-col lg:flex-row items-center justify-between">
+
+                <div class="mt-10 mb-10 lg:mb-0 text-center lg:text-left leading-loose">
+                    <h1 class="text-3xl sm:text-5xl font-extrabold mb-10">
+                        Level Up <br> Knowledge and <br> <span class="text-purple-500 color-change">Your Future</span>
+                    </h1>
+                    <p class="mt-4 text-lg sm:text-xl ">
+                        Experience a new way to learn, where fun and education collide.<br>
+                        Test your knowledge, climb the leaderboard, and achieve greatness!
+                    </p>
+
+                    <div class="flex flex-col justify-center md:justify-center lg:justify-start">
+                        <div><a href="#" class="glowing-box font-bold py-3 px-10 mt-6 inline-block rounded-full text-lg hover:bg-yellow-400 ">
+                            Explore
+                        </a></div>
+                    </div>
+                </div>
+                <div class="lg:w-1/2 flex flex-col items-center">
+                    <script src="https://scripts.sirv.com/sirvjs/v3/sirv.js?modules=model"></script>
+                    <div class="Sirv">
+                        <div data-src="https://riyaangel.sirv.com/ghost_boy.glb" data-options="animation.autoplay:true; animation.timeScale:2; animation.crossfadeDuration:800; hint.finger:false; autorotate.enable:true" ></div>
+                    </div>
+                </div>
+            </div>
+
+        </section>
+    </div>
+
+
+<!-- Trail -->
+    <script>
+        // JavaScript to create trailing particles
+        document.addEventListener("mousemove", function(e) {
+            // Get the window's width and height
+            const windowWidth = window.innerWidth;
+            const windowHeight = window.innerHeight;
+
+            // Generate random offset to prevent particles from going outside
+            const maxX = windowWidth - 10; // Max X value for particles (width - particle size)
+            const maxY = windowHeight - 10; // Max Y value for particles (height - particle size)
+
+            // Limit particle creation by checking for a cooldown interval
+            if (Math.random() < 0.9) { // Only create a particle 20% of the time
+                // Create a new particle
+                const particle = document.createElement('div');
+                particle.classList.add('particle');
+
+                // Set the particle's initial position to the cursor's position, with boundaries
+                const posX = Math.min(Math.max(e.pageX - 5, 0), maxX); // Keep within X bounds
+                const posY = Math.min(Math.max(e.pageY - 5, 0), maxY); // Keep within Y bounds
+
+                // Apply the calculated position
+                particle.style.left = `${posX}px`;
+                particle.style.top = `${posY}px`;
+
+                // Append the particle to the body
+                document.body.appendChild(particle);
+
+                // Remove the particle after animation ends (1s)
+                setTimeout(() => {
+                    particle.remove();
+                }, 1000);
+            }
+        });
+    </script>
+</div>
+
+</body>
+</html>
