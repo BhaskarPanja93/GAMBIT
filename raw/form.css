@@ -265,4 +265,5 @@ h6 span{
 #rotating-form{
   position: relative;
   top: -100px;
+  margin-left: 40px;
 }
