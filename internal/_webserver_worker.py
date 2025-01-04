@@ -1616,9 +1616,9 @@ bodyBase = """
 </body>"""
 
 
-musicCollection = MusicCollection()
+#musicCollection = MusicCollection()
 baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
-                               Routes.webHomePage.value, Routes.webWS.value, ServerSecrets.webFernetKey.value,
+                               Routes.webHomePage.value, ServerSecrets.webFernetKey.value,
                                extraHeads, bodyBase, CoreValues.title.value, False)
 
 
