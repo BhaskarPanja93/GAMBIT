@@ -10,7 +10,7 @@ body{
     width: 10px;
     height: 10px;
     border-radius: 50%;
-    background-color: orange;
+    background-color: #007bff;
     pointer-events: none;
     animation: fadeOut 1s ease-out forwards;
 }
@@ -26,22 +26,93 @@ body{
     }
 }
 
-/* Orange glow Box */
+/* Music button */
+
+.vertical-tray {
+    z-index: 1000;
+    position: absolute;
+    bottom: 90px;
+    right: 80px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    justify-content: center;
+    gap: 10px;
+    font-size: 13px;
+
+    background: rgba(255, 255, 255, 0.2);
+    padding: 7px;
+    border-radius: 50px;
+
+    transition: all 0.5s ease;}
+
+.rect-btn {
+    cursor: pointer;
+    color: rgba(255, 255, 255, 0.71);
+}
+
+.rect-btn:hover {
+    color: rgba(255, 255, 255);
+}
+
+.vertical-tray.collapsed .rect-btn {
+    display: none;
+}
+
+.music-btn {
+    width: 50px;
+    height: 50px;
+    background: linear-gradient(to bottom, #c451fd, #4949fd);
+    color: #fff;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    box-shadow: 0 4px 8px rgba(0, 0, 0, 0.2);
+    cursor: pointer;
+    transition: transform 0.2s, background-color 0.2s;
+}
+
+.music-btn:hover {
+    background: linear-gradient(to bottom, #cc6bfb, #7171fa);
+    box-shadow: 0 0 10px 5px rgba(125, 50, 255, 0.39);
+    transition: all 0.3s ease-in-out;
+}
+
+.music-btn span {
+    font-size: 24px;
+}
+
+@media (max-width: 768px) {
+    .vertical-tray {
+        bottom: 60px;
+        right: 60px;
+    }
+}
+
+@media (max-width: 480px) {
+    .vertical-tray {
+        bottom: 50px;
+        right: 40px;
+    }
+}
+
+/* glow Button */
 
 .glowing-box {
-    background: linear-gradient(to bottom, #ffc298, #f97316);
+    background: linear-gradient(to bottom, #c451fd, #4949fd);
     padding: 1.5rem;
     color: white;
-    box-shadow: 0 0 15px 5px rgba(53, 53, 53, 0.8);
+    box-shadow: 0 0 15px 5px rgba(11, 11, 11, 0.8);
     border-radius: 8px;
     position: relative;
     z-index: 2;
 }
 
 .glowing-box:hover {
-    background: linear-gradient(to bottom, #ffd8bb, #ff9954);
+    background: linear-gradient(to bottom, #cc6bfb, #7171fa);
     transform: scale(1.05);
-    box-shadow: 0 0 10px 5px rgba(255, 165, 0, 0.39);
+    box-shadow: 0 0 10px 5px rgba(50, 60, 255, 0.39);
     transition: all 0.3s ease-in-out;
 }
 
@@ -70,37 +141,37 @@ body{
 
 @keyframes changeColor {
     0% {
-        color: #6B21A8; /* Purple */
+        color: #6B21A8;
     }
     10% {
-        color: #5d00ff; /* Violet */
+        color: #5d00ff;
     }
     20% {
-        color: #0f00ff; /* Dark Blue */
+        color: #0f00ff;
     }
     30% {
-        color: #0080ff; /* Blue */
+        color: #0080ff;
     }
     40% {
-        color: #00dcff; /* Cyan */
+        color: #00dcff;
     }
     50% {
-        color: #00ffea; /* Turquoise */
+        color: #00ffea;
     }
     60% {
-        color: #00ffbb; /* Teal */
+        color: #00ffbb;
     }
     70% {
-        color: #00eaff; /* Green */
+        color: #00eaff;
     }
     80% {
-        color: #0076ff; /* Orange */
+        color: #0076ff;
     }
     90% {
-        color: #2e00ff; /* Red */
+        color: #2e00ff;
     }
     100% {
-        color: #8d00ff; /* Back to Purple */
+        color: #8d00ff;
     }
 }
 
@@ -270,9 +341,9 @@ body{
     background-color: rgba(255, 0, 0, 0.8);
     z-index: 100;
 }
-@media (min-width: 1024px) { /* Large screens and above */
+@media (min-width: 1024px) {
     #container3D {
-        justify-self: end; /* Align the container to the right */
+        justify-self: end;
     }
 }
 

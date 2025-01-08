@@ -32,6 +32,66 @@
             </div>
         </nav>
 
+        <!--   Music Button   -->
+        <div class="vertical-tray" id="tray">
+            <button id="toggle-btn" class="toggle-btn">
+                <img src="upArrow.png" style="height: 15px; width: 15px" alt="Toggle" />
+            </button>
+            <button class="rect-btn">Lo-fi</button>
+            <button class="rect-btn">Ambient</button>
+            <button class="rect-btn">Jazz</button>
+            <button class="rect-btn">Classical</button>
+            <div id="music-btn" class="music-btn">
+                <img id="icon" src="play-button.png" alt="Play" style="height: 25px;width: 25px;">
+            </div>
+        </div>
+
+        <audio id="audio" src="placeholder.mp3"></audio>
+
+        <script>
+
+            document.addEventListener('DOMContentLoaded', function() {
+                // Get elements
+                const tray = document.getElementById('tray');
+                const toggleBtn = document.getElementById('toggle-btn');
+                const musicBtn = document.getElementById('music-btn');
+                const toggleImage = toggleBtn.querySelector('img');
+
+
+                toggleBtn.addEventListener('click', () => {
+                    tray.classList.toggle('collapsed');
+
+
+                    if (tray.classList.contains('collapsed')) {
+                        toggleImage.src = 'upArrow.png';
+                    } else {
+                        toggleImage.src = 'downArrow.png';
+                    }
+                });
+            });
+
+
+        </script>
+
+        <script>
+            const musicBtn = document.getElementById('music-btn');
+            const audio = document.getElementById('audio');
+            const icon = document.getElementById('icon');
+
+            musicBtn.addEventListener('click', () => {
+                if (audio.paused) {
+                    audio.play();
+                    icon.src = 'pause-button.png';
+                    icon.alt = 'Pause';
+                } else {
+                    audio.pause();
+                    icon.src = 'play-button.png';
+                    icon.alt = 'Play';
+                }
+            });
+        </script>
+
+
         <!-- Content -->
         <div class="text-white text-center py-20 mt-10 mb-0" style="z-index: 3;">
             <div class="mx-auto px-2 sm:px-3 lg:px-20 flex flex-col lg:flex-row items-center justify-between">
@@ -40,7 +100,7 @@
 
 
                                         <div class="section text-center" id="rotating-form">
-                                            <h6 class="mb-0 pb-3"><span>Log In </span><span>Sign Up</span></h6>
+                                            <div class="logSignHeader"><h6><span>Log In</span></h6><h6><span>Sign Up</span></h6></div>
                                             <input class="checkbox" type="checkbox" id="reg-log" name="reg-log"/>
                                             <label for="reg-log"></label>
                                             <div class="card-3d-wrap mx-auto">
@@ -99,11 +159,11 @@
 
                 <div id="ghost3d" class="lg:w-1/2 flex flex-col items-center">
                     <script src="https://scripts.sirv.com/sirvjs/v3/sirv.js?modules=model"></script>
-
-                    <div class="Sirv">    <!--  Change model  -->
-                        <div data-src="https://riyaangel.sirv.com/floating_fox.glb" data-options="camera.orbit:10deg 88deg 10%; exposure:1; zoom:false; preload:true; animation.autoplay:true; animation.timeScale:2; animation.crossfadeDuration:800; hint.finger:false;" ></div>
+                    <div class="Sirv">
+                        <div data-src="https://riyaangel.sirv.com/ghost_boy.glb" data-options="zoom:false; preload:true; animation.autoplay:true; animation.timeScale:2; animation.crossfadeDuration:800; hint.finger:false; autorotate.enable:true" ></div>
                     </div>
                 </div>
+
             </div>
 
         </div>
