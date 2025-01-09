@@ -8,6 +8,7 @@
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="Authentication.css">
     <link rel="stylesheet" href="form.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 </head>
 <body>
@@ -99,22 +100,40 @@
             <div style="width: 40%; padding: 20px; border-right: 1px solid #ddd;">
                 <h3 style="margin-bottom: 20px;">Create New Post</h3>
                 <form>
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label for="post-date" style="display: block; margin-bottom: 5px;">Date</label>
-                        <input type="date" id="post-date" class="form-style" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                    <div class="flex flex-wrap md:flex-nowrap gap-4">
+                        <!-- Date Field -->
+                        <div class="form-group w-full md:w-1/3" style="margin-bottom: 15px;">
+                            <label for="post-date" style="display: block; margin-bottom: 5px;">Date</label>
+                            <input type="date" id="post-date"
+                                   class="w-full h-12 text-black text-center"
+                                   style="border-radius: 4px; border: 1px solid #ddd;">
+                        </div>
+
+                        <!-- Header Field -->
+                        <div class="form-group w-full md:w-2/3" style="margin-bottom: 15px;">
+                            <label for="logheader" style="display: block; margin-bottom: 5px;">Header</label>
+                            <input type="text" id="logheader"
+                                   class="form-style w-full h-12"
+                                   placeholder="Enter Header"
+                                   style="border-radius: 4px; border: 1px solid #ddd;">
+                        </div>
                     </div>
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label for="logheader" style="display: block; margin-bottom: 5px;">Header</label>
-                        <input type="text" id="logheader" class="form-style" placeholder="Enter Header" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                    </div>
+
+
                     <div class="form-group" style="margin-bottom: 15px;">
                         <label for="post-description" style="display: block; margin-bottom: 5px;">Description</label>
                         <input type="text" id="post-description" class="form-style" placeholder="Enter Description" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
                     </div>
-                    <div class="form-group" style="margin-bottom: 15px;">
-                        <label for="content-body" style="display: block; margin-bottom: 5px;">Content Body</label>
-                        <input type="text" id="content-body" class="form-style" placeholder="Enter Content Body" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+
+                    <div class="form-group mb-4">
+                        <label for="content-body" class="block mb-1">Content Body</label>
+                        <input type="text" id="content-body"
+                               class="form-style w-full p-3 h-32"
+                               placeholder="Enter Content Body"
+                               style="border-radius: 4px; border: 1px solid #ddd;">
                     </div>
+
+
                     <div class="form-group" style="margin-bottom: 15px;">
                         <label for="post-subject" style="display: block; margin-bottom: 5px;">Subject</label>
                         <select id="post-subject" class="form-style" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
@@ -124,30 +143,98 @@
                             <option value="Language">Computer</option>
                         </select>
                     </div>
-                    <button type="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Publish</button>
+                    <button class="glowing-box py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Publish</button>
                 </form>
             </div>
 
             <!-- Right Side: Search Bar and Posted Content -->
             <div style="width: 60%; padding: 20px;">
-                <div class="form-group" style="margin-bottom: 20px;">
-                    <input type="text" class="form-style" placeholder="Search posts..." style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                <div class="flex flex-wrap md:flex-nowrap gap-4">
+                    <div class="form-group" style="margin-bottom: 20px; position: relative; flex: 1;">
+                        <input type="text" class="form-style" placeholder="Search posts..." style="width: 100%; padding: 10px 40px 10px 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <button type="button" style="position: absolute; top: 50%; right: 10px; transform: translateY(-50%); background-color: transparent; border: none; cursor: pointer;">
+                            <i class="fa fa-search" style="color: #ffffff;"></i>
+                        </button>
+                    </div>
+
+
+                    <div class="form-group" style="margin-bottom: 15px;">
+                       <select id="post-filter" class="form-style" style="width: 100%; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                           <option value="All">All Subjects</option>
+                            <option value="Math">Mathematics</option>
+                            <option value="Science">Science</option>
+                            <option value="History">History</option>
+                            <option value="Language">Computer</option>
+                        </select>
+                    </div>
+
                 </div>
-                <div>
-                    <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                        <h4 style="margin: 0 0 10px;">Post Title 1</h4>
-                        <p style="margin: 0 0 10px;">Description: Brief description of the post...</p>
-                        <p style="margin: 0 0 10px;"><strong>Subject:</strong> Science</p>
-                        <button type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+
+
+                <div style="overflow-y: scroll;max-height: 570px; padding-right: 150px;">
+
+                    <style>
+                        /* Hide the scrollbar */
+                        div::-webkit-scrollbar {
+                            display: none;
+                        }
+                    </style>
+
+                    <!-- post 1 -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; padding: 7px; border: 1px solid #ddd; border-radius: 4px;">
+                        <div style="flex: 1">
+                            <h4 style="margin: 0 0 10px;">Post Title 2</h4>
+                            <p style="margin: 0 0 10px;">Description: Another brief description... </p>
+                            <p style="margin: 0 0 10px;"><strong>Subject:</strong> History</p>
+                            <button class="glowing-box py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+                        </div>
+                        <div style=" min-width: 300px; display:flex;">
+                            <img src="https://archive.org/download/resort_bar_ocean-wallpaper-1280x720/resort_bar_ocean-wallpaper-1280x720.jpg" alt="Post Image" class="post-image">
+                        </div>
                     </div>
-                    <div style="margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
-                        <h4 style="margin: 0 0 10px;">Post Title 2</h4>
-                        <p style="margin: 0 0 10px;">Description: Another brief description...</p>
-                        <p style="margin: 0 0 10px;"><strong>Subject:</strong> History</p>
-                        <button type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+
+                    <!-- post 2 -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <div style="flex: 1;">
+                            <h4 style="margin: 0 0 10px;">Post Title 2</h4>
+                            <p style="margin: 0 0 10px;">Description: Another brief description... </p>
+                            <p style="margin: 0 0 10px;"><strong>Subject:</strong> History</p>
+                            <button class="glowing-box py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+                        </div>
+                        <div style=" min-width: 300px; display: flex;">
+                            <img src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" alt="Post Image" class="post-image">
+                        </div>
                     </div>
+
+                    <!-- post 3 -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <div style="flex: 1">
+                            <h4 style="margin: 0 0 10px;">Post Title 2</h4>
+                            <p style="margin: 0 0 10px;">Description: Another brief description... </p>
+                            <p style="margin: 0 0 10px;"><strong>Subject:</strong> History</p>
+                            <button class="glowing-box py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+                        </div>
+                        <div style=" min-width: 300px; display: flex;">
+                            <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_xrlfVkBSYBaeRtyyKvqnvsXZ2gNjpzn4DvNiRUdcq27E8Y71jlhv3qxFN8xxmMHuIfw&usqp=CAU" alt="Post Image" class="post-image">
+                        </div>
+                    </div>
+
+                    <!-- post 4 -->
+                    <div style="display: flex; flex-wrap: wrap; gap: 20px; margin-bottom: 20px; padding: 10px; border: 1px solid #ddd; border-radius: 4px;">
+                        <div style="flex: 1">
+                            <h4 style="margin: 0 0 10px;">Post Title 2</h4>
+                            <p style="margin: 0 0 10px;">Description: Another brief description... </p>
+                            <p style="margin: 0 0 10px;"><strong>Subject:</strong> History</p>
+                            <button class="glowing-box py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+                        </div>
+                        <div style=" min-width: 300px; display: flex;">
+                            <img src="https://wallpapers.com/images/hd/720p-ny-city-background-6fja004v3olna9yj.jpg" alt="Post Image" class="post-image">
+                        </div>
+                    </div>
+
                     <!-- Add more post divs as needed -->
                 </div>
+
             </div>
         </div>
 
