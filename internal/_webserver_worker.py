@@ -8,14 +8,14 @@ from flask import request, send_from_directory, Response
 from random import shuffle
 from threading import Thread
 from time import time, sleep
-from randomisedString import RandomisedString as StringGenerator
-from dynamicWebsite import DynamicWebsite
 from Enums import *
 from gevent.pywsgi import WSGIServer
 from Methods import *
-from customisedLogs import Manager as LogManager
 from werkzeug.security import check_password_hash, generate_password_hash
 from json import loads
+from customisedLogs import CustomisedLogs
+from randomisedString import RandomisedString
+from dynamicWebsite import DynamicWebsite
 
 
 def navBar(viewerObj: DynamicWebsite.BaseViewer):
@@ -850,8 +850,8 @@ class MusicCollection:
 
 class Player:
     def __init__(self, viewer: DynamicWebsite.BaseViewer|None=None):
-        self.userName = "BOT_"+StringGenerator().AlphaNumeric(4,4)
-        self.userID = "BOT_"+StringGenerator().AlphaNumeric(10,10)
+        self.userName = "BOT_" + RandomisedString().AlphaNumeric(4, 4)
+        self.userID = "BOT_" + RandomisedString().AlphaNumeric(10, 10)
         self.userName = liveCacheManager.getUserName(liveCacheManager.ByViewerID, viewer.viewerID) if viewer else self.userName
         self.userID = liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewer.viewerID) if viewer else self.userID
         self.viewerObj = viewer
@@ -886,7 +886,7 @@ class Party:
         self.teams: list[Team] = []
         self.timerInitialised = False
         self.gameObj:Quiz|None = None
-        while not self.partyID or self.partyID in liveCacheManager.activeParties: self.partyID = StringGenerator().AlphaNumeric(5, 30)
+        while not self.partyID or self.partyID in liveCacheManager.activeParties: self.partyID = RandomisedString().AlphaNumeric(5, 30)
         liveCacheManager.partyCreated(self)
         for _ in range(teamCount): self.teams.append(Team(f"{self.partyID}{_}"))
         self.maxPlayers = playerCount
@@ -986,7 +986,7 @@ class Quiz:
         self.party = party
 
         self.startTime = time()
-        self.matchID = StringGenerator().AlphaNumeric(50, 50)
+        self.matchID = RandomisedString().AlphaNumeric(50, 50)
         self.addedToDB = False
         self.endTime = 0.0
 
@@ -1339,7 +1339,7 @@ def registerUser(viewerObj:DynamicWebsite.BaseViewer, form:dict):
         sendRegisterForm(viewerObj)
     else:
         while True:
-            userID = StringGenerator().AlphaNumeric(50, 50)
+            userID = RandomisedString().AlphaNumeric(50, 50)
             if not SQLconn.execute(f"SELECT UserName from user_auth where UserID=\"{userID}\" limit 1"):
                 SQLconn.execute(f"INSERT INTO user_info values (\"{userID}\", now(), \"{name}\", {age})")
                 SQLconn.execute(f"INSERT INTO user_auth values (\"{userID}\", \"{username}\", \"{generate_password_hash(password)}\")")
@@ -1366,7 +1366,7 @@ def loginUser(viewerObj:DynamicWebsite.BaseViewer, form:dict):
 
 def publishNote(viewerObj:DynamicWebsite.BaseViewer, form:dict):
     while True:
-        noteID = StringGenerator().AlphaNumeric(50,50)
+        noteID = RandomisedString().AlphaNumeric(50, 50)
         if not SQLconn.execute(f"SELECT NoteID from notes where NoteID=\"{noteID}\" limit 1"):
             SQLconn.execute(f"INSERT INTO notes values (\"{noteID}\", \"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\")")
             SQLconn.execute(f"INSERT INTO note_relevance values (\"{noteID}\", \"{form['subject']}\", \"{form['header']}\", \"{form['description']}\")")
@@ -1488,7 +1488,7 @@ def visitorLeftCallback(viewerObj: DynamicWebsite.BaseViewer):
     print("Visitor Left: ", viewerObj.viewerID)
 
 
-logger = LogManager()
+logger = CustomisedLogs()
 SQLconn = connectDB(logger)
 liveCacheManager = UserCache()
 

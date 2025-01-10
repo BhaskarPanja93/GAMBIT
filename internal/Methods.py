@@ -1,5 +1,5 @@
-from customisedLogs import Manager as LogManager
-from pooledMySQL import Manager as MySQLPool
+from customisedLogs import CustomisedLogs
+from pooledMySQL import PooledMySQL
 try: from SecretEnums import * ## change
 except: from internal.SecretEnums import * ## change
 
@@ -29,21 +29,21 @@ def sqlISafe(parameter):
     return parameter
 
 
-def connectDB(logger:LogManager) -> MySQLPool:
+def connectDB(logger:CustomisedLogs) -> PooledMySQL:
     """
     Blocking function to connect to DB
     :return: None
     """
     for host in DBData.DBHosts.value:
         try:
-            mysqlPool = MySQLPool(user=DBData.DBUser.value, password=DBData.DBPassword.value, dbName=DBData.DBName.value, host=host)
+            mysqlPool = PooledMySQL(user=DBData.DBUser.value, password=DBData.DBPassword.value, dbName=DBData.DBName.value, host=host)
             mysqlPool.execute(f"SELECT DATABASE();")
-            logger.success("DB", f"connected to: {host}")
+            logger.log(logger.Colors.green_800, "DB", f"connected to: {host}")
             return mysqlPool
         except:
-            logger.failed("DB", f"failed: {host}")
+            logger.log(logger.Colors.red_500, "DB", f"failed: {host}")
     else:
-        logger.fatal("DB", "Unable to connect to DataBase")
+        logger.log(logger.Colors.red_800, "DB", "Unable to connect to DataBase")
         input("EXIT...")
         exit(0)
 
