@@ -52,7 +52,7 @@ class FormPurposes(Enum):
 
 
 class Routes(Enum):
-    webHomePage = "/better-education"
+    webHomePage = "/"
     webWS = f"{webHomePage}-ws"
     internalConnection = f"{webHomePage}-conn"
     cdnFileContent = f"{webHomePage}-cdn-file"

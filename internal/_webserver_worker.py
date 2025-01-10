@@ -8,8 +8,8 @@ from flask import request, send_from_directory, Response
 from random import shuffle
 from threading import Thread
 from time import time, sleep
-from randomisedString import Generator as StringGenerator
-from dynamicWebsite import *
+from randomisedString import RandomisedString as StringGenerator
+from dynamicWebsite import DynamicWebsite
 from Enums import *
 from gevent.pywsgi import WSGIServer
 from Methods import *
@@ -18,7 +18,7 @@ from werkzeug.security import check_password_hash, generate_password_hash
 from json import loads
 
 
-def navBar(viewerObj: BaseViewer):
+def navBar(viewerObj: DynamicWebsite.BaseViewer):
     navigation_bar = f"""
 
         <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
@@ -26,7 +26,7 @@ def navBar(viewerObj: BaseViewer):
                 <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto">
                     <a href="#" class="flex items-center space-x-4">
                         <!-- Logo Image -->
-                        <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
+                        <img class="w-auto h-14 sm:h-18" src="/-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
                         <!-- GAMBIT Text -->
                         <p class="text-3xl text-white font-bold">GAMBIT</p>
                     </a>
@@ -35,7 +35,7 @@ def navBar(viewerObj: BaseViewer):
             <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
-                    <form onsubmit="return submit_ws(this)">
+                    <form>
                         {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
                             Log out
@@ -46,22 +46,22 @@ def navBar(viewerObj: BaseViewer):
         </div>
     """
 
-    viewerObj.queueTurboAction(navigation_bar, "navBar", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(navigation_bar, "navBar", DynamicWebsite.UpdateMethods.update)
 
 
-def renderLogo(viewerObj: BaseViewer, allowNavigation=True):
+def renderLogo(viewerObj: DynamicWebsite.BaseViewer, allowNavigation=True):
     logo = f"""
-    <form onsubmit="return submit_ws(this)">
+    <form>
         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6 bg-transparent">
             {viewerObj.addCSRF(FormPurposes.renderSubCategories.value) if allowNavigation else ""}
-            <img class="w-auto h-14 sm:h-18" src="/better-education-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
+            <img class="w-auto h-14 sm:h-18" src="/-cdn-file?type=image&name=dice.png" loading="lazy" width="202" height="80">
             <p class="text-3xl text-white font-bold">GAMBIT</p>
         </button>
     </form>"""
-    viewerObj.queueTurboAction(logo, "navLogoButton", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(logo, "navLogoButton", DynamicWebsite.UpdateMethods.update)
 
 
-def renderHomepage(viewerObj: BaseViewer):
+def renderHomepage(viewerObj: DynamicWebsite.BaseViewer):
     home = f"""
 
         <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
@@ -71,7 +71,7 @@ def renderHomepage(viewerObj: BaseViewer):
             <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
-                    <form onsubmit="return submit_ws(this)">
+                    <form>
                         {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
                             Log out
@@ -91,7 +91,7 @@ def renderHomepage(viewerObj: BaseViewer):
                     <source src="{Routes.cdnFileContent.value}?type={CDNFileType.video.value}&name=login_background_video1.mp4"
                     type="video/mp4"> </video>
                 <!-- Start Learning Button -->
-                <form onsubmit="return submit_ws(this)">
+                <form>
                     {viewerObj.addCSRF(FormPurposes.renderSubCategories.value)}
                     <button type="submit" class="absolute top-1/3 left-1/2 transform -translate-x-1/2 bg-white font-bold text-4xl rounded-full p-12 hover:scale-105 transition duration-300 ease-in-out" style="color: #23003d;">
                 START LEARNING
@@ -107,11 +107,11 @@ def renderHomepage(viewerObj: BaseViewer):
         </div>
     </div>
 """
-    viewerObj.queueTurboAction(home, "fullPage", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(home, "fullPage", DynamicWebsite.UpdateMethods.update)
     renderLogo(viewerObj)
 
 
-def renderAuthPage(viewerObj: BaseViewer):
+def renderAuthPage(viewerObj: DynamicWebsite.BaseViewer):
     loginRegister = f"""
 
 <div class="relative min-h-screen flex justify-center">
@@ -143,7 +143,7 @@ def renderAuthPage(viewerObj: BaseViewer):
                     </button>
                     <div id="loginFormContainer"
                          class="hidden w-full rounded-lg bg-transparent flex items-center justify-center h-96 shadow-2xl">
-                        <form onsubmit="return submit_ws(this)">
+                        <form>
                             {viewerObj.addCSRF(FormPurposes.submitLogin.value)}
                             <input type="text" autocomplete="off"
                                    class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -167,7 +167,7 @@ def renderAuthPage(viewerObj: BaseViewer):
 
                     <div id="registerFormContainer"
                          class="hidden w-full rounded-lg bg-transparent flex items-center justify-center h-96 shadow-2xl">
-                        <form class="w-full px-6" onsubmit="return submit_ws(this)">
+                        <form class="w-full px-6">
                             {viewerObj.addCSRF(FormPurposes.submitRegister.value)}
 
                             <input type="text" autocomplete="off"
@@ -218,13 +218,13 @@ def renderAuthPage(viewerObj: BaseViewer):
         }});    
     </script>
     """
-    viewerObj.queueTurboAction(loginRegister, "fullPage", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(loginRegister, "fullPage", DynamicWebsite.UpdateMethods.update)
     sendRegisterForm(viewerObj)
     sendLoginForm(viewerObj)
     renderLogo(viewerObj, False)
 
 
-def renderQuizGamePage(viewerObj: BaseViewer):
+def renderQuizGamePage(viewerObj: DynamicWebsite.BaseViewer):
     quiz = f"""
 <div class="bg-[#23003d] flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
 
@@ -294,11 +294,11 @@ def renderQuizGamePage(viewerObj: BaseViewer):
 """
 
 
-    viewerObj.queueTurboAction(quiz, "fullPage", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(quiz, "fullPage", DynamicWebsite.UpdateMethods.update)
 
 
 # Ending Quiz Page
-def renderQuizEndPage(viewerObj: BaseViewer):
+def renderQuizEndPage(viewerObj: DynamicWebsite.BaseViewer):
     quizEnd = f"""
     <div class="bg-[#23003d] flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
     <div id="leaderboardDiv" class="rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
@@ -324,10 +324,10 @@ def renderQuizEndPage(viewerObj: BaseViewer):
     </div>
 </div>
 """
-    viewerObj.queueTurboAction(quizEnd, "fullPage", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(quizEnd, "fullPage", DynamicWebsite.UpdateMethods.update)
 
 
-def renderQuizLobbyPage(viewerObj: BaseViewer):
+def renderQuizLobbyPage(viewerObj: DynamicWebsite.BaseViewer):
     quizLobby = f"""
             <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
@@ -338,7 +338,7 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
             <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
-                    <form onsubmit="return submit_ws(this)">
+                    <form>
                         {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
                             Log out
@@ -356,7 +356,7 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
         </div>
         <div id="quizFriendListDiv" class="p-6 flex items-center rounded-lg bg-[#490080] flex flex-col h-full w-1/3">
             <!-- Queue Up Button -->
-            <form class="w-full" onsubmit="return submit_ws(this)">
+            <form class="w-full"
                 {viewerObj.addCSRF(FormPurposes.startQuiz.value)}
                 <button type="submit" class="w-full p-4 rounded-full flex justify-center bg-gradient-to-r from-purple-500 to-violet-700 hover:scale-105 hover:transition duration-300 ease-in-out mb-4">
                     <div id="queueTimer" class="w-full text-white font-bold">QUEUE UP</div>
@@ -381,11 +381,11 @@ def renderQuizLobbyPage(viewerObj: BaseViewer):
 
     </div>
     """
-    viewerObj.queueTurboAction(quizLobby, "fullPage", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(quizLobby, "fullPage", DynamicWebsite.UpdateMethods.update)
     renderLogo(viewerObj)
 
 
-def renderQuizMatchFoundPage(viewerObj: BaseViewer):
+def renderQuizMatchFoundPage(viewerObj: DynamicWebsite.BaseViewer):
     matchFound = f"""
         <div class="rounded-lg bg-[#23003d] flex items-center justify-stretch h-full w-full gap-8 px-6 py-6 place-content-stretch">
             <div id="quizDiv" class="rounded-lg bg-gradient-to-t from-gray-700 to-gray-900 flex flex-col items-center justify-center w-full h-full">
@@ -394,7 +394,7 @@ def renderQuizMatchFoundPage(viewerObj: BaseViewer):
         </div>
 
         """
-    viewerObj.queueTurboAction(matchFound, "fullPage", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(matchFound, "fullPage", DynamicWebsite.UpdateMethods.update)
 
 
 # <div class="bg-[#000000]">
@@ -404,7 +404,7 @@ def renderQuizMatchFoundPage(viewerObj: BaseViewer):
 #             </div>
 #         </div>
 #     </div>
-def renderContentMarketPlace(viewerObj: BaseViewer):
+def renderContentMarketPlace(viewerObj: DynamicWebsite.BaseViewer):
     contentMarketPlace = f"""
     <script>
         function findMarketplaceSearch(text)
@@ -431,7 +431,7 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
 
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
-                    <form onsubmit="return submit_ws(this)">
+                    <form>
                         {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
                             Log out
@@ -519,11 +519,11 @@ def renderContentMarketPlace(viewerObj: BaseViewer):
 
 
     """
-    viewerObj.queueTurboAction(contentMarketPlace, "fullPage", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(contentMarketPlace, "fullPage", DynamicWebsite.UpdateMethods.update)
     renderLogo(viewerObj)
 
 
-def renderSubCategories(viewerObj: BaseViewer):
+def renderSubCategories(viewerObj: DynamicWebsite.BaseViewer):
     subCategories = f"""
         <nav class="relative flex items-center justify-between h-20 w-full bg-black" aria-label="Global">
             <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
@@ -532,7 +532,7 @@ def renderSubCategories(viewerObj: BaseViewer):
 
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
-                    <form onsubmit="return submit_ws(this)">
+                    <form>
                         {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
                             Log out
@@ -550,28 +550,28 @@ def renderSubCategories(viewerObj: BaseViewer):
                     SUB-CATEGORIES
                 </div>
                 <!-- First container -->
-                <form onsubmit="return submit_ws(this)">
+                <form>
                     {viewerObj.addCSRF(FormPurposes.renderMusicPage.value)}
                     <div class="bg-gray-200 rounded-lg">
                         <button class="bg-gray-400 rounded-lg text-center w-full h-full">MUSIC</button>
                     </div>
                 </form>
 
-                <form onsubmit="return submit_ws(this)">
+                <form>
                     {viewerObj.addCSRF(FormPurposes.renderQuizLobby.value)}
                     <div class="bg-gray-200 rounded-lg">
                         <button class="bg-gray-400 rounded-lg text-center w-full h-full">QUIZ</button>
                     </div>
                 </form>
 
-                <form onsubmit="return submit_ws(this)">
+                <form>
                     {viewerObj.addCSRF(FormPurposes.renderNotesPage.value)}
                     <div class="bg-gray-200 rounded-lg">
                         <button class="bg-gray-400 rounded-lg text-center w-full h-full">NOTES</button>
                     </div>
                 </form>
 
-                <form onsubmit="return submit_ws(this)">
+                <form>
                     {viewerObj.addCSRF(FormPurposes.renderContentMarketplacePage.value)}
                     <div class="bg-gray-200 rounded-lg">
                         <button class="bg-gray-400 rounded-lg text-center w-full h-full">MARKETPLACE</button>
@@ -584,11 +584,11 @@ def renderSubCategories(viewerObj: BaseViewer):
 
 
     """
-    viewerObj.queueTurboAction(subCategories, "fullPage", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(subCategories, "fullPage", DynamicWebsite.UpdateMethods.update)
     renderLogo(viewerObj)
 
 
-def renderNotesRepository(viewerObj: BaseViewer):
+def renderNotesRepository(viewerObj: DynamicWebsite.BaseViewer):
     notesRepository = f"""
     <script>
         function findNote(text)
@@ -615,7 +615,7 @@ def renderNotesRepository(viewerObj: BaseViewer):
             <div class="text-white font-semibold text-3xl flex justify-center">THE ALL IN ONE EDUCATION</div>
             <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
                 <div class="p-4 inline-flex rounded-full">   
-                    <form onsubmit="return submit_ws(this)">
+                    <form>
                         {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
                         <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-9">
                             Log out
@@ -636,13 +636,13 @@ def renderNotesRepository(viewerObj: BaseViewer):
 </div>
 """
 
-    viewerObj.queueTurboAction(notesRepository, "fullPage", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(notesRepository, "fullPage", DynamicWebsite.UpdateMethods.update)
     renderNotesUploader(viewerObj)
     renderLogo(viewerObj)
     renderAvailableNotes(viewerObj)
 
 
-def renderAvailableNotes(viewerObj: BaseViewer):
+def renderAvailableNotes(viewerObj: DynamicWebsite.BaseViewer):
     finalNotes = ""
     for noteObj in SQLconn.execute(f"SELECT NoteID from notes where UserID=\"{liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewerObj.viewerID)}\""):
         noteObjs = SQLconn.execute(f"SELECT NoteID, Subject, Header, Description from note_relevance where NoteID=\"{noteObj['NoteID'].decode()}\" limit 1")
@@ -668,12 +668,12 @@ def renderAvailableNotes(viewerObj: BaseViewer):
                     </div>
                 </div>
                 """
-    viewerObj.queueTurboAction(finalNotes, "notesHolder", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(finalNotes, "notesHolder", DynamicWebsite.UpdateMethods.update)
 
 
-def renderNotesUploader(viewerObj: BaseViewer):
+def renderNotesUploader(viewerObj: DynamicWebsite.BaseViewer):
     form = f"""
-    <form onsubmit="return submit_ws(this)">
+    <form>
         {viewerObj.addCSRF(FormPurposes.submitNote.value)}
         <div class="rounded-lg bg-gray-800 h-full md:px-6 pt-6 pb-6">
             <div class=" bg-gray-800 rounded-md px-6 py-10 w-full mx-auto h-full">
@@ -707,140 +707,40 @@ def renderNotesUploader(viewerObj: BaseViewer):
         </div>
     </form>
     """
-    viewerObj.queueTurboAction(form, "notesUpload", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(form, "notesUpload", DynamicWebsite.UpdateMethods.update)
 
 
 
-def renderMusicPage(viewerObj: BaseViewer):
+def renderMusicPage(viewerObj: DynamicWebsite.BaseViewer):
     musicPage = f"""
     
     <div class="relative flex items-center justify-center h-20 w-full bg-black" aria-label="Global">
-    <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
-        <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
-    </div>
-    <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
-    <div class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
-        <div class="p-4 inline-flex rounded-full">   
-            <form onsubmit="return submit_ws(this)">
-                {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
-                <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
-                    Log out
-                </button>
-            </form>
+        <div class="flex items-center flex-1 md:absolute md:inset-y-0 md:left-0">
+            <div id="navLogoButton" class="flex items-center justify-between w-full md:w-auto"></div>
+        </div>
+        <div class="text-white font-semibold text-3xl flex justify-center mt-3">THE ALL IN ONE EDUCATION PLATFORM</div>
+        <div id="musiclayer2" class="hidden md:absolute md:flex md:items-center md:justify-end md:inset-y-0 md:right-0">
         </div>
     </div>
-</div>
-
-
-<!-- MUSIC LAYOUT -->
-<div class="grid place-items-center min-h-screen bg-gradient-to-t from-gray-700 to-gray-900 p-5">
-    <div>
-        <h1 class="text-4xl sm:text-5xl md:text-7xl font-bold text-gray-200 mb-5">Choose your playlist</h1>
-        <div class="grid grid-cols-1 sm:grid-cols-3 md:grid-cols-4 lg:grid-cols-4 gap-4">
-            <!-- CARD 1 -->
-            <div class="bg-gray-900 shadow-lg rounded p-3">
-                <div class="group relative">
-                    <img class="w-full md:w-72 block rounded h-3/5"
-                         src="https://upload.wikimedia.org/wikipedia/en/f/f1/Tycho_-_Epoch.jpg" alt=""/>
-                    <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
-
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('LOFI')">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
-                                 class="bi bi-play-circle-fill" viewBox="0 0 16 16">
-                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
-                            </svg>
-                        </button>
-
-                    </div>
-                </div>
-                <div class="p-5">
-                    <h3 class="text-white text-lg">Lo-Fi</h3>
-                </div>
-            </div>
-            <!-- END OF CARD 1 -->
-
-            <!-- CARD 2 -->
-            <div class="bg-gray-900 shadow-lg rounded p-3">
-                <div class="group relative">
-                    <img class="w-full md:w-72 block rounded h-3/5"
-                         src="https://upload.wikimedia.org/wikipedia/en/c/ca/Tycho_-_Awake.png" alt=""/>
-                    <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
-
-
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('JAZZ')">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
-                                 class="bi bi-play-circle-fill" viewBox="0 0 16 16">
-                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
-                            </svg>
-                        </button>
-
-
-                    </div>
-                </div>
-                <div class="p-5">
-                    <h3 class="text-white text-lg">Jazz</h3>
-                </div>
-            </div>
-            <!-- END OF CARD 2 -->
-
-            <!-- CARD 3 -->
-            <div class="bg-gray-900 shadow-lg rounded p-3">
-                <div class="group relative">
-                    <img class="w-full md:w-72 block rounded h-3/5"
-                         src="https://upload.wikimedia.org/wikipedia/en/1/11/Dive_tycho_album.jpg" alt=""/>
-                    <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
-
-
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('AMBIENT')">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
-                                 class="bi bi-play-circle-fill" viewBox="0 0 16 16">
-                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
-                            </svg>
-                        </button>
-
-
-                    </div>
-                </div>
-                <div class="p-5">
-                    <h3 class="text-white text-lg">Ambient</h3>
-                </div>
-            </div>
-            <!-- END OF CARD 3 -->
-
-            <!-- CARD 4 -->
-            <div class="bg-gray-900 shadow-lg rounded p-3">
-                <div class="group relative">
-                    <img class="w-full md:w-72 block rounded h-3/5"
-                         src="https://upload.wikimedia.org/wikipedia/commons/thumb/4/42/The_Telescopes_-_Third_Wave_vinyl_photo.jpg/640px-The_Telescopes_-_Third_Wave_vinyl_photo.jpg"
-                         alt=""/>
-                    <div class="absolute bg-black rounded bg-opacity-0 group-hover:bg-opacity-60 w-full h-full top-0 flex items-center group-hover:opacity-100 transition justify-evenly">
-
-
-                        <button class="hover:scale-110 text-white opacity-0 transform translate-y-3 group-hover:translate-y-0 group-hover:opacity-100 transition" onclick="changeMusic('CLASSICAL')">
-                            <svg xmlns="http://www.w3.org/2000/svg" width="40" height="40" fill="currentColor"
-                                 class="bi bi-play-circle-fill" viewBox="0 0 16 16">
-                                <path d="M16 8A8 8 0 1 1 0 8a8 8 0 0 1 16 0zM6.79 5.093A.5.5 0 0 0 6 5.5v5a.5.5 0 0 0 .79.407l3.5-2.5a.5.5 0 0 0 0-.814l-3.5-2.5z"/>
-                            </svg>
-                        </button>
-
-
-                    </div>
-                </div>
-                <div class="p-5">
-                    <h3 class="text-white text-lg">Classical</h3>
-                </div>
-            </div>
-            <!-- END OF CARD 4 -->
-        </div>
-    </div>
-</div>
 """
-    viewerObj.queueTurboAction(musicPage, "fullPage", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(musicPage, "fullPage", DynamicWebsite.UpdateMethods.update)
+    musicPageL2 = f"""
+     <div class="p-4 inline-flex rounded-full">   
+        <form>
+            {viewerObj.addCSRF(FormPurposes.renderAuthPage.value)}
+            <button type="submit" class="text-3xl text-white font-bold inline-flex items-center px-14 py-3 text-2xl text-white bg-gray-800 rounded-full cursor-pointer hover:scale-105 hover:transition duration-300 ease-in-out mt-6">
+                Log out
+            </button>
+        </form>
+    </div>
+    """
+    viewerObj.updateHTML(musicPageL2, "musiclayer2", DynamicWebsite.UpdateMethods.update)
+
     renderLogo(viewerObj)
 
 
-def sendRegisterForm(viewerObj:BaseViewer):
-    form = f"""<form onsubmit="return submit_ws(this)">
+def sendRegisterForm(viewerObj:DynamicWebsite.BaseViewer):
+    form = f"""<form>
                         {viewerObj.addCSRF(FormPurposes.submitRegister.value)}
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-2 mb-2 text-sm dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -868,11 +768,11 @@ def sendRegisterForm(viewerObj:BaseViewer):
                            <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit
                         </button>
                     </form>"""
-    viewerObj.queueTurboAction(form, "registerFormContainer", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(form, "registerFormContainer", DynamicWebsite.UpdateMethods.update)
 
 
-def sendLoginForm(viewerObj:BaseViewer):
-    form = f"""<form onsubmit="return submit_ws(this)">
+def sendLoginForm(viewerObj:DynamicWebsite.BaseViewer):
+    form = f"""<form>
                     {viewerObj.addCSRF(FormPurposes.submitLogin.value)}
                     <input type="text" autocomplete="off"
                            class="bg-gray-50 border border-gray-300 text-gray-900 rounded-lg focus:ring-primary-600 focus:border-primary-600 block w-full p-4 mb-4 dark:bg-gray-700 dark:border-gray-600 dark:placeholder-gray-400 dark:text-white dark:focus:ring-blue-500 dark:focus:border-blue-500"
@@ -881,7 +781,7 @@ def sendLoginForm(viewerObj:BaseViewer):
                            type="password" name="password" placeholder="Password">
                     <button type="submit" class="bg-white text-blue-700 font-bold p-4 w-full rounded">Submit</button>
                 </form>"""
-    viewerObj.queueTurboAction(form, "loginFormContainer", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(form, "loginFormContainer", DynamicWebsite.UpdateMethods.update)
 
 
 
@@ -949,7 +849,7 @@ class MusicCollection:
 
 
 class Player:
-    def __init__(self, viewer: BaseViewer|None=None):
+    def __init__(self, viewer: DynamicWebsite.BaseViewer|None=None):
         self.userName = "BOT_"+StringGenerator().AlphaNumeric(4,4)
         self.userID = "BOT_"+StringGenerator().AlphaNumeric(10,10)
         self.userName = liveCacheManager.getUserName(liveCacheManager.ByViewerID, viewer.viewerID) if viewer else self.userName
@@ -998,17 +898,17 @@ class Party:
             self.timerInitialised = True
             while time() - partyTimerStartedAt < 4 and sum([len(team.players) for team in self.teams]) > 1:
                 for player in self.userIDToPlayer.values():
-                    player.viewerObj.queueTurboAction(str(4 - int(time() - partyTimerStartedAt)), "queueTimer", player.viewerObj.turboApp.methods.update)
+                    player.viewerObj.updateHTML(str(4 - int(time() - partyTimerStartedAt)), "queueTimer", DynamicWebsite.UpdateMethods.update)
                 sleep(1)
         if sum([len(team.players) for team in self.teams]) > 1:
             self.partyComplete()
         else:
             self.timerInitialised = False
             for player in self.userIDToPlayer.values():
-                player.viewerObj.queueTurboAction("Waiting...", "queueTimer", player.viewerObj.turboApp.methods.update)
+                player.viewerObj.updateHTML("Waiting...", "queueTimer", DynamicWebsite.UpdateMethods.update)
 
 
-    def joinTeam(self, viewer: BaseViewer|None=None):
+    def joinTeam(self, viewer: DynamicWebsite.BaseViewer|None=None):
         player = Player(viewer)
         if player.isHuman: liveCacheManager.userIDToPartyID[player.userID] = self.partyID
         self.userIDToPlayer[player.userID] = player
@@ -1028,7 +928,7 @@ class Party:
         return False
 
 
-    def leaveTeam(self, viewer: BaseViewer, team:Team|None=None):
+    def leaveTeam(self, viewer: DynamicWebsite.BaseViewer, team:Team|None=None):
         player = self.userIDToPlayer.get(liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewer.viewerID), Player(viewer))
         if player.userID in liveCacheManager.userIDToPartyID: del liveCacheManager.userIDToPartyID[player.userID]
         if team is None:
@@ -1108,9 +1008,9 @@ class Quiz:
                             </div>
                             """
                     if playerToRenderFor.team == playerToRender.team:
-                        playerToRenderFor.viewerObj.queueTurboAction(playerDiv, "selfTeam", playerToRenderFor.viewerObj.turboApp.methods.newDiv)
+                        playerToRenderFor.viewerObj.updateHTML(playerDiv, "selfTeam", DynamicWebsite.UpdateMethods.newDiv)
                     else:
-                        playerToRenderFor.viewerObj.queueTurboAction(playerDiv, "otherTeam", playerToRenderFor.viewerObj.turboApp.methods.newDiv)
+                        playerToRenderFor.viewerObj.updateHTML(playerDiv, "otherTeam", DynamicWebsite.UpdateMethods.newDiv)
 
     def initQuestions(self):
         for questionData in SQLconn.execute("SELECT * from questions where QuizEligible=1 ORDER BY RAND() LIMIT 30"):
@@ -1125,11 +1025,11 @@ class Quiz:
         currentQuestion = self.questions[self.questionIndex]
         for player in self.party.userIDToPlayer.values():
             if not player.isHuman: continue
-            player.viewerObj.queueTurboAction(currentQuestion.questionStatement, "questionText", player.viewerObj.turboApp.methods.update.value)
+            player.viewerObj.updateHTML(currentQuestion.questionStatement, "questionText", DynamicWebsite.UpdateMethods.update)
             options = ""
             for optionIndex in range(4):
                 options+= f"""
-                <form onsubmit="return submit_ws(this)">
+                <form>
                 {player.viewerObj.addCSRF(FormPurposes.submitQuizOption.value)}
                 <input type="hidden" name="party" value="{self.party.partyID}">
                 <input type="hidden" name="option" value="{optionIndex}">
@@ -1137,7 +1037,7 @@ class Quiz:
                     <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[player.team.teamID][optionIndex]}</div>
                 </button>
             </form>"""
-            player.viewerObj.queueTurboAction(options, "options", player.viewerObj.turboApp.methods.update.value)
+            player.viewerObj.updateHTML(options, "options", DynamicWebsite.UpdateMethods.update)
         self.generateBotInputs()
 
     def generateBotInputs(self):
@@ -1156,7 +1056,7 @@ class Quiz:
                     incorrectOptions.remove(option)
                     self.receiveUserInput(False, player, choice(incorrectOptions))
 
-    def receiveUserInput(self, isHuman: bool, viewer: BaseViewer|Player, optionIndex):
+    def receiveUserInput(self, isHuman: bool, viewer: DynamicWebsite.BaseViewer|Player, optionIndex):
         if isHuman:
             userID = liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewer.viewerID)
             player = self.party.userIDToPlayer.get(userID)
@@ -1173,28 +1073,28 @@ class Quiz:
                 options = f"""<button class="col-span-2 rounded-lg bg-gradient-to-r from-purple-500 to-violet-700 flex items-center justify-center h-full w-full">
                                     <div class="text-white font-bold text-2xl">{currentQuestion.teamOptions[player.team.teamID][optionIndex]}</div>
                                 </button>"""
-                player.viewerObj.queueTurboAction(options, "options", player.viewerObj.turboApp.methods.update.value)
+                player.viewerObj.updateHTML(options, "options", DynamicWebsite.UpdateMethods.update)
             if len(currentQuestion.optionsPressed) == len(self.party.userIDToPlayer):
                 self.updateTeamHealth(player.team, -5)
                 sleep(1)
                 self.endCurrentQuestion()
 
-    def sendPostQuizQuestion(self, viewer: BaseViewer, questionIndex):
+    def sendPostQuizQuestion(self, viewer: DynamicWebsite.BaseViewer, questionIndex):
         userID = liveCacheManager.getUserID(liveCacheManager.ByViewerID, viewer.viewerID)
         if userID not in self.party.userIDToPlayer: return
         questionIndex = int(questionIndex)
         postQuestion = f"""<div class="rounded-lg px-2 mx-6 bg-[#eacfff] text-green font-bold text-2xl p-4">
                 <div class="text-black font-bold text-2xl h-1/3 p-4 m-4">{self.questions[questionIndex].questionStatement}{self.questions[questionIndex].correctAnswers[0]}</div>
             </div>"""
-        viewer.queueTurboAction(postQuestion, "postQuiz", viewer.turboApp.methods.update)
+        viewer.updateHTML(postQuestion, "postQuiz", DynamicWebsite.UpdateMethods.update)
         self.sendPostQuizQuestionList(viewer)
 
-    def sendPostQuizQuestionList(self, viewer:BaseViewer):
+    def sendPostQuizQuestionList(self, viewer:DynamicWebsite.BaseViewer):
         questionList = """<ul class="grid grid-cols-1 gap-2 w-full h-full p-4">"""
         for questionIndex in range(0, self.questionIndex + 1):
             questionList += f"""
                                 <li>
-                                    <form onsubmit="return submit_ws(this)">
+                                    <form>
                                         {viewer.addCSRF(FormPurposes.renderPostQuizQuestion.value)}
                                         <input type="hidden" name="party" value="{self.party.partyID}">
                                         <input type="hidden" name="question" value="{questionIndex}">
@@ -1203,7 +1103,7 @@ class Quiz:
                                 </li>
                                 """
         questionList += "</ul>"
-        viewer.queueTurboAction(questionList, "postQuizQuestionList", viewer.turboApp.methods.update)
+        viewer.updateHTML(questionList, "postQuizQuestionList", DynamicWebsite.UpdateMethods.update)
 
     def endCurrentQuestion(self):
         points = {}
@@ -1240,11 +1140,11 @@ class Quiz:
                                 stroke-width="2" stroke-dasharray="{75*teamChanged.health/100} 100" stroke-linecap="round"></circle>
                     </svg>"""
             if player.team == teamChanged:
-                player.viewerObj.queueTurboAction(bar, f"selfTeamHealthBar", player.viewerObj.turboApp.methods.update.value)
-                player.viewerObj.queueTurboAction(str(teamChanged.health), f"selfTeamHealthText", player.viewerObj.turboApp.methods.update.value)
+                player.viewerObj.updateHTML(bar, f"selfTeamHealthBar", DynamicWebsite.UpdateMethods.update)
+                player.viewerObj.updateHTML(str(teamChanged.health), f"selfTeamHealthText", DynamicWebsite.UpdateMethods.update)
             else:
-                player.viewerObj.queueTurboAction(bar, f"otherTeamHealthBar", player.viewerObj.turboApp.methods.update.value)
-                player.viewerObj.queueTurboAction(str(teamChanged.health), f"otherTeamHealthText", player.viewerObj.turboApp.methods.update.value)
+                player.viewerObj.updateHTML(bar, f"otherTeamHealthBar", DynamicWebsite.UpdateMethods.update)
+                player.viewerObj.updateHTML(str(teamChanged.health), f"otherTeamHealthText", DynamicWebsite.UpdateMethods.update)
 
         if teamChanged.health == 0:
             self.saveToDB()
@@ -1277,10 +1177,10 @@ class Quiz:
                 if player.isHuman:
                     self.sendPostQuizQuestionList(player.viewerObj)
                     if player.team == teamChanged:
-                        player.viewerObj.queueTurboAction("DEFEAT", "resultTextDiv", player.viewerObj.turboApp.methods.update)
+                        player.viewerObj.updateHTML("DEFEAT", "resultTextDiv", DynamicWebsite.UpdateMethods.update)
                     else:
-                        player.viewerObj.queueTurboAction("VICTORY", "resultTextDiv", player.viewerObj.turboApp.methods.update)
-                    player.viewerObj.queueTurboAction(leaderboardDiv, "quizLeaderboard", player.viewerObj.turboApp.methods.update)
+                        player.viewerObj.updateHTML("VICTORY", "resultTextDiv", DynamicWebsite.UpdateMethods.update)
+                    player.viewerObj.updateHTML(leaderboardDiv, "quizLeaderboard", DynamicWebsite.UpdateMethods.update)
 
     def startQuiz(self):
         for player in self.party.userIDToPlayer.values():
@@ -1360,7 +1260,7 @@ class UserCache:
     def getParty(self, By, value):
         pass
 
-    def loginCall(self, viewer: BaseViewer, userID):
+    def loginCall(self, viewer: DynamicWebsite.BaseViewer, userID):
         #self.logoutCall(viewer, True)
         username = self.getUserName(self.ByUserID, userID)
         if userID not in self.activeUserIDs:
@@ -1373,14 +1273,14 @@ class UserCache:
         addEntry = False
         if received:
             received = received[0]
-            if received["UserID"].decode() != userID or received["RemoteAddr"] != viewer.cookie.remoteAddress or received["UserAgent"] != viewer.cookie.UA or received["HostURL"] != viewer.cookie.hostURL:
+            if received["UserID"].decode() != userID or received["RemoteAddr"] != viewer.cookie.remoteAddress or received["UserAgent"] != viewer.cookie.userAgent or received["HostURL"] != viewer.cookie.hostURL:
                 SQLconn.execute(f"DELETE from user_devices WHERE ViewerID=\"{viewer.viewerID}\"")
                 addEntry = True
         else: addEntry = True
         if addEntry:
-            SQLconn.execute(f"INSERT INTO user_devices values (\"{viewer.viewerID}\", \"{userID}\", \"{viewer.cookie.remoteAddress}\", \"{viewer.cookie.UA}\", \"{viewer.cookie.hostURL}\")")
+            SQLconn.execute(f"INSERT INTO user_devices values (\"{viewer.viewerID}\", \"{userID}\", \"{viewer.cookie.remoteAddress}\", \"{viewer.cookie.userAgent}\", \"{viewer.cookie.hostURL}\")")
 
-    def logoutCall(self, viewer: BaseViewer, logout: bool = False):
+    def logoutCall(self, viewer: DynamicWebsite.BaseViewer, logout: bool = False):
         userID = self.getUserID(self.ByViewerID, viewer.viewerID)
         username = self.getUserName(self.ByViewerID, viewer.viewerID)
         if userID is not None and userID in self.userIDToPartyID:
@@ -1394,9 +1294,9 @@ class UserCache:
         if logout: SQLconn.execute(f"DELETE from user_devices WHERE ViewerID=\"{viewer.viewerID}\"")
 
     @staticmethod
-    def getKnownLoggedInUserID(viewer: BaseViewer):
+    def getKnownLoggedInUserID(viewer: DynamicWebsite.BaseViewer):
         remoteAddr = viewer.cookie.remoteAddress
-        userAgent = viewer.cookie.UA
+        userAgent = viewer.cookie.userAgent
         hostURL = viewer.cookie.hostURL
         received = SQLconn.execute(f"SELECT UserID, RemoteAddr, UserAgent, HostURL from user_devices where ViewerID=\"{viewer.viewerID}\"")
         if received:
@@ -1411,7 +1311,7 @@ class UserCache:
         if party.partyID in self.activeParties: del self.activeParties[party.partyID]
 
 
-def registerUser(viewerObj:BaseViewer, form:dict):
+def registerUser(viewerObj:DynamicWebsite.BaseViewer, form:dict):
     username = form.get("username", "")
     email = form.get("email", "")
     password = form.get("password", "")
@@ -1420,22 +1320,22 @@ def registerUser(viewerObj:BaseViewer, form:dict):
     age = form.get("age", 0)
     try: age=int(age)
     except:
-        viewerObj.queueTurboAction("Invalid Age", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        viewerObj.updateHTML("Invalid Age", "registrationWarning", DynamicWebsite.UpdateMethods.update)
         sendRegisterForm(viewerObj)
     if not username:
-        viewerObj.queueTurboAction("Invalid Username", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        viewerObj.updateHTML("Invalid Username", "registrationWarning", DynamicWebsite.UpdateMethods.update)
         sendRegisterForm(viewerObj)
     elif SQLconn.execute(f"SELECT UserName from user_auth where UserName=\"{username}\" limit 1"):
-        viewerObj.queueTurboAction("Username Taken", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        viewerObj.updateHTML("Username Taken", "registrationWarning", DynamicWebsite.UpdateMethods.update)
         sendRegisterForm(viewerObj)
     elif email.count("@")!=1 or email.split("@")[1].count(".")!=1 or not email.split("@")[1].split(".")[0] or not email.split("@")[1].split(".")[1]:
-        viewerObj.queueTurboAction("Email not valid", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        viewerObj.updateHTML("Email not valid", "registrationWarning", DynamicWebsite.UpdateMethods.update)
         sendRegisterForm(viewerObj)
     elif password == "" or len(password)<8:
-        viewerObj.queueTurboAction("Passwords Not Valid", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        viewerObj.updateHTML("Passwords Not Valid", "registrationWarning", DynamicWebsite.UpdateMethods.update)
         sendRegisterForm(viewerObj)
     elif password!=confirm_password:
-        viewerObj.queueTurboAction("Passwords Dont match", "registrationWarning", viewerObj.turboApp.methods.update.value)
+        viewerObj.updateHTML("Passwords Dont match", "registrationWarning", DynamicWebsite.UpdateMethods.update)
         sendRegisterForm(viewerObj)
     else:
         while True:
@@ -1447,24 +1347,24 @@ def registerUser(viewerObj:BaseViewer, form:dict):
                 renderHomepage(viewerObj)
                 break
 
-def loginUser(viewerObj:BaseViewer, form:dict):
+def loginUser(viewerObj:DynamicWebsite.BaseViewer, form:dict):
     username = form.get("username", "")
     password = form.get("password", "")
     received = SQLconn.execute(f"SELECT UserID, PWHash from user_auth where UserName=\"{username}\" limit 1")
     if not received:
-        viewerObj.queueTurboAction("Username Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
+        viewerObj.updateHTML("Username Dont Match", "loginWarning", DynamicWebsite.UpdateMethods.update)
         sendLoginForm(viewerObj)
     else:
         received = received[0]
         if not check_password_hash(received["PWHash"].decode(), password):
-            viewerObj.queueTurboAction("Password Dont Match", "loginWarning", viewerObj.turboApp.methods.update.value)
+            viewerObj.updateHTML("Password Dont Match", "loginWarning", DynamicWebsite.UpdateMethods.update)
             sendLoginForm(viewerObj)
         else:
             liveCacheManager.loginCall(viewerObj, received["UserID"].decode())
             renderHomepage(viewerObj)
 
 
-def publishNote(viewerObj:BaseViewer, form:dict):
+def publishNote(viewerObj:DynamicWebsite.BaseViewer, form:dict):
     while True:
         noteID = StringGenerator().AlphaNumeric(50,50)
         if not SQLconn.execute(f"SELECT NoteID from notes where NoteID=\"{noteID}\" limit 1"):
@@ -1473,7 +1373,7 @@ def publishNote(viewerObj:BaseViewer, form:dict):
             open(f"{folderLocation}\\static\\text\\{noteID}.txt", "wb").write(form['content'].encode())
             break
 
-def formSubmitCallback(viewerObj: BaseViewer, form: dict):
+def formSubmitCallback(viewerObj: DynamicWebsite.BaseViewer, form: dict):
     if form is not None:
         purpose = form.pop("PURPOSE")
         print(liveCacheManager.getUserName(liveCacheManager.ByViewerID, viewerObj.viewerID), purpose, form)
@@ -1522,7 +1422,7 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
                 <div class="text-white text-md">Level 1</div>
             </div>
             """
-            viewerObj.queueTurboAction(players, "quizLobbyDiv", viewerObj.turboApp.methods.update)
+            viewerObj.updateHTML(players, "quizLobbyDiv", DynamicWebsite.UpdateMethods.update)
 
         elif purpose == FormPurposes.renderPostQuizQuestion.value:
             partyID = form.pop("party", "")
@@ -1550,11 +1450,11 @@ def formSubmitCallback(viewerObj: BaseViewer, form: dict):
 
 
 
-def newVisitorCallback(viewerObj: BaseViewer):
+def newVisitorCallback(viewerObj: DynamicWebsite.BaseViewer):
     print("Visitor Joined: ", viewerObj.viewerID)
 
     initial = "<div id=\"fullPage\"></div>"
-    viewerObj.queueTurboAction(initial, "mainDiv", viewerObj.turboApp.methods.update)
+    viewerObj.updateHTML(initial, "mainDiv", DynamicWebsite.UpdateMethods.update)
     userID = liveCacheManager.getKnownLoggedInUserID(viewerObj)
     if userID:
         liveCacheManager.loginCall(viewerObj, userID)
@@ -1583,7 +1483,7 @@ def newVisitorCallback(viewerObj: BaseViewer):
     #renderNotesRepository(viewerObj)
     # renderMusicPage(viewerObj)
 
-def visitorLeftCallback(viewerObj: BaseViewer):
+def visitorLeftCallback(viewerObj: DynamicWebsite.BaseViewer):
     liveCacheManager.logoutCall(viewerObj)
     print("Visitor Left: ", viewerObj.viewerID)
 
@@ -1617,9 +1517,9 @@ bodyBase = """
 
 
 #musicCollection = MusicCollection()
-baseApp, turboApp = createApps(formSubmitCallback, newVisitorCallback, visitorLeftCallback, CoreValues.appName.value,
-                               Routes.webHomePage.value, ServerSecrets.webFernetKey.value,
-                               extraHeads, bodyBase, CoreValues.title.value, False)
+dynamicWebsiteApp = DynamicWebsite(newVisitorCallback, visitorLeftCallback, formSubmitCallback, None, ServerSecrets.webFernetKey.value,
+                                   CoreValues.appName.value,  Routes.webHomePage.value, extraHeads, bodyBase, CoreValues.title.value)
+baseApp = dynamicWebsiteApp.start()
 
 
 @baseApp.get(Routes.cdnFileContent.value)
