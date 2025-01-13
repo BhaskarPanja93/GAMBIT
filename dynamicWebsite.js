@@ -17,6 +17,7 @@ const WS_DATA_REASONS = {
     OUT : {
         VERIFY_CSRF: "CSRF-VERIFY",
         CLIENT_KEY: "CLIENT-KEY",
+        READY: "READY"
     },
     IN : {
         TURBO: "TURBO",
@@ -84,6 +85,14 @@ class WSConnectionManager {
     constructor(RESPONSIVE_CSRF, LARGE_CSRF) {
         this.createNewWS(WS_PURPOSES.RESPONSIVE, RESPONSIVE_CSRF).then()
         this.createNewWS(WS_PURPOSES.LARGE, LARGE_CSRF).then()
+        this.stopOperation = false
+        window.addEventListener('beforeunload', (event) => {
+            this.stopOperation = true;
+            this.collectionWS.RESPONSIVE.close();
+            this.collectionWS.LARGE.close();
+            event.preventDefault();
+            event.returnValue = '';
+        });
     }
 
     async createNewWS(purpose, CSRF) {
@@ -100,7 +109,9 @@ class WSConnectionManager {
     }
 
     handleClosedWS(WSObj) {
-        if (this.collectionWS[WSObj.purpose] !== undefined) {
+        console.log("WS closed", this.collectionWS[WSObj.purpose] !== undefined, !this.stopOperation)
+        if (this.collectionWS[WSObj.purpose] !== undefined && !this.stopOperation) {
+            console.log("Creating new")
             delete this.collectionWS[WSObj.purpose]
             if (WSObj.futureCSRF !== null) this.createNewWS(WSObj.purpose, WSObj.futureCSRF)
         }
@@ -141,7 +152,7 @@ class WSConnectionManager {
 
         for (let formElementIndex = 0; formElementIndex < form.children.length; formElementIndex++)
         {
-            let element = form.children[formElementIndex];
+            // let element = form.children[formElementIndex];
             // if (element.type === "file")
             // {
             //     let elementName = element.name;
@@ -213,6 +224,7 @@ class WSConnectionManager {
             this.purpose = purpose
             this.futureCSRF = null
             this.key = (window.crypto.subtle !== undefined)
+            this.clientKeyPair = null
             this.rawWS = new WebSocket(`ws${location.protocol.substring(4)}//${location.host}/?WS_PURPOSE=${this.purpose}`)
         }
 
@@ -225,12 +237,25 @@ class WSConnectionManager {
         }
 
         initialise = async(CSRF) => {
-            this.rawWS.addEventListener("open", () => this.sendWS(JSON.stringify({REASON: WS_DATA_REASONS.OUT.VERIFY_CSRF, CSRF: CSRF, ENCRYPTION: this.key})))
-            this.rawWS.addEventListener("close", () => this.handler.handleClosedWS(this))
-            this.rawWS.addEventListener("message", (event) => this.processReceived(event.data))
+            this.rawWS.addEventListener("open", () => {
+                if (this.key === true) {
+                    this.generateClientKey().then((clientPublicKey) => {
+                        this.sendWS(JSON.stringify({REASON: WS_DATA_REASONS.OUT.VERIFY_CSRF, CSRF: CSRF, REQUEST_ENCRYPTION: true, "CLIENT-KEY": {PubB64: btoa(String.fromCharCode(...new Uint8Array(clientPublicKey)))}}))
+                    })
+                } else {
+                    this.sendWS(JSON.stringify({REASON: WS_DATA_REASONS.OUT.VERIFY_CSRF, CSRF: CSRF, REQUEST_ENCRYPTION: false}))
+                }
+            })
+            this.rawWS.addEventListener("close", () => {
+                this.handler.handleClosedWS(this)
+            })
+            this.rawWS.addEventListener("message", (event) => {
+                this.processReceived(event.data)
+            })
         }
 
         sendWS = async (string) => {
+            console.log("SEND raw", string)
             if (this.key === false || this.key === true) {
                 this.rawWS.send(string)
             } else {
@@ -239,31 +264,33 @@ class WSConnectionManager {
         }
 
         processReceived = async(data) => {
-            let received = await JSON.parse(data)
-            if (this.key !== false && this.key !== true) received = await JSON.parse(await this.decrypt(received["eB64"], received["ivB64"], received["tagB64"]))
-            let reason = received["REASON"]
+            let receivedDict = await JSON.parse(data)
+            if (this.key !== false && this.key !== true) receivedDict = await JSON.parse(await this.decrypt(receivedDict["eB64"], receivedDict["ivB64"], receivedDict["tagB64"]))
+            let reason = receivedDict["REASON"]
+            console.log("RECV", receivedDict)
 
             if (reason === WS_DATA_REASONS.IN.CSRF_ACCEPTED) {
-                if (this.key === true) await this.receiveServerKey(received["SERVER-KEY"])
+                if (this.key === true) await this.generateSharedKey(receivedDict["SERVER-KEY"])
+                await this.sendWS(JSON.stringify({REASON: WS_DATA_REASONS.OUT.READY}))
                 if (this.key !== true || this.key === false) await this.handler.handleAcceptedWS(this)
             } else if (this.key !== true) {
                 if (reason === WS_DATA_REASONS.IN.FUTURE_CSRF) {
-                    this.futureCSRF = received["CSRF"]
+                    this.futureCSRF = receivedDict["CSRF"]
                 } else {
-                    this.handler.onMessageReceived(received)
+                    this.handler.onMessageReceived(receivedDict)
                 }
             } else {
                 new Promise((resolve) => {
                     setTimeout(async () => {
                         const r = await this.processReceived(data)
                         resolve(r);
-                    }, 10);
+                    }, 100);
                 });
             }
         }
 
-        async receiveServerKey (data) {
-            const clientKeyPair = await window.crypto.subtle.generateKey(
+        async generateClientKey() {
+            this.clientKeyPair = await window.crypto.subtle.generateKey(
                 {
                     name: "ECDH",
                     namedCurve: "P-256",
@@ -271,14 +298,16 @@ class WSConnectionManager {
                 true,
                 ["deriveKey", "deriveBits"]
             )
-            const clientPublicKey = await window.crypto.subtle.exportKey(
+            return await window.crypto.subtle.exportKey(
                 "spki",
-                clientKeyPair.publicKey
+                this.clientKeyPair.publicKey
             )
-            await this.sendWS(JSON.stringify({"REASON": WS_DATA_REASONS.OUT.CLIENT_KEY, "CLIENT-KEY": {PubB64: btoa(String.fromCharCode(...new Uint8Array(clientPublicKey)))}}))
+        }
+
+        async generateSharedKey(serverKey) {
             const serverPublicKey = await window.crypto.subtle.importKey(
                 "spki",
-                urlSafeBase64Decoded(data["PubB64"]),
+                urlSafeBase64Decoded(serverKey["PubB64"]),
                 {name: "ECDH", namedCurve: "P-256"},
                 false,
                 []
@@ -288,7 +317,7 @@ class WSConnectionManager {
                     name: "ECDH",
                     public: serverPublicKey,
                 },
-                clientKeyPair.privateKey,
+                this.clientKeyPair.privateKey,
                 256
             )
             const hkdfKey = await crypto.subtle.importKey(
@@ -302,8 +331,8 @@ class WSConnectionManager {
                 {
                     name: "HKDF",
                     hash: "SHA-256",
-                    salt: urlSafeBase64Decoded(data["SaltB64"]),
-                    info: urlSafeBase64Decoded(data["InfoB64"]),
+                    salt: urlSafeBase64Decoded(serverKey["SaltB64"]),
+                    info: urlSafeBase64Decoded(serverKey["InfoB64"]),
                 },
                 hkdfKey,
                 {name: "AES-GCM", length: 256},
@@ -311,6 +340,7 @@ class WSConnectionManager {
                 ["encrypt", "decrypt"]
             )
         }
+
         async decrypt(ciphertextB64, ivB64, tagB64) {
             const ciphertext = urlSafeBase64Decoded(ciphertextB64)
             const iv = urlSafeBase64Decoded(ivB64)

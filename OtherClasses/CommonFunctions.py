@@ -34,9 +34,9 @@ def connectDB(logger:CustomisedLogs) -> PooledMySQL:
     Blocking function to connect to DB
     :return: None
     """
-    for host in DBData.DBHosts.value:
+    for host in DBData.DBHosts:
         try:
-            mysqlPool = PooledMySQL(user=DBData.DBUser.value, password=DBData.DBPassword.value, dbName=DBData.DBName.value, host=host)
+            mysqlPool = PooledMySQL(user=DBData.DBUser, password=DBData.DBPassword.value, dbName=DBData.DBName.value, host=host)
             mysqlPool.execute(f"SELECT DATABASE();")
             logger.log(logger.Colors.green_800, "DB", f"connected to: {host}")
             return mysqlPool

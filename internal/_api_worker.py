@@ -607,7 +607,7 @@ dic = \
 
 
 
-from internal.Methods import connectDB
+from internal.CommonFunctions import connectDB
 from customisedLogs import Manager as LogManager
 from randomisedString import Generator
 from json import dumps

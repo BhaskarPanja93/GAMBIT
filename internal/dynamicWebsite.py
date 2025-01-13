@@ -74,6 +74,7 @@ class DynamicWebsite:
             FORM = "F"
             CUSTOM = "C"
             VERIFY_CSRF = "CSRF-VERIFY"
+            READY = "READY"
             CLIENT_KEY = "CLIENT-KEY"
         class OUT:
             TURBO = "TURBO"
@@ -97,7 +98,6 @@ class DynamicWebsite:
         remove = "remove"
         after = "after"
         before = "before"
-        newDiv = "new"
 
 
     class ERRORS:
@@ -137,7 +137,7 @@ class DynamicWebsite:
         Internal DataStructure to hold a visitor's uniquely identifying information and methods to convert to and from cookies
         """
 
-        def __init__(self, instanceID: str = "", viewer: DynamicWebsite.BaseViewer|None = None):
+        def __init__(self, instanceID: str = "", viewer: DynamicWebsite.Viewer | None = None):
             self.instanceID = instanceID
             self.viewer = viewer
             self.stage = 0
@@ -280,7 +280,7 @@ class DynamicWebsite:
         """
         Internal Structure for receiving parts of Files uploaded by Visitor and storing when required by the server
         """
-        def __init__(self, viewer: DynamicWebsite.BaseViewer, fileID):
+        def __init__(self, viewer: DynamicWebsite.Viewer, fileID):
             self.viewer = viewer
             self.isReady = False
             self.isCurrentlySaving = False
@@ -328,7 +328,7 @@ class DynamicWebsite:
 
 
     class PurposeManager:
-        def __init__(self, viewer: DynamicWebsite.BaseViewer, stringGenerator: Imports.RandomisedString):
+        def __init__(self, viewer: DynamicWebsite.Viewer, stringGenerator: Imports.RandomisedString):
             self.viewer = viewer
             self.stringGenerator = stringGenerator
             self.activeCSRF: dict[str, list[str]] = {}
@@ -378,9 +378,9 @@ class DynamicWebsite:
             self._privateKey = None
             self._publicKeyDER = None
             self._generatingKeys = False
+            self._generateServerKeys()
 
         def pubB64(self):
-            self._generateServerKeys()
             return Imports.urlsafe_b64encode(self._publicKeyDER).decode()
 
         def sharedKey(self, clientPubB64, salt, info):
@@ -408,6 +408,7 @@ class DynamicWebsite:
 
     class WSHolder:
         def __init__(self, rawWS, salt: bytes, info: bytes):
+            self.isActive = None
             self.rawWS = rawWS
 
             self.key = None
@@ -441,23 +442,24 @@ class DynamicWebsite:
             self.rawWS.send(finalData)
 
 
-    class BaseViewer:
+    class Viewer:
         """
         Internal DataStructure to hold all information regarding individual visitor
         """
         def __init__(self, dynamicWebsiteApp: DynamicWebsite):
+            self.arrivalCalled: bool = False
             self.currentState = DynamicWebsite.VIEWER_STATES.CREATED
             self.dynamicWebsiteApp = dynamicWebsiteApp
             self.purposeManager = DynamicWebsite.PurposeManager(self, self.dynamicWebsiteApp.stringGenerator)
-            self.addCSRF = self.purposeManager.createCSRF
+            self.addCSRF = self.createCSRF = self.purposeManager.createCSRF
             self.formSubmitCallback = self.dynamicWebsiteApp.formSubmitCallback
             self.customMessageCallback = self.dynamicWebsiteApp.customMessageCallback
             self.pendingFiles:dict[str, DynamicWebsite.FileHolder] = {}
             self.queueHandler = Imports.RateLimitedQueues()
             self.currentWS:dict[str, DynamicWebsite.WSHolder|str|None] = {}
             self.futureWS:dict[str, str] = {}
-            self.viewerID:str|None = None
             self.cookie: DynamicWebsite.CookieHolder|None = None
+            self.viewerID:str|None = None
             self.privateData = None
 
 
@@ -478,6 +480,7 @@ class DynamicWebsite:
 
 
         def receive(self, data:dict):
+            print(data)
             TYPE = data.pop("T")
 
             if TYPE == DynamicWebsite.WSDataReasons.IN.CUSTOM:
@@ -553,8 +556,8 @@ class DynamicWebsite:
         self.title = title
 
         self.pendingL1Cookies:dict[str, dict[int, DynamicWebsite.CookieHolder|None]] = {}
-        self.inCompleteViewers:dict[str, DynamicWebsite.BaseViewer] = {}
-        self.completeViewers:dict[str, DynamicWebsite.BaseViewer] = {}
+        self.inCompleteViewers:dict[str, DynamicWebsite.Viewer] = {}
+        self.completeViewers:dict[str, DynamicWebsite.Viewer] = {}
 
         self.serverKeys = self.ServerKeyHolder()
         self.stringGenerator = Imports.RandomisedString()
@@ -584,13 +587,13 @@ class DynamicWebsite:
         if instanceID in self.pendingL1Cookies: del self.pendingL1Cookies[instanceID]
 
 
-    def createViewer(self, requestObj: Imports.Request, L2Values: dict) -> DynamicWebsite.BaseViewer|None:
+    def createViewer(self, requestObj: Imports.Request, L2Values: dict) -> DynamicWebsite.Viewer | None:
         validCookie = self.CookieHolder().readL1(requestObj).readL2(L2Values)
         presentL1Cookie = self.CookieHolder().decrypt(requestObj.cookies.get("DW-ID-L1"), self.fernetKey)
         presentL2Cookie = self.CookieHolder().decrypt(requestObj.cookies.get("DW-ID-L2"), self.fernetKey)
         validCookie.viewerID = presentL1Cookie.viewerID
         if presentL1Cookie.instanceID in self.pendingL1Cookies and validCookie.match(presentL1Cookie, 1): # current person is recent person
-            viewer = self.BaseViewer(self)
+            viewer = self.Viewer(self)
             dump = self.pendingL1Cookies.pop(presentL1Cookie.instanceID)
             previousL1Cookie = dump.get(1)
             previousL2Cookie = dump.get(2)
@@ -612,7 +615,7 @@ class DynamicWebsite:
         return None
 
 
-    def createWSToken(self, viewer: DynamicWebsite.BaseViewer, purpose: str, future: bool):
+    def createWSToken(self, viewer: DynamicWebsite.Viewer, purpose: str, future: bool):
         if not future and viewer.currentWS.get(purpose) is None:
             self.makeViewerInComplete(viewer)
             newCSRF = self.stringGenerator.AlphaNumeric(50, 50)
@@ -624,7 +627,7 @@ class DynamicWebsite:
             return newCSRF
 
 
-    def makeViewerComplete(self, viewer: DynamicWebsite.BaseViewer):
+    def makeViewerComplete(self, viewer: DynamicWebsite.Viewer):
         viewer.currentState = self.VIEWER_STATES.COMPLETE
         if viewer.cookie.instanceID in self.inCompleteViewers:
             del self.inCompleteViewers[viewer.cookie.instanceID]
@@ -632,7 +635,7 @@ class DynamicWebsite:
             self.completeViewers[viewer.cookie.instanceID] = viewer
 
 
-    def makeViewerInComplete(self, viewer: DynamicWebsite.BaseViewer):
+    def makeViewerInComplete(self, viewer: DynamicWebsite.Viewer):
         viewer.currentState = self.VIEWER_STATES.INCOMPLETE
         if viewer.cookie.instanceID in self.completeViewers:
             del self.completeViewers[viewer.cookie.instanceID]
@@ -640,7 +643,7 @@ class DynamicWebsite:
             self.inCompleteViewers[viewer.cookie.instanceID] = viewer
 
 
-    def makeViewerDying(self, viewer: DynamicWebsite.BaseViewer, timeToWait: int, triggerViewerLeftCallback: bool = True):
+    def makeViewerDying(self, viewer: DynamicWebsite.Viewer, timeToWait: int, triggerViewerLeftCallback: bool = True):
         for countDown in range(timeToWait, 0, -1):
             Imports.sleep(1)
             if viewer.currentState != self.VIEWER_STATES.DYING:
@@ -648,7 +651,7 @@ class DynamicWebsite:
         self.makeViewerDead(viewer, triggerViewerLeftCallback)
 
 
-    def makeViewerDead(self, viewer: DynamicWebsite.BaseViewer, triggerViewerLeftCallback: bool = True):
+    def makeViewerDead(self, viewer: DynamicWebsite.Viewer, triggerViewerLeftCallback: bool = True):
         viewer.currentState = self.VIEWER_STATES.DEAD
         if viewer.cookie.instanceID not in self.inCompleteViewers:
             del self.inCompleteViewers[viewer.cookie.instanceID]
@@ -657,7 +660,7 @@ class DynamicWebsite:
         if triggerViewerLeftCallback: self.visitorLeftCallback(viewer)
 
 
-    def createFile(self, viewer: DynamicWebsite.BaseViewer, fileID):
+    def createFile(self, viewer: DynamicWebsite.Viewer, fileID):
         file = self.FileHolder(viewer, fileID)
         viewer.pendingFiles[fileID] = file
         Imports.Thread(target=self.deleteFileOnInactivity, args=(file,)).start()
@@ -744,56 +747,62 @@ class DynamicWebsite:
             if presentL1Cookie.instanceID in self.inCompleteViewers and self.inCompleteViewers[presentL1Cookie.instanceID].currentWS.get(purpose) is None and type(self.inCompleteViewers[presentL1Cookie.instanceID].futureWS.get(purpose)) == str and validCookie.match(presentL1Cookie, 1) and presentL2Cookie.match(presentL1Cookie, 1, True, True): # current person is recent person
                 viewerObj = self.inCompleteViewers[presentL1Cookie.instanceID]
                 WSObj = self.WSHolder(rawWS, self.stringGenerator.AlphaNumeric(10,10).encode(), self.stringGenerator.AlphaNumeric(10,10).encode())
-                isValidated = False
-                triggeredJoin = False
+                CSRFVerified = False
                 while True:
                     try:
-                        receivedBytes = rawWS.receive(timeout=60 if isValidated else 5)
-                    except (BrokenPipeError, Imports.ConnectionClosed) as e:
+                        receivedBytes = rawWS.receive(timeout=60 if CSRFVerified else 5)
+                    except (BrokenPipeError, Imports.ConnectionClosed):
+                        WSObj.isActive = False
                         viewerObj.currentWS[purpose] = None
                         futureCSRF = viewerObj.futureWS.get(purpose)
-                        if futureCSRF is not None:
+                        if futureCSRF is None:
                             for _WSObj in viewerObj.currentWS.values():
-                                if type(_WSObj) != str: # Has active WS
+                                if _WSObj.isActive: # Has active WS
                                     self.makeViewerInComplete(viewerObj)
                                     break
                             else: # No active WS
                                 self.makeViewerDying(viewerObj, 2) ## Viewer left callback is called 2 seconds after he actually leaves (giving them a scope to reconnect in cases of network disconnections)
                         break
-                    if receivedBytes is None and not isValidated:
-                        break
+                    if receivedBytes is None and not CSRFVerified: break # WS couldn't prove authenticity in specified time
                     if receivedBytes:
                         dictReceived:dict = Imports.loads(receivedBytes)
                         reason = dictReceived.get("REASON")
 
-                        if reason == self.WSDataReasons.IN.VERIFY_CSRF and WSObj.key is None:
-                            if viewerObj.currentWS.get(purpose) is None and type(viewerObj.futureWS.get(purpose)) == str and viewerObj.futureWS.get(purpose) == dictReceived["CSRF"]: # Viewer has pending CSRF of same purpose and is valid
-                                del viewerObj.futureWS[purpose]
-                                viewerObj.currentWS[purpose] = WSObj
-                                WSObj.key = dictReceived.get("ENCRYPTION", False)
-                                if WSObj.key:
-                                    rawWS.send(Imports.dumps({"REASON": self.WSDataReasons.OUT.CSRF_ACCEPTED, "SERVER-KEY": {"PubB64":self.serverKeys.pubB64(), "SaltB64": Imports.urlsafe_b64encode(WSObj.salt).decode(), "InfoB64": Imports.urlsafe_b64encode(WSObj.info).decode()}}))
+                        if WSObj.key is None: # Should be the first data from WS
+                            if reason == self.WSDataReasons.IN.VERIFY_CSRF:
+                                if viewerObj.currentWS.get(purpose) is None and viewerObj.futureWS.get(purpose) == dictReceived["CSRF"] and viewerObj.futureWS.get(purpose): # Viewer has pending CSRF of same purpose and is valid
+                                    del viewerObj.futureWS[purpose]
+                                    viewerObj.currentWS[purpose] = WSObj
+                                    requireEncryption= dictReceived.get("REQUEST_ENCRYPTION", False)
+                                    if requireEncryption:
+                                        WSObj.key = self.serverKeys.sharedKey(dictReceived.get("CLIENT-KEY").get("PubB64"), WSObj.salt, WSObj.info)
+                                        rawWS.send(Imports.dumps({"REASON": self.WSDataReasons.OUT.CSRF_ACCEPTED, "SERVER-KEY": {"PubB64":self.serverKeys.pubB64(), "SaltB64": Imports.urlsafe_b64encode(WSObj.salt).decode(), "InfoB64": Imports.urlsafe_b64encode(WSObj.info).decode()}}))
+                                    else:
+                                        WSObj.key = False
+                                        rawWS.send(Imports.dumps({"REASON": self.WSDataReasons.OUT.CSRF_ACCEPTED}))
+                                    CSRFVerified = True
                                 else:
-                                    rawWS.send(Imports.dumps({"REASON": self.WSDataReasons.OUT.CSRF_ACCEPTED}))
-                                isValidated = True
-                                for _WSObj in viewerObj.currentWS.values():
-                                    if _WSObj is None: # Has incomplete CSRF
-                                        break
-                                else:
-                                    if not triggeredJoin:
-                                        self.visitorArrivedCallback(viewerObj)
-                                        triggeredJoin = True
-                                    self.makeViewerComplete(viewerObj)
-                            else:
-                                break
-                        elif reason == self.WSDataReasons.IN.CLIENT_KEY and WSObj.key == True:
-                            WSObj.key = self.serverKeys.sharedKey(dictReceived.get("CLIENT-KEY").get("PubB64"), WSObj.salt, WSObj.info)
-                            rawWS.send(Imports.dumps(WSObj.encrypt(Imports.dumps({"REASON": self.WSDataReasons.OUT.FUTURE_CSRF, "CSRF": self.createWSToken(viewerObj, purpose, True)}), self.stringGenerator.AlphaNumeric(10,10).encode())))
-
-
-                        elif WSObj.key is not None and WSObj.key != True:
+                                    break
+                        elif WSObj.key is not None and WSObj.key != True and CSRFVerified: # Encryption handshake complete (either success or fail)
                             if WSObj.key:
                                 dictReceived = Imports.loads(WSObj.decrypt(dictReceived))
+                                reason = dictReceived.get("REASON")
+                            if reason == self.WSDataReasons.IN.READY:
+                                if WSObj.key:
+                                    rawWS.send(Imports.dumps(WSObj.encrypt(Imports.dumps({"FUTURE-CSRF": self.createWSToken(viewerObj, purpose, True)}), self.stringGenerator.AlphaNumeric(12,12).encode())))
+                                else:
+                                    rawWS.send(Imports.dumps({"FUTURE-CSRF": self.createWSToken(viewerObj, purpose, True)}))
+
+                                WSObj.isActive = True
+                                for _WSObj in viewerObj.currentWS.values():
+                                    if _WSObj is None or WSObj.isActive is None: # Has incomplete CSRF
+                                        break
+                                else:
+                                    if not viewerObj.arrivalCalled:
+                                        viewerObj.arrivalCalled = True
+                                        self.visitorArrivedCallback(viewerObj)
+                                    self.makeViewerComplete(viewerObj)
+                                continue
                             Imports.Thread(target=viewerObj.receive, args=(dictReceived,)).start()
                 rawWS.close()
-        return self.baseApp
+        return self.baseApp, self.sock

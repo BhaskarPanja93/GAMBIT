@@ -32,73 +32,9 @@
             </div>
         </nav>
 
-
-        <!--   Music Button   -->
-        <div class="vertical-tray" id="tray">
-            <button id="toggle-btn" class="toggle-btn">
-                <img src="upArrow.png" style="height: 15px; width: 15px" alt="Toggle" />
-            </button>
-            <button class="rect-btn">Lo-fi</button>
-            <button class="rect-btn">Ambient</button>
-            <button class="rect-btn">Jazz</button>
-            <button class="rect-btn">Classical</button>
-            <div id="music-btn" class="music-btn">
-                <img id="icon" src="play-button.png" alt="Play" style="height: 25px;width: 25px;">
-            </div>
-        </div>
-
-        <audio id="audio" src="placeholder.mp3"></audio>
-
-        <script>
-
-            document.addEventListener('DOMContentLoaded', function() {
-                // Get elements
-                const tray = document.getElementById('tray');
-                const toggleBtn = document.getElementById('toggle-btn');
-                const musicBtn = document.getElementById('music-btn');
-                const toggleImage = toggleBtn.querySelector('img');
-
-
-                toggleBtn.addEventListener('click', () => {
-                    tray.classList.toggle('collapsed');
-
-
-                    if (tray.classList.contains('collapsed')) {
-                        toggleImage.src = 'upArrow.png';
-                    } else {
-                        toggleImage.src = 'downArrow.png';
-                    }
-                });
-            });
-
-
-        </script>
-
-        <script>
-            const musicBtn = document.getElementById('music-btn');
-            const audio = document.getElementById('audio');
-            const icon = document.getElementById('icon');
-
-            musicBtn.addEventListener('click', () => {
-                if (audio.paused) {
-                    audio.play();
-                    icon.src = 'pause-button.png';
-                    icon.alt = 'Pause';
-                } else {
-                    audio.pause();
-                    icon.src = 'play-button.png';
-                    icon.alt = 'Play';
-                }
-            });
-        </script>
-
-
-
         <!-- Content -->
         <div class="text-white text-center py-20 mt-10 mb-0" style="z-index: 3;">
             <div class="mx-auto px-2 sm:px-3 lg:px-20 flex flex-col lg:flex-row items-center justify-between">
-
-                <!--    Only change this div to convert to authentication     START       -->
 
                 <div id="changing-content" class="mt-10 mb-10 lg:mb-0 text-center lg:text-left leading-loose">
                     <h1 class="text-3xl sm:text-5xl font-extrabold mb-10">
@@ -115,10 +51,6 @@
                         </button></div>
                     </div>
                 </div>
-
-                <!--    Only change this div to convert to authentication    END        -->
-
-
                 <div id="ghost3d" class="lg:w-1/2 flex flex-col items-center">
                     <script src="https://scripts.sirv.com/sirvjs/v3/sirv.js?modules=model"></script>
                     <div class="Sirv">
