@@ -75,13 +75,13 @@ def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
 def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Joined: ", viewerObj.viewerID)
     viewerObj.privateData = {}
-    #renderAuthPre(viewerObj)
-    #sleep(2)
-    #renderAuthForm(viewerObj)
-    #sleep(2)
+    renderAuthPre(viewerObj)
+    sleep(2)
+    renderAuthForm(viewerObj)
+    sleep(2)
     renderAuthPost(viewerObj)
-    #sleep(2)
-    #renderNotes(viewerObj)
+    sleep(2)
+    renderNotes(viewerObj)
 
 
 logger = CustomisedLogs()
@@ -92,7 +92,6 @@ extraHeads = f"""
 <meta charset="UTF-8">
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <script src="{Routes.cdnFileContent}?type={CDNFileType.js}&name={FileNames.JS.Trail}"></script>
-<script src="{Routes.cdnFileContent}?type={CDNFileType.js}&name={FileNames.JS.MusicAction}"></script>
 <link rel="stylesheet" href="{Routes.cdnFileContent}?type={CDNFileType.css}&name={FileNames.CSS.auth}">
 <link rel="stylesheet" href="{Routes.cdnFileContent}?type={CDNFileType.css}&name={FileNames.CSS.form}">
 <script src="https://cdn.tailwindcss.com"></script>

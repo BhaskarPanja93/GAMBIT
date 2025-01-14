@@ -81,8 +81,32 @@ const urlSafeBase64Decoded = function (base64String) {
 }
 
 
-class WSConnectionManager {
+class EventEmitter {
+    constructor() {
+        this.events = {};
+    }
+    addEventListener(eventName, listener) {
+        if (!this.events[eventName]) {
+            this.events[eventName] = [];
+        }
+        this.events[eventName].push(listener);
+    }
+    emit(eventName, ...args) {
+        if (this.events[eventName]) {
+            this.events[eventName].forEach(listener => listener(...args));
+        }
+    }
+    removeEventListener(eventName, listener) {
+        if (this.events[eventName]) {
+            this.events[eventName] = this.events[eventName].filter(l => l !== listener);
+        }
+    }
+}
+
+
+class WSConnectionManager extends EventEmitter {
     constructor(RESPONSIVE_CSRF, LARGE_CSRF) {
+        super();
         this.createNewWS(WS_PURPOSES.RESPONSIVE, RESPONSIVE_CSRF).then()
         this.createNewWS(WS_PURPOSES.LARGE, LARGE_CSRF).then()
         this.stopOperation = false
@@ -90,9 +114,8 @@ class WSConnectionManager {
             this.stopOperation = true;
             this.collectionWS.RESPONSIVE.close();
             this.collectionWS.LARGE.close();
-            event.preventDefault();
-            event.returnValue = '';
         });
+        this.sendCustomMessage = sendCustomMessage
     }
 
     async createNewWS(purpose, CSRF) {
@@ -105,13 +128,15 @@ class WSConnectionManager {
     }
 
     onMessageReceived(data) {
-        if (data["REASON"] === WS_DATA_REASONS.IN.TURBO) Turbo.session.streamObserver.receiveMessageHTML(data["DATA"])
+        if (data.REASON === WS_DATA_REASONS.IN.TURBO) {
+            Turbo.session.streamObserver.receiveMessageHTML(data["DATA"])
+        } else if (data.T===WS_DATA_TYPES.CUSTOM) {
+            this.emit("message", data["DATA"])
+        }
     }
 
     handleClosedWS(WSObj) {
-        console.log("WS closed", this.collectionWS[WSObj.purpose] !== undefined, !this.stopOperation)
-        if (this.collectionWS[WSObj.purpose] !== undefined && !this.stopOperation) {
-            console.log("Creating new")
+        if (this.collectionWS[WSObj.purpose] !== undefined && this.stopOperation === false) {
             delete this.collectionWS[WSObj.purpose]
             if (WSObj.futureCSRF !== null) this.createNewWS(WSObj.purpose, WSObj.futureCSRF)
         }
@@ -139,7 +164,7 @@ class WSConnectionManager {
             setTimeout(async () => {
                 const result = await this.sendInQueue(string, purpose, ignoreBuffered, ignoreAuthentication, ignoreState);
                 resolve(result);
-            }, window.DELAY_TIMEOUT);
+            }, window.DELAY_TIME);
         });
     };
 
@@ -152,27 +177,27 @@ class WSConnectionManager {
 
         for (let formElementIndex = 0; formElementIndex < form.children.length; formElementIndex++)
         {
-            // let element = form.children[formElementIndex];
-            // if (element.type === "file")
-            // {
-            //     let elementName = element.name;
-            //     form_data[FORM_FILE_LIST_NAME][elementName] = {};
-            //     delete form_data[elementName];
-            //     for (let fileIndex = 0; fileIndex < element.files.length; fileIndex++)
-            //     {
-            //         let file = element.files[fileIndex];
-            //         let fileID = this.fileIndex++
-            //         form_data[FORM_FILE_LIST_NAME][elementName][fileID] = {"NAME":file.name, "SIZE":file.size, "TYPE":file.type, "MAXPART":Math.ceil(file.size/window.CHUNK_SIZE)-1}
-            //         filesToUpload[fileID] = file;
-            //     }
-            // }
+            let element = form.children[formElementIndex];
+            if (element.type === "file")
+            {
+                let elementName = element.name;
+                form_data[FORM_FILE_LIST_NAME][elementName] = {};
+                delete form_data[elementName];
+                for (let fileIndex = 0; fileIndex < element.files.length; fileIndex++)
+                {
+                    let file = element.files[fileIndex];
+                    let fileID = this.fileIndex++
+                    form_data[FORM_FILE_LIST_NAME][elementName][fileID] = {"NAME":file.name, "SIZE":file.size, "TYPE":file.type, "MAXPART":Math.ceil(file.size/window.CHUNK_SIZE)-1}
+                    filesToUpload[fileID] = file;
+                }
+            }
         }
         form_data[FORM_FILE_LIST_NAME] = Object.assign({}, form_data[FORM_FILE_LIST_NAME])
         window.ConnmanagerWS.sendInQueue(JSON.stringify({T: WS_DATA_TYPES.FORM, D: form_data}), purpose).then(()=>{
-            // for (const [fileID, fileObj] of Object.entries(filesToUpload)) {
-            //     let fileSender = new this.FileClass(this, fileID, fileObj);
-            //     fileSender.resumeSending().then()
-            // }
+            for (const [fileID, fileObj] of Object.entries(filesToUpload)) {
+                let fileSender = new this.FileClass(this, fileID, fileObj);
+                fileSender.resumeSending().then()
+            }
         })
         return false
     }
@@ -255,7 +280,6 @@ class WSConnectionManager {
         }
 
         sendWS = async (string) => {
-            console.log("SEND raw", string)
             if (this.key === false || this.key === true) {
                 this.rawWS.send(string)
             } else {
@@ -267,7 +291,6 @@ class WSConnectionManager {
             let receivedDict = await JSON.parse(data)
             if (this.key !== false && this.key !== true) receivedDict = await JSON.parse(await this.decrypt(receivedDict["eB64"], receivedDict["ivB64"], receivedDict["tagB64"]))
             let reason = receivedDict["REASON"]
-            console.log("RECV", receivedDict)
 
             if (reason === WS_DATA_REASONS.IN.CSRF_ACCEPTED) {
                 if (this.key === true) await this.generateSharedKey(receivedDict["SERVER-KEY"])
@@ -384,19 +407,15 @@ class WSConnectionManager {
     }
 }
 
-
-window.transferred_bytes = 0;
-window.to_be_transferred_bytes = 0;
-
-window.CHUNK_SIZE = 1024*1024*5;
-window.MAX_BUFFER_SIZE = 1024*1024*2;
-window.DELAY_TIMEOUT = 100
+window.CHUNK_SIZE = 1024*1024*10;
+window.MAX_BUFFER_SIZE = 1024*1024*5;
+window.DELAY_TIME = 500
 
 fetch('/?RECEIVE_NEW_L2_COOKIE', {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: getDeviceFingerprint(),
-    credentials: "same-origin",
+    credentials: "include",
 }).then((response)=>{
     response.json().then((parsed)=>{
         window.ConnmanagerWS = new WSConnectionManager(parsed[WS_PURPOSES.RESPONSIVE], parsed[WS_PURPOSES.LARGE])
@@ -404,7 +423,7 @@ fetch('/?RECEIVE_NEW_L2_COOKIE', {
 });
 
 
-function sendWS(data, isLargeData) {
+function sendCustomMessage(data, isLargeData) {
     let purpose = WS_PURPOSES.RESPONSIVE
     if (isLargeData) purpose = WS_PURPOSES.LARGE
     window.ConnmanagerWS.sendInQueue(JSON.stringify({T: WS_DATA_TYPES.CUSTOM, D: data}), purpose).then()

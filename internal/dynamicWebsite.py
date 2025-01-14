@@ -1,5 +1,5 @@
 from __future__ import annotations
-__version__ = "2.0.0"
+__version__ = "2.0.0beta1"
 __packagename__ = "dynamicWebsite"
 
 
@@ -39,7 +39,7 @@ def updatePackage():
 
 
 class Imports:
-    from flask import Flask, Request, Response, send_file, render_template_string, make_response, request, redirect
+    from flask import Flask, Request, Response, send_file, render_template_string, make_response, request
     from flask_sock import Sock, ConnectionClosed
     from json import dumps, loads
     from time import time, sleep
@@ -47,6 +47,7 @@ class Imports:
     from cryptography.fernet import Fernet
     from urllib.parse import urlparse
     from bidict import bidict
+    from typing import Any
     from base64 import urlsafe_b64decode, urlsafe_b64encode
     from cryptography.hazmat.backends import default_backend
     from cryptography.hazmat.primitives import serialization
@@ -60,6 +61,13 @@ class Imports:
 
 class DynamicWebsite:
 
+
+    class WS_DATA_TYPES:
+        FILE_PART = "FP"
+        FORM = "F"
+        CUSTOM = "C"
+
+
     class VIEWER_STATES:
         CREATED = "CREATED"
         DEAD = "DEAD"
@@ -67,12 +75,8 @@ class DynamicWebsite:
         COMPLETE = "COMPLETE"
         DYING = "DYING"
 
-
-    class WSDataReasons:
+    class WS_DATA_REASONS:
         class IN:
-            FILE_PART = "FP"
-            FORM = "F"
-            CUSTOM = "C"
             VERIFY_CSRF = "CSRF-VERIFY"
             READY = "READY"
             CLIENT_KEY = "CLIENT-KEY"
@@ -463,14 +467,30 @@ class DynamicWebsite:
             self.privateData = None
 
 
-        def send(self, stream, highPriority: bool = True):
+        def sendTurbo(self, stream, highPriority: bool = True):
             WSObj = self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE) if highPriority and self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE) else self.currentWS.get(DynamicWebsite.WSPurposes.LARGE)
             if WSObj is None:
                 Imports.sleep(1)
-                return self.send(stream, highPriority)
+                return self.sendTurbo(stream, highPriority)
             try:
                 if self.currentState != DynamicWebsite.VIEWER_STATES.DEAD:
-                    toSend = Imports.dumps({"REASON":DynamicWebsite.WSDataReasons.OUT.TURBO, "DATA": stream})
+                    toSend = Imports.dumps({"REASON":self.dynamicWebsiteApp.WS_DATA_REASONS.OUT.TURBO, "DATA": stream})
+                    if WSObj.key is not None and WSObj.key != True:
+                        if WSObj.key:
+                            toSend = Imports.dumps(WSObj.encrypt(toSend, self.dynamicWebsiteApp.stringGenerator.AlphaNumeric(12,12).encode()))
+                    WSObj.sendRaw(toSend)
+            except (BrokenPipeError, Imports.ConnectionClosed):  # pragma: no cover
+                print("Unable to send. Connection closed")
+
+
+        def sendCustomMessage(self, data: Imports.Any):
+            WSObj = self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE)
+            if WSObj is None:
+                Imports.sleep(1)
+                return self.sendTurbo(data)
+            try:
+                if self.currentState != DynamicWebsite.VIEWER_STATES.DEAD:
+                    toSend = Imports.dumps({"T":self.dynamicWebsiteApp.WS_DATA_TYPES.CUSTOM, "DATA": data})
                     if WSObj.key is not None and WSObj.key != True:
                         if WSObj.key:
                             toSend = Imports.dumps(WSObj.encrypt(toSend, self.dynamicWebsiteApp.stringGenerator.AlphaNumeric(12,12).encode()))
@@ -480,13 +500,12 @@ class DynamicWebsite:
 
 
         def receive(self, data:dict):
-            print(data)
             TYPE = data.pop("T")
 
-            if TYPE == DynamicWebsite.WSDataReasons.IN.CUSTOM:
+            if TYPE == DynamicWebsite.WS_DATA_TYPES.CUSTOM:
                 Imports.Thread(target=self.customMessageCallback, args=(self, data.get("D"),)).start()
 
-            elif TYPE == DynamicWebsite.WSDataReasons.IN.FORM:
+            elif TYPE == DynamicWebsite.WS_DATA_TYPES.FORM:
                 formData = data.get("D")
                 purpose = self.purposeManager.checkCSRFPurpose(formData.pop("PURPOSE_CSRF"))
                 if purpose is not None:
@@ -503,10 +522,11 @@ class DynamicWebsite:
                             formData[elementName].append(fileObj)
                     self.formSubmitCallback(self, formData)
 
-            elif TYPE == DynamicWebsite.WSDataReasons.IN.FILE_PART:
+            elif TYPE == DynamicWebsite.WS_DATA_TYPES.FILE_PART:
                 fileID = data.pop("FID")
                 if fileID in self.pendingFiles:
                     self.pendingFiles[fileID].acceptNewData(data)
+
 
         def updateHTML(self, htmlData: str, divID: str, method: str, nonBlockingWait: float = 0, removeAfter: float = 0, blockingWait: float = 0, newDivAttributes: dict|None = None) -> str|None:
             if type(htmlData) != str:
@@ -536,7 +556,7 @@ class DynamicWebsite:
 
 
             stream =  f'<turbo-stream action="{method}" target="{divID}"><template>{htmlData}</template></turbo-stream>'
-            self.queueHandler.queueAction(self.send, False, 0, None, None, None, None, stream)
+            self.queueHandler.queueAction(self.sendTurbo, False, 0, None, None, None, None, stream)
 
             if removeAfter: self.updateHTML("", divID, DynamicWebsite.UpdateMethods.remove, removeAfter)
 
@@ -561,7 +581,7 @@ class DynamicWebsite:
 
         self.serverKeys = self.ServerKeyHolder()
         self.stringGenerator = Imports.RandomisedString()
- 
+
         self.baseApp = Imports.Flask(self.appName)
         self.visitorLeftCallback = visitorLeftCallback
         self.baseApp.config.setdefault('TURBO_WEBSOCKET_ROUTE', actionsRoute)
@@ -598,11 +618,11 @@ class DynamicWebsite:
             previousL1Cookie = dump.get(1)
             previousL2Cookie = dump.get(2)
             if (previousL2Cookie.viewerID and
-                validCookie.match(previousL2Cookie, 1) and
-                presentL1Cookie.match(previousL1Cookie, 1) and
-                presentL2Cookie.match(previousL2Cookie, 2, True, True) and
-                previousL2Cookie.match(previousL1Cookie, 1, True, True)
-                ):
+                    validCookie.match(previousL2Cookie, 1) and
+                    presentL1Cookie.match(previousL1Cookie, 1) and
+                    presentL2Cookie.match(previousL2Cookie, 2, True, True) and
+                    previousL2Cookie.match(previousL1Cookie, 1, True, True)
+            ):
                 validCookie.viewerID = previousL2Cookie.viewerID
             else:
                 validCookie.viewerID = presentL1Cookie.viewerID
@@ -726,10 +746,10 @@ class DynamicWebsite:
             # Requesting L1 Cookie
             else:
                 response = Imports.make_response(Imports.render_template_string(self.HTMLElements.baseHTML
-                                                                            .replace(self.HTMLElements.replaceActionRoutePlaceholder, self.actionsRoute)
-                                                                            .replace(self.HTMLElements.replaceBodyPlaceholder, self.body)
-                                                                            .replace(self.HTMLElements.replaceExtraHeadsPlaceholder, self.extraHeads)
-                                                                            .replace(self.HTMLElements.replaceTitlePlaceholder, self.title)))
+                                                                                .replace(self.HTMLElements.replaceActionRoutePlaceholder, self.actionsRoute)
+                                                                                .replace(self.HTMLElements.replaceBodyPlaceholder, self.body)
+                                                                                .replace(self.HTMLElements.replaceExtraHeadsPlaceholder, self.extraHeads)
+                                                                                .replace(self.HTMLElements.replaceTitlePlaceholder, self.title)))
                 return self.createL1Cookie(Imports.request).wrapResponse(response, self.fernetKey)
 
 
@@ -769,17 +789,17 @@ class DynamicWebsite:
                         reason = dictReceived.get("REASON")
 
                         if WSObj.key is None: # Should be the first data from WS
-                            if reason == self.WSDataReasons.IN.VERIFY_CSRF:
+                            if reason == self.WS_DATA_REASONS.IN.VERIFY_CSRF:
                                 if viewerObj.currentWS.get(purpose) is None and viewerObj.futureWS.get(purpose) == dictReceived["CSRF"] and viewerObj.futureWS.get(purpose): # Viewer has pending CSRF of same purpose and is valid
                                     del viewerObj.futureWS[purpose]
                                     viewerObj.currentWS[purpose] = WSObj
                                     requireEncryption= dictReceived.get("REQUEST_ENCRYPTION", False)
                                     if requireEncryption:
                                         WSObj.key = self.serverKeys.sharedKey(dictReceived.get("CLIENT-KEY").get("PubB64"), WSObj.salt, WSObj.info)
-                                        rawWS.send(Imports.dumps({"REASON": self.WSDataReasons.OUT.CSRF_ACCEPTED, "SERVER-KEY": {"PubB64":self.serverKeys.pubB64(), "SaltB64": Imports.urlsafe_b64encode(WSObj.salt).decode(), "InfoB64": Imports.urlsafe_b64encode(WSObj.info).decode()}}))
+                                        rawWS.send(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.CSRF_ACCEPTED, "SERVER-KEY": {"PubB64":self.serverKeys.pubB64(), "SaltB64": Imports.urlsafe_b64encode(WSObj.salt).decode(), "InfoB64": Imports.urlsafe_b64encode(WSObj.info).decode()}}))
                                     else:
                                         WSObj.key = False
-                                        rawWS.send(Imports.dumps({"REASON": self.WSDataReasons.OUT.CSRF_ACCEPTED}))
+                                        rawWS.send(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.CSRF_ACCEPTED}))
                                     CSRFVerified = True
                                 else:
                                     break
@@ -787,7 +807,7 @@ class DynamicWebsite:
                             if WSObj.key:
                                 dictReceived = Imports.loads(WSObj.decrypt(dictReceived))
                                 reason = dictReceived.get("REASON")
-                            if reason == self.WSDataReasons.IN.READY:
+                            if reason == self.WS_DATA_REASONS.IN.READY:
                                 if WSObj.key:
                                     rawWS.send(Imports.dumps(WSObj.encrypt(Imports.dumps({"FUTURE-CSRF": self.createWSToken(viewerObj, purpose, True)}), self.stringGenerator.AlphaNumeric(12,12).encode())))
                                 else:
