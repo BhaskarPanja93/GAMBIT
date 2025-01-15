@@ -1,7 +1,7 @@
 from customisedLogs import CustomisedLogs
 from pooledMySQL import PooledMySQL
-try: from SecretEnums import * ## change
-except: from internal.SecretEnums import * ## change
+try: from Credentials import DBData ## change
+except: from internal.Credentials import DBData ## change
 
 
 def checkRelatedIP(addressA: str, addressB: str):
@@ -16,17 +16,6 @@ def checkRelatedIP(addressA: str, addressB: str):
         b = addressB.split(".")[:-1]
         return a == b
     return addressA == addressB
-
-
-def sqlISafe(parameter):
-    """
-    Sanitise SQL syntax before passing it to main Database
-    :param parameter: String containing the syntax to execute
-    :return:
-    """
-    if type(parameter) == str:
-        return parameter.replace("'", "").replace('"', "").strip()
-    return parameter
 
 
 def connectDB(logger:CustomisedLogs) -> PooledMySQL:

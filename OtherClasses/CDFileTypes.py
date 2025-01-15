@@ -1,4 +1,4 @@
-class CDNFileType:
+class CDFileType:
     text = "text"
     font = "font"
     image = "image"

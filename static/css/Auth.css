@@ -1,4 +1,3 @@
-
 <!-- Cursor -->
 body{
     cursor: none;
@@ -7,12 +6,12 @@ body{
 
 .particle {
     position: absolute;
-    width: 10px;
-    height: 10px;
+    width: 5px;
+    height: 5px;
     border-radius: 50%;
     background-color: #007bff;
     pointer-events: none;
-    animation: fadeOut 1s ease-out forwards;
+    /*animation: fadeOut 1s ease-out forwards;*/
 }
 
 @keyframes fadeOut {
@@ -28,7 +27,7 @@ body{
 
 /* Music button */
 
-.vertical-tray {
+.music-tray {
     z-index: 1000;
     position: absolute;
     bottom: 90px;
@@ -46,16 +45,16 @@ body{
 
     transition: all 0.5s ease;}
 
-.rect-btn {
+.music-tray-categories {
     cursor: pointer;
-    color: rgba(255, 255, 255, 0.71);
+    color: rgba(255, 255, 255, 0.5);
 }
 
-.rect-btn:hover {
+.music-tray-categories:hover {
     color: rgba(255, 255, 255);
 }
 
-.vertical-tray.collapsed .rect-btn {
+.music-tray.collapsed .music-tray-categories {
     display: none;
 }
 
@@ -84,14 +83,14 @@ body{
 }
 
 @media (max-width: 768px) {
-    .vertical-tray {
+    .music-tray {
         bottom: 60px;
         right: 60px;
     }
 }
 
 @media (max-width: 480px) {
-    .vertical-tray {
+    .music-tray {
         bottom: 50px;
         right: 40px;
     }

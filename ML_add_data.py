@@ -1,12 +1,16 @@
 import secrets
 from math import exp
-from threading import Thread
-from time import sleep
+import csv
 
-from pooledMySQL import PooledMySQL
+fields = ["Person", "Question", "PlacementGamesCompleted", "QuestionToughness", "TimeTaken", "OptionSelected", "CorrectOption", "InvisibleMMR", "MMROffset"]
 
-MySQLPool = PooledMySQL("gambit", "SimplePassword@69", "gambit", "bhindi1.ddns.net")
-MySQLPool.execute("truncate ml_train")
+filename = "WithoutVisibleMMR1.csv"
+
+csvfile = open(filename, 'w', newline='')
+csvwriter = csv.writer(csvfile)
+csvwriter.writerow(fields)
+
+
 
 class Person:
     def __init__(self, personID):
@@ -35,25 +39,27 @@ class Answer:
         difficulty_factor = self.question.toughness
         return exp(-difficulty_factor) * (hiddenMMR_factor * 0.7 + mood_factor * 0.3)
 
-people: dict[int, Person] = {personID: Person(personID) for personID in range(1, 500)}
-questions: dict[int, Question] = {questionID: Question(questionID) for questionID in range(1, 500)}
+people: dict[int, Person] = {personID: Person(personID) for personID in range(1, 1000)}
+questions: dict[int, Question] = {questionID: Question(questionID) for questionID in range(1, 1000)}
 
 records = []
 peopleKeys = list(people)
-maxPlacements = 10
+maxPlacements = 20
 while peopleKeys:
     personID = secrets.choice(peopleKeys)
+    peopleKeys.remove(personID)
     person = people[personID]
     questionKeys = list(questions.keys())
     while questionKeys:
+        questionID = secrets.choice(questionKeys)
+        question = questions[questionID]
+        questionKeys.remove(questionID)
         isPlacementQuiz = int(person.placementQuestionsCompleted < maxPlacements)
         placement_question_modifier = maxPlacements - person.placementQuestionsCompleted
         if isPlacementQuiz:
             person.placementQuestionsCompleted += 1
             placement_question_modifier *= 4
 
-        questionID = secrets.choice(questionKeys)
-        question = questions[questionID]
         answer = Answer(person, question)
         isCorrect = 1 if answer.optionSelected == question.correctOption else 0
 
@@ -75,21 +81,18 @@ while peopleKeys:
         person.hiddenMMR = max(0, min(1, person.hiddenMMR + MMROffset))
 
         visibleMMR = int(person.hiddenMMR * 1000)
-
         values = [
             personID,
-            person.placementQuestionsCompleted,
-            answer.timeTaken,
             questionID,
+            person.placementQuestionsCompleted,
+            question.toughness,
+            answer.timeTaken,
             answer.optionSelected,
             question.correctOption,
-            int(person.hiddenMMR * 1000),
-            int(question.toughness * 100),
+            person.hiddenMMR,
             MMROffset,
         ]
+        print(len(peopleKeys), len(questionKeys), values)
         #input()
-        print(values)
-        Thread(target=MySQLPool.execute, args=("INSERT INTO ml_train VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", values,)).start()
-        #MySQLPool.execute("INSERT INTO ml_train VALUES (?, ?, ?, ?, ?, ?, ?, ?, ?)", values)
-        #input()
-        sleep(0.001)
+        csvwriter.writerow(values)
+csvfile.close()

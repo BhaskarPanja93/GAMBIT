@@ -4,7 +4,7 @@ from internal.Credentials import folderLocation
 class Folders:
     static = folderLocation+"/static/"
 
-    audio = static+"audio/"
+    music = static + "music/"
     css = static+"css/"
     font = static+"font/"
     html = static+"html/"

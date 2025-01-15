@@ -1,3 +1,5 @@
 class Routes:
     webHomePage = "/"
-    cdnFileContent = "/cdn"
+    cdFileContent = "/cd"
+    liveMusic = "/music"
+    favicon = "/favicon.ico"
