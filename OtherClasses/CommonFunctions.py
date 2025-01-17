@@ -1,7 +1,16 @@
-from customisedLogs import CustomisedLogs
-from pooledMySQL import PooledMySQL
+from pathlib import Path
+
+from flask import Flask
+from gevent.pywsgi import WSGIServer
+
 try: from Credentials import DBData ## change
 except: from internal.Credentials import DBData ## change
+
+from OtherClasses.WSGIElements import LoggerAttachedWSGIServer
+
+
+from customisedLogs import CustomisedLogs
+from pooledMySQL import PooledMySQL
 
 
 def checkRelatedIP(addressA: str, addressB: str):
@@ -18,15 +27,16 @@ def checkRelatedIP(addressA: str, addressB: str):
     return addressA == addressB
 
 
-def connectDB(logger:CustomisedLogs) -> PooledMySQL:
+
+def connectDB(logger: CustomisedLogs) -> PooledMySQL:
     """
     Blocking function to connect to DB
     :return: None
     """
     for host in DBData.DBHosts:
         try:
-            mysqlPool = PooledMySQL(user=DBData.DBUser, password=DBData.DBPassword.value, dbName=DBData.DBName.value, host=host)
-            mysqlPool.execute(f"SELECT DATABASE();")
+            mysqlPool = PooledMySQL(user=DBData.DBUser, password=DBData.DBPassword, dbName=DBData.DBName, host=host)
+            mysqlPool.execute("SHOW DATABASES", dbRequired=False, catchErrors=False)
             logger.log(logger.Colors.green_800, "DB", f"connected to: {host}")
             return mysqlPool
         except:
@@ -37,4 +47,12 @@ def connectDB(logger:CustomisedLogs) -> PooledMySQL:
         exit(0)
 
 
-
+def WSGIRunner(app: Flask, port: int, route: str, logger: CustomisedLogs):
+    cert_file = r'C:\cert\fullchain1.pem'
+    key_file = r'C:\cert\privkey1.pem'
+    if Path(cert_file).is_file() and Path(key_file).is_file():
+        print(f"https://127.0.0.1:{port}{route}")
+        LoggerAttachedWSGIServer(('0.0.0.0', port,), app, logger, certfile=cert_file, keyfile=key_file).serve_forever()
+    else:
+        print(f"http://127.0.0.1:{port}{route}")
+        LoggerAttachedWSGIServer(('0.0.0.0', port,), app, logger).serve_forever()

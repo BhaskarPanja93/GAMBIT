@@ -1,4 +1,4 @@
 class CoreValues:
-    appName = "Gambit"
-    title = "Study Well"
-    cdName = "Gambit-CD"
+    title = "GAMBIT"
+    appName = "WB"
+    cdName = "CD"

@@ -710,14 +710,11 @@ class DynamicWebsite:
             Applies user remote address correctly (received from proxy)
             :return:
             """
-            address = "NOT-RECOGNISED"
             if Imports.request.remote_addr == "127.0.0.1":
-                if Imports.request.environ.get("HTTP_X_FORWARDED_FOR") == Imports.request.headers.get("X-Forwarded-For"):
-                    if Imports.request.environ.get("HTTP_X_FORWARDED_FOR") is not None:
-                        address = Imports.request.environ.get("HTTP_X_FORWARDED_FOR")
-                    else: address = "LOCALHOST"
-            else: address = Imports.request.remote_addr
-            Imports.request.remote_addr = address
+                if Imports.request.environ.get("HTTP_X_FORWARDED_FOR") is not None:
+                    address = Imports.request.environ.get("HTTP_X_FORWARDED_FOR")
+                else: address = "LOCALHOST"
+                Imports.request.remote_addr = address
 
 
         @self.baseApp.route(self.actionsRoute, methods=["GET", "POST"])

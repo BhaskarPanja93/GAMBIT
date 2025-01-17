@@ -41,7 +41,7 @@ async function playMusicCategory(category) {
 
 function unmuteMusic() {
     if (window.lastMusicCategory === null || musicPlayer.muted === true) {
-        musicPlayer.volume = 0.1;
+        musicPlayer.volume = 0.05;
         musicPlayer.muted = false
         trayPPIcon.src = '/cd?type=image&name=music-tray-pause.png';
         trayPPIcon.alt = 'Pause';

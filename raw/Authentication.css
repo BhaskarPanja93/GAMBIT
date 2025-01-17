@@ -66,29 +66,3 @@
         right: 40px;
     }
 }
-
-/* Notes CSS */
-
-.post-image {
-    height: 150px;
-    border-radius: 8px;
-}
-
-@media (max-width: 600px) {
-    .post-image {
-        height: 50px;
-    }
-}
-
-@media (min-width: 601px) and (max-width: 1024px) {
-    .post-image {
-        height: 80px;
-        align-self: flex-start;
-    }
-}
-
-@media (min-width: 1025px) {
-    .post-image {
-        height: 150px;
-    }
-}
