@@ -162,6 +162,6 @@ cython_debug/
 #.idea/
 
 
-/internal/SecretEnums.py!/internal/SecretEnums.py
-/internal/SecretEnums.py
+*Credentials.py
 *.glb
+/static/music/
