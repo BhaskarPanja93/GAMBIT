@@ -68,13 +68,6 @@ def _liveMusicFeed(category):
     return Response(soundBytesGenerator(category))
 
 
-@cdApp.after_request
-def _setCacheTimeHeader(response):
-    response.headers['Cache-Control'] = 'public, max-age=36000'
-    response.headers['ETag'] = str(serverStartTime)
-    return response
-
-
 @cdApp.errorhandler(Exception)
 def handle_404(error):
    return "ITEM_NOT_FOUND", 404

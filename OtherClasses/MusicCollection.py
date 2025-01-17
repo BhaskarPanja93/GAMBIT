@@ -14,7 +14,7 @@ class MusicStream:
         self.onCompleteCallback = onCompleteCallback
         self.category = category
         self.fileName = fileName
-        self.partsPerSecond = 10
+        self.partsPerSecond = 5
         self.wf = open(self.fileName, 'rb')
         self.sampleRate = self.wf.getframerate()
         self.chunkSize = self.sampleRate // self.partsPerSecond

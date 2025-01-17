@@ -8,10 +8,7 @@ interval = 1
 AutoReRun(toRun, toCheck, interval)
 
 
-# toRun = {RequiredFiles.cdServerRunnable: [ServerSecrets.fernetKey, str(ServerSecrets.webPort), str(ServerSecrets.cdPort)]}
-# toCheck = RequiredFiles.cdServerRequired
-# interval = 1
-# AutoReRun(toRun, toCheck, interval)
-
-
-
+toRun = {RequiredFiles.cdServerRunnable: [ServerSecrets.fernetKey, str(ServerSecrets.webPort), str(ServerSecrets.cdPort)]}
+toCheck = RequiredFiles.cdServerRequired
+interval = 1
+AutoReRun(toRun, toCheck, interval)
