@@ -1,8 +1,6 @@
-from gevent.monkey import patch_all
+from gevent.monkey import patch_all; patch_all()
 
-patch_all()
-
-from time import time, sleep
+from time import time
 from sys import argv
 from flask import Flask, request, send_from_directory, Response
 
@@ -51,21 +49,18 @@ def _favicon():
 
 @cdApp.get(f"{Routes.liveMusic}/<category>")
 def _liveMusicFeed(category):
-    def soundBytesGenerator(category):
-        first_run = True
-        timeToWait=0
+    categoryStream = musicCollection.activeStreams.get(category)
+    if categoryStream is None: return "Invalid stream category"
+    def soundBytesGenerator():
+        first = True
         while True:
-            categoryStream = musicCollection.getStream(category)
-            if categoryStream is None: return "Invalid stream category"
-            if timeToWait: sleep(timeToWait)
-            if first_run:
-                data = categoryStream.header
-                first_run = False
-            else:
-                data = categoryStream.getCurrentChunk()
-                timeToWait = categoryStream.chunkTime
-            yield data
-    return Response(soundBytesGenerator(category))
+            if first:
+                first = False
+                yield b"".join(categoryStream.allChunks)
+            with categoryStream.condition:
+                categoryStream.condition.wait()
+                yield categoryStream.allChunks[-1]
+    return Response(soundBytesGenerator(), mimetype="audio/mpeg'")
 
 
 @cdApp.errorhandler(Exception)

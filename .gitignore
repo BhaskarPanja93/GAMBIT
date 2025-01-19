@@ -164,4 +164,4 @@ cython_debug/
 
 *Credentials.py
 *.glb
-/static/music/
+/music/

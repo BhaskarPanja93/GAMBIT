@@ -1,5 +1,9 @@
-from internal.Credentials import RequiredFiles, ServerSecrets
 from autoReRun import AutoReRun
+while True:
+    try:
+        from internal.Credentials import RequiredFiles, ServerSecrets
+        break
+    except: input("Credentials.py not found in /internal/")
 
 
 toRun = {RequiredFiles.webServerRunnable: [ServerSecrets.fernetKey, str(ServerSecrets.webPort), str(ServerSecrets.cdPort)]}
