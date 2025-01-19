@@ -6,16 +6,15 @@
     <title>Authentication</title>
 
     <script src="https://cdn.tailwindcss.com"></script>
-    <link rel="stylesheet" href="Authentication.css">
-    <link rel="stylesheet" href="form.css">
+    <link rel="stylesheet" href="Overall.css">
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/5.15.4/css/all.min.css">
 
 </head>
 <body>
-<div class="wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
+<div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
 
     <!-- Animation div-->
-    <div class="box">
+    <div class="bg-animation-box">
         <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
     </div>
 
@@ -25,8 +24,8 @@
         <nav class="bg-transparent py-4" style="z-index: 2;">
             <div class="mx-auto px-2 sm:px-4 lg:px-20 mt-[2vw] flex justify-between items-center">
                 <div class="flex items-center">
-                    <a href="logo.png" class="mr-2">
-                        <img src="logo.png" alt="Logo" class="h-8 w-8">
+                    <a href="favicon.ico" class="mr-2">
+                        <img src="favicon.ico" alt="Logo" class="h-8 w-8">
                     </a>
                     <div class="text-white font-bold text-2xl py-3">Gambit</div>
                 </div>
@@ -34,16 +33,16 @@
         </nav>
 
         <!--   Music Button   -->
-        <div class="vertical-tray" id="tray">
+        <div class="music-tray" id="tray">
             <button id="music-tray-toggle-btn" class="music-tray-toggle-btn">
-                <img src="upArrow.png" style="height: 15px; width: 15px" alt="Toggle" />
+                <img src="music-tray-up.png" style="height: 15px; width: 15px" alt="Toggle" />
             </button>
-            <button class="rect-btn">Lo-fi</button>
-            <button class="rect-btn">Ambient</button>
-            <button class="rect-btn">Jazz</button>
-            <button class="rect-btn">Classical</button>
+            <button class="music-tray-button-global">Lo-fi</button>
+            <button class="music-tray-button-global">Ambient</button>
+            <button class="music-tray-button-global">Jazz</button>
+            <button class="music-tray-button-global">Classical</button>
             <div id="music-pp-btn" class="music-pp-btn">
-                <img id="icon" src="play-button.png" alt="Play" style="height: 25px;width: 25px;">
+                <img id="icon" src="mouse-tray-play.png" alt="Play" style="height: 25px;width: 25px;">
             </div>
         </div>
 
@@ -130,7 +129,7 @@
                             <option value="Language">Computer</option>
                         </select>
                     </div>
-                    <button class="glowing-box py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Publish</button>
+                    <button class="button-glow py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 10px 20px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">Publish</button>
                 </form>
             </div>
 
@@ -173,7 +172,7 @@
                             <h4 style="margin: 0 0 10px;">Post Title 2</h4>
                             <p style="margin: 0 0 10px;">Description: Another brief description... </p>
                             <p style="margin: 0 0 10px;"><strong>Subject:</strong> History</p>
-                            <button class="glowing-box py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+                            <button class="button-glow py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
                         </div>
                         <div style=" min-width: 300px; display:flex;">
                             <img src="https://archive.org/download/resort_bar_ocean-wallpaper-1280x720/resort_bar_ocean-wallpaper-1280x720.jpg" alt="Post Image" class="post-image">
@@ -186,7 +185,7 @@
                             <h4 style="margin: 0 0 10px;">Post Title 2</h4>
                             <p style="margin: 0 0 10px;">Description: Another brief description... </p>
                             <p style="margin: 0 0 10px;"><strong>Subject:</strong> History</p>
-                            <button class="glowing-box py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+                            <button class="button-glow py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
                         </div>
                         <div style=" min-width: 300px; display: flex;">
                             <img src="https://letsenhance.io/static/8f5e523ee6b2479e26ecc91b9c25261e/1015f/MainAfter.jpg" alt="Post Image" class="post-image">
@@ -199,7 +198,7 @@
                             <h4 style="margin: 0 0 10px;">Post Title 2</h4>
                             <p style="margin: 0 0 10px;">Description: Another brief description... </p>
                             <p style="margin: 0 0 10px;"><strong>Subject:</strong> History</p>
-                            <button class="glowing-box py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+                            <button class="button-glow py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
                         </div>
                         <div style=" min-width: 300px; display: flex;">
                             <img src="https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcT_xrlfVkBSYBaeRtyyKvqnvsXZ2gNjpzn4DvNiRUdcq27E8Y71jlhv3qxFN8xxmMHuIfw&usqp=CAU" alt="Post Image" class="post-image">
@@ -212,7 +211,7 @@
                             <h4 style="margin: 0 0 10px;">Post Title 2</h4>
                             <p style="margin: 0 0 10px;">Description: Another brief description... </p>
                             <p style="margin: 0 0 10px;"><strong>Subject:</strong> History</p>
-                            <button class="glowing-box py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
+                            <button class="button-glow py-3 px-7 rounded-3xl font-bold" type="button" style="padding: 5px 10px; background-color: #007bff; color: white; border: none; border-radius: 4px; cursor: pointer;">View</button>
                         </div>
                         <div style=" min-width: 300px; display: flex;">
                             <img src="https://wallpapers.com/images/hd/720p-ny-city-background-6fja004v3olna9yj.jpg" alt="Post Image" class="post-image">

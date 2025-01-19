@@ -7,7 +7,7 @@ class FormPurposes:
     renderPostQuizQuestion = "renderPostQuizQuestion"
     displayNoteContent = "displayNoteContent"
     renderQuizLobby = "preQuiz"
-    renderSubCategories = "renderCategories"
+    rendermusicSubCategories = "renderCategories"
     renderAuthPage = "renderAuthPage"
     renderMusicPage = "renderMusicPage"
     renderNotesPage = "renderNotesPage"

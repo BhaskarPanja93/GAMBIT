@@ -3,9 +3,9 @@ from pathlib import Path
 from random import shuffle
 from subprocess import Popen, PIPE, DEVNULL
 from threading import Thread, Condition
-from time import sleep, time
-
+from time import sleep
 from pydub import AudioSegment
+
 
 from OtherClasses.Folders import Folders
 
@@ -34,7 +34,7 @@ class MusicStreamCategory:
 
 
     def __listenToFileChanges(self):
-        while not self.closed and self.folderPath.exists():
+        while (not self.closed) and self.folderPath.exists():
             current = stat(self.folderPath).st_mtime
             if current != self.lastFolderModification:
                 self.lastFolderModification = current
@@ -57,7 +57,7 @@ class MusicStreamCategory:
         if self.currentFilePath is not None: self.files.append(self.currentFilePath)
         if not self.files:
             print(f"Waiting for music files in {self.category}")
-            while not self.files: sleep(1)
+            while (not self.files) and (not self.closed): sleep(1)
         self.currentFilePath = self.files.pop(0)
         print(f"{self.category}: {self.currentFilePath}")
         Thread(target=self.__startListening).start()
@@ -66,6 +66,7 @@ class MusicStreamCategory:
     def __startListening(self):
         chunkSize = 10
         _mp3 = AudioSegment.from_mp3(self.currentFilePath)
+        frameRate = _mp3.frame_rate
         self.process = Popen(
             ['ffmpeg', '-re', '-i', str(self.currentFilePath), "-f", "mp3", "-"],
             stdout=PIPE,
@@ -75,7 +76,7 @@ class MusicStreamCategory:
             data = self.process.stdout.read(chunkSize)
             if not data: break
             self.allChunks.append(data)
-            if len(self.allChunks) > 8*_mp3.frame_rate/chunkSize:
+            if len(self.allChunks) > 8*frameRate/chunkSize:
                 with self.condition:
                     self.allChunks.pop(0)
                     self.condition.notify_all()
@@ -87,13 +88,14 @@ class MusicStreamCategory:
 
 class MusicCollection:
     def __init__(self):
+        self.closed = False
         self.activeStreams:dict[str,MusicStreamCategory] = {}
         self.lastFolderModification = 0
         Thread(target=self.__listenToFolderChanges).start()
 
 
     def __listenToFolderChanges(self):
-        while True:
+        while not self.closed:
             current = stat(Folders.music).st_mtime
             if current != self.lastFolderModification:
                 self.lastFolderModification = current
@@ -117,6 +119,8 @@ class MusicCollection:
                 print(f"Killed {catName}")
                 self.activeStreams.pop(catName).kill()
 
+
     def close(self):
         for stream in self.activeStreams.values():
             stream.kill()
+        print("Music Collection Stopped")

@@ -1,8 +1,8 @@
 class DivID:
     root = "root"
-    basePage = "basePage"
-    scripts = "scripts"
+    basePage = "base-page"
+    scripts = "script"
     navbar = "navbar"
     ghost3d = "ghost3d"
-    musicTray = "musicTray"
+    musicTray = "music-tray"
     auth = "auth"

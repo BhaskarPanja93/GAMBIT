@@ -1,27 +1,48 @@
-const musicTray = document.getElementById('musicTray');
+const musicTray = document.getElementById('music-tray');
+const musicTrayCategories = document.getElementById('music-tray-categories');
 const musicTrayToggleButton = document.getElementById('music-tray-toggle-btn');
 const musicTrayPPButton = document.getElementById('music-pp-btn');
 const musicTrayPPIcon = musicTrayPPButton.querySelector('img');
 const musicTrayToggleIcon = musicTrayToggleButton.querySelector('img');
 const musicPlayer = document.getElementById('music-player');
+
+
+let knownStreams = []
 musicPlayer.muted = true
-
-
-const lofiPlayButton = document.getElementById('LOFI');
-const jazzPlayButton = document.getElementById('JAZZ');
-const classicalPlayButton = document.getElementById('CLASSICAL');
-const ambientPlayButton = document.getElementById('AMBIENT');
-const knownStreams = ["LOFI", "JAZZ", "CLASSICAL", "AMBIENT"]
-
-
 window.lastMusicCategory = null
 window.currentlyPlaying = false
 
 
-lofiPlayButton.addEventListener('click', () => playMusicCategory(lofiPlayButton.id));
-classicalPlayButton.addEventListener('click', () => playMusicCategory(classicalPlayButton.id));
-jazzPlayButton.addEventListener('click', () => playMusicCategory(jazzPlayButton.id));
-ambientPlayButton.addEventListener('click', () => playMusicCategory(ambientPlayButton.id));
+fetch("/music-categories").then((response) => {
+    response.json().then((streams) => {
+        knownStreams = streams
+        knownStreams.forEach((cat)=>{
+            let _split = cat.split("-")
+            let mainCat = _split[0]
+            let subCat = _split[1]
+            if (document.getElementById(mainCat + "-music-category") === null) {
+                let mainCategoryDiv = document.createElement('div');
+                mainCategoryDiv.className = "music-tray-category-grp"
+                let mainCatButton = document.createElement('button');
+                mainCatButton.className = "music-tray-button-global"
+                mainCatButton.innerHTML = mainCat;
+                mainCategoryDiv.append(mainCatButton);
+                musicTrayCategories.appendChild(mainCategoryDiv);
+
+                let subCategoryDiv = document.createElement('div');
+                subCategoryDiv.className = "music-tray-sub-category-grp"
+                subCategoryDiv.id = mainCat + "-music-category"
+                mainCategoryDiv.append(subCategoryDiv);
+            }
+            let subCatButton = document.createElement('button');
+            subCatButton.className = "music-tray-button-global music-tray-sub-category-button"
+            subCatButton.id = cat
+            subCatButton.innerText = subCat
+            subCatButton.onclick = () => {playMusicCategory(cat).then()}
+            document.getElementById(mainCat + "-music-category").append(subCatButton);
+        })
+    })
+})
 
 
 async function playMusicCategory(category) {
@@ -41,7 +62,7 @@ async function playMusicCategory(category) {
 
 function unmuteMusic() {
     if (window.lastMusicCategory === null || musicPlayer.muted === true) {
-        musicPlayer.volume = 0.05;
+        musicPlayer.volume = 0.01;
         musicPlayer.muted = false
         musicTrayPPIcon.src = '/cd?type=image&name=music-tray-pause.png';
         musicTrayPPIcon.alt = 'Pause';
@@ -49,6 +70,8 @@ function unmuteMusic() {
     }
     return null
 }
+
+
 function muteMusic() {
     if (musicPlayer.muted === false) {
         musicPlayer.muted = true
@@ -58,6 +81,8 @@ function muteMusic() {
     }
     return null
 }
+
+
 function toggleMusicMute() {
     if (!(unmuteMusic() === true)) muteMusic()
 }
@@ -71,6 +96,8 @@ function openMusicTray() {
     }
     return null
 }
+
+
 function closeMusicTray() {
     if (!musicTray.classList.contains('collapsed')) {
         musicTray.classList.toggle('collapsed');
@@ -79,6 +106,7 @@ function closeMusicTray() {
     }
     return null
 }
+
 
 function toggleMusicTray() {
     if (!(openMusicTray() === true)) closeMusicTray()

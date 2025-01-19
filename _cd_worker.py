@@ -11,6 +11,7 @@ from OtherClasses.CoreValues import CoreValues
 from OtherClasses.MusicCollection import MusicCollection
 from OtherClasses.CommonFunctions import WSGIRunner
 from customisedLogs import CustomisedLogs
+from flask_cors import CORS
 
 
 serverStartTime = time()
@@ -19,8 +20,14 @@ webPort = int(argv[2])
 cdPort = int(argv[3])
 cdApp = Flask(CoreValues.cdName)
 musicCollection = MusicCollection()
+allowed_origins = [
+    "https://bhindi1.ddns.net",
+    "https://127.0.0.1",
+    "https://localhost"
+]
 
-
+# Enable CORS for all routes and specific origins
+CORS(cdApp, resources={r"/*": {"origins": allowed_origins}})
 @cdApp.get(Routes.cdFileContent)
 def _fileContent():
     fileType = request.args.get("type", "").strip()
@@ -61,6 +68,11 @@ def _liveMusicFeed(category):
                 categoryStream.condition.wait()
                 yield categoryStream.allChunks[-1]
     return Response(soundBytesGenerator(), mimetype="audio/mpeg'")
+
+
+@cdApp.get(f"{Routes.allMusicCategories}")
+def _allMusicCategories():
+    return list(musicCollection.activeStreams)
 
 
 @cdApp.errorhandler(Exception)

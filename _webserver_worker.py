@@ -1,8 +1,6 @@
-from gevent import monkey
+from gevent import monkey; monkey.patch_all()
 
-monkey.patch_all()
-
-from time import time
+from time import time, sleep
 from sys import argv
 from typing import Any
 from flask import request, redirect
@@ -87,25 +85,30 @@ def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
 def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Joined: ", viewerObj.viewerID)
     viewerObj.privateData = {}
+    sleep(.1)
     renderUniversal(viewerObj)
+    sleep(.1)
     renderMusicTray(viewerObj)
-    knownUserID = SQLconn.execute(f"SELECT {Database.USER_DEVICES.USER_ID} FROM {Database.USER_DEVICES.SELF} WHERE {Database.USER_DEVICES.VIEWER_ID}=? LIMIT 1", [viewerObj.viewerID])
-    if knownUserID:
-        knownUserID = knownUserID[0]
-        viewerObj.privateData["UserID"] = knownUserID.get(Database.USER_DEVICES.VIEWER_ID)
-    print(knownUserID)
-    if knownUserID: renderAuthPost(viewerObj)
-    else: renderAuthPre(viewerObj)
+    sleep(.1)
+    renderAuthPre(viewerObj)
+    sleep(.1)
+    renderAuthForm(viewerObj)
+    sleep(.1)
+    renderAuthPost(viewerObj)
+
+    # knownUserID = SQLconn.execute(f"SELECT {Database.USER_DEVICES.USER_ID} FROM {Database.USER_DEVICES.SELF} WHERE {Database.USER_DEVICES.VIEWER_ID}=? LIMIT 1", [viewerObj.viewerID])
+    # if knownUserID:
+    #     knownUserID = knownUserID[0]
+    #     viewerObj.privateData["UserID"] = knownUserID.get(Database.USER_DEVICES.VIEWER_ID)
+    # print(knownUserID)
+    # if knownUserID: renderAuthPost(viewerObj)
+    # else: renderAuthPre(viewerObj)
 
 
 logger = CustomisedLogs()
 SQLconn = connectDB(logger)
 dynamicWebsiteApp = DynamicWebsite(newVisitorCallback, visitorLeftCallback, formSubmitCallback, customWSMessageCallback, fernetKey, CoreValues.appName, Routes.webHomePage, cachedHTMLElements.fetchStaticHTML(FileNames.HTML.ExtraHead), cachedHTMLElements.fetchStaticHTML(FileNames.HTML.BodyBase), CoreValues.title)
 baseApp, WSSock = dynamicWebsiteApp.start()
-
-@baseApp.get("/ip")
-def get_ip():
-    return request.remote_addr
 
 
 @baseApp.errorhandler(Exception)

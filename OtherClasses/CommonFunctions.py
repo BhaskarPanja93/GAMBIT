@@ -1,16 +1,11 @@
 from pathlib import Path
 
+from customisedLogs import CustomisedLogs
 from flask import Flask
-from gevent.pywsgi import WSGIServer
-
-try: from Credentials import DBData ## change
-except: from internal.Credentials import DBData ## change
+from pooledMySQL import PooledMySQL
 
 from OtherClasses.WSGIElements import LoggerAttachedWSGIServer
-
-
-from customisedLogs import CustomisedLogs
-from pooledMySQL import PooledMySQL
+from internal.Credentials import DBData
 
 
 def checkRelatedIP(addressA: str, addressB: str):
@@ -25,7 +20,6 @@ def checkRelatedIP(addressA: str, addressB: str):
         b = addressB.split(".")[:-1]
         return a == b
     return addressA == addressB
-
 
 
 def connectDB(logger: CustomisedLogs) -> PooledMySQL:

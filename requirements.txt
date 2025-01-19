@@ -1,10 +1,8 @@
 gevent
 Flask
-requests
 randomisedString
 Werkzeug
 customisedLogs
 pooledMySQL
-dynamicWebsite
 autoReRun
-bidict
+pydub
