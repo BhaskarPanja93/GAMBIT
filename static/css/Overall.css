@@ -119,7 +119,7 @@ body{
     color: rgba(255, 255, 255);
 }
 
-.music-tray.collapsed .music-tray-button-global, .music-tray.collapsed .music-tray-category-grp {
+.music-tray.collapsed .music-tray-button-global, .music-tray.collapsed #music-tray-categories, .music-tray.collapsed .music-tray-category-grp {
     display: none;
 }
 

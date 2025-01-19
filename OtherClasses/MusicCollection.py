@@ -52,19 +52,19 @@ class MusicStreamCategory:
 
 
     def __nextFile(self):
-        print("NEXT FILE")
         if self.closed: return
         if self.currentFilePath is not None: self.files.append(self.currentFilePath)
         if not self.files:
             print(f"Waiting for music files in {self.category}")
             while (not self.files) and (not self.closed): sleep(1)
+        if self.closed: return
         self.currentFilePath = self.files.pop(0)
         print(f"{self.category}: {self.currentFilePath}")
         Thread(target=self.__startListening).start()
 
 
     def __startListening(self):
-        chunkSize = 10
+        chunkSize = 1024
         _mp3 = AudioSegment.from_mp3(self.currentFilePath)
         frameRate = _mp3.frame_rate
         self.process = Popen(

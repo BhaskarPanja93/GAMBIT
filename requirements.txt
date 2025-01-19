@@ -6,3 +6,4 @@ customisedLogs
 pooledMySQL
 autoReRun
 pydub
+flask_cors

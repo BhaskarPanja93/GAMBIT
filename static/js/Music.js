@@ -9,7 +9,6 @@ const musicPlayer = document.getElementById('music-player');
 
 let knownStreams = []
 musicPlayer.muted = true
-window.lastMusicCategory = null
 window.currentlyPlaying = false
 
 
@@ -22,36 +21,44 @@ fetch("/music-categories").then((response) => {
             let subCat = _split[1]
             if (document.getElementById(mainCat + "-music-category") === null) {
                 let mainCategoryDiv = document.createElement('div');
-                mainCategoryDiv.className = "music-tray-category-grp"
-                let mainCatButton = document.createElement('button');
-                mainCatButton.className = "music-tray-button-global"
-                mainCatButton.innerHTML = mainCat;
-                mainCategoryDiv.append(mainCatButton);
-                musicTrayCategories.appendChild(mainCategoryDiv);
-
                 let subCategoryDiv = document.createElement('div');
+                let mainCatButton = document.createElement('button');
+                mainCategoryDiv.className = "music-tray-category-grp py-1"
+                mainCategoryDiv.id = mainCat + "-music-category";
+                mainCategoryDiv.innerHTML = mainCat;
+                mainCategoryDiv.style.color = "rgba(255, 255, 255, 0.2)"
                 subCategoryDiv.className = "music-tray-sub-category-grp"
-                subCategoryDiv.id = mainCat + "-music-category"
+                subCategoryDiv.id = mainCat + "-music-subcategory"
+                mainCatButton.className = "music-tray-button-global"
+                mainCategoryDiv.append(mainCatButton);
                 mainCategoryDiv.append(subCategoryDiv);
+                musicTrayCategories.appendChild(mainCategoryDiv);
             }
             let subCatButton = document.createElement('button');
             subCatButton.className = "music-tray-button-global music-tray-sub-category-button"
             subCatButton.id = cat
-            subCatButton.innerText = subCat
-            subCatButton.onclick = () => {playMusicCategory(cat).then()}
-            document.getElementById(mainCat + "-music-category").append(subCatButton);
+            subCatButton.innerHTML = subCat
+            subCatButton.style.color = "rgba(255, 255, 255, 0.2)"
+            subCatButton.onclick = () => {playMusicCategory(cat, mainCat).then()}
+            document.getElementById(mainCat + "-music-subcategory").append(subCatButton);
         })
     })
 })
 
 
-async function playMusicCategory(category) {
+window.lastMusicCategory = null
+window.lastMusicMainCategory = null
+window.lastMusicSubCategory = null
+async function playMusicCategory(category, mainCategory) {
     if (!knownStreams.includes(category)) return null
     if (window.lastMusicCategory === null || category!==window.lastMusicCategory) {
         muteMusic()
-        if (window.lastMusicCategory !== null) document.getElementById(window.lastMusicCategory).style.color = "rgba(255, 255, 255, 0.5)";
+        if (window.lastMusicCategory !== null) document.getElementById(window.lastMusicCategory).style.color = "rgba(255, 255, 255, 0.2)";
+        if (window.lastMusicMainCategory !== null) document.getElementById(window.lastMusicMainCategory+"-music-category").style.color = "rgba(255, 255, 255, 0.2)";
         document.getElementById(category).style.color = "rgba(255, 255, 255, 1)";
+        document.getElementById(mainCategory+"-music-category").style.color = "rgba(255, 255, 255, 1)";
         window.lastMusicCategory = category
+        window.lastMusicMainCategory = mainCategory
         musicPlayer.children[0].src = "/music/" + category
         await musicPlayer.load()
         unmuteMusic()
@@ -62,7 +69,7 @@ async function playMusicCategory(category) {
 
 function unmuteMusic() {
     if (window.lastMusicCategory === null || musicPlayer.muted === true) {
-        musicPlayer.volume = 0.01;
+        musicPlayer.volume = 0.08;
         musicPlayer.muted = false
         musicTrayPPIcon.src = '/cd?type=image&name=music-tray-pause.png';
         musicTrayPPIcon.alt = 'Pause';
