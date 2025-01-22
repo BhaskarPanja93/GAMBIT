@@ -2,47 +2,47 @@
     {{ CSRF | safe }}
     <h4 class="mt-1 mb-1 pb-3">Sign Up</h4>
     <div class="form-group relative">
-        <input type="text" id="username" name="user-name" class="form-style w-full pr-8" placeholder="Enter User Name"
-               autocomplete="off">
+        <input type="text" name="person-name" id="personName" class="form-style w-full" placeholder="Enter Your Name"
+               autocomplete="off" required>
         <i class="input-icon uil uil-user"></i>
-        <div id="required-exclaim" class="invisible top-1/2 right-2 text-red-500 text-sm translate-y-[-50%]" title="This field is required">!
+        <div id="required-exclaim" class="exclamation absolute top-1/2 right-2 text-red-500 text-sm translate-y-[-50%]"
+             title="This field is required">!
         </div>
-        <small class="error-message text-red-500 text-xs"></small>
     </div>
     <div class="form-group mt-1 relative">
-        <input type="text" id="personName" name="person-name" class="form-style w-full pr-8"
-               placeholder="Enter Your Name" autocomplete="off">
+        <input type="text" name="user-name" id="username" class="form-style w-full" placeholder="Enter Username"
+               autocomplete="off" required>
         <i class="input-icon uil uil-user"></i>
-        <div id="required-exclaim" class="invisible top-1/2 right-2 text-red-500 text-sm translate-y-[-50%]" title="This field is required">!
+        <div id="required-exclaim" class="exclamation absolute top-1/2 right-2 text-red-500 text-sm translate-y-[-50%]"
+             title="This field is required">!
         </div>
-        <small class="error-message text-red-500 text-xs"></small>
     </div>
     <div class="form-group mt-1 relative">
-        <input type="email" id="email" name="email" class="form-style w-full pr-8" placeholder="Enter Email"
-               autocomplete="off">
+        <input type="email" name="email" id="email" class="form-style w-full" placeholder="Enter Email"
+               autocomplete="off" required>
         <i class="input-icon uil uil-at"></i>
-        <div id="required-exclaim" class="invisible top-1/2 right-2 text-red-500 text-sm translate-y-[-50%]"
+        <div id="required-exclaim" class="exclamation absolute top-1/2 right-2 text-red-500 text-sm translate-y-[-50%]"
              title="Please enter a valid email">!
         </div>
-        <small class="error-message text-red-500 text-xs"></small>
     </div>
     <div class="form-group mt-1 relative">
-        <input type="password" id="password" name="password" class="form-style w-full pr-8" placeholder="Enter Password"
-               autocomplete="off">
+        <input type="password" name="password" id="password" class="form-style w-full" placeholder="Enter Password"
+               autocomplete="off" required minlength="6">
         <i class="input-icon uil uil-lock-alt"></i>
-        <div id="required-exclaim" class="invisible top-1/2 right-2 text-red-500 text-sm translate-y-[-50%]"
+        <div id="required-exclaim" class="exclamation absolute top-1/2 right-2 text-red-500 text-sm translate-y-[-50%]"
              title="Password must be at least 6 characters">!
         </div>
-        <small class="error-message text-red-500 text-xs"></small>
     </div>
     <div class="form-group mt-1 relative">
-        <input type="password" id="confirmPassword" name="confirm-password" class="form-style w-full pr-8"
-               placeholder="Confirm Password" autocomplete="off">
+        <input type="password" name="confirm-password" id="confirmPassword" class="form-style w-full"
+               placeholder="Confirm Password" autocomplete="off" required>
         <i class="input-icon uil uil-lock-alt"></i>
-        <div id="required-exclaim" class="invisible top-1/2 right-2 text-red-500 text-sm translate-y-[-50%]" title="Passwords must match">!
+        <div id="required-exclaim" class="exclamation absolute top-1/2 right-2 text-red-500 text-sm translate-y-[-50%]"
+             title="Passwords must match">!
         </div>
-        <small class="error-message text-red-500 text-xs"></small>
     </div>
     <button type="submit" class="btn mt-3">Submit</button>
 </form>
+
+
 
