@@ -26,7 +26,7 @@ fetch("/music-categories").then((response) => {
                 mainCategoryDiv.className = "music-tray-category-grp py-1"
                 mainCategoryDiv.id = mainCat + "-music-category";
                 mainCategoryDiv.innerHTML = mainCat;
-                mainCategoryDiv.style.color = "rgba(255, 255, 255, 0.2)"
+                mainCategoryDiv.style.color = "rgba(255, 255, 255, 0.4)"
                 subCategoryDiv.className = "music-tray-sub-category-grp"
                 subCategoryDiv.id = mainCat + "-music-subcategory"
                 mainCatButton.className = "music-tray-button-global"
@@ -38,7 +38,7 @@ fetch("/music-categories").then((response) => {
             subCatButton.className = "music-tray-button-global music-tray-sub-category-button"
             subCatButton.id = cat
             subCatButton.innerHTML = subCat
-            subCatButton.style.color = "rgba(255, 255, 255, 0.2)"
+            subCatButton.style.color = "rgba(255, 255, 255, 0.4)"
             subCatButton.onclick = () => {playMusicCategory(cat, mainCat).then()}
             document.getElementById(mainCat + "-music-subcategory").append(subCatButton);
         })

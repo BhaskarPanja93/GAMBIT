@@ -26,10 +26,3 @@ class CachedElements:
         if itemName not in self.knownHTMLElements["CSS"]:
             self.knownHTMLElements["CSS"][itemName] = open(Folders.css/itemName, "r").read()
         return self.knownHTMLElements["CSS"].get(itemName)
-
-
-    def createAuthForm(self, registerCSRF: str, loginCSRF: str):
-        return (self.fetchStaticHTML(FileNames.HTML.AuthForm)
-                .replace("REPLACE_REGISTER_CSRF", registerCSRF)
-                .replace("REPLACE_LOGIN_CSRF", loginCSRF))
-

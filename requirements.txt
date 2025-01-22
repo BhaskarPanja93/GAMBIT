@@ -6,4 +6,7 @@ customisedLogs
 pooledMySQL
 autoReRun
 pydub
-flask_cors
+Flask-Cors
+argon2-cffi
+argon2-cffi-bindings
+Jinja2

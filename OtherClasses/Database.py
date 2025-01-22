@@ -1,43 +1,49 @@
 class Database:
-    SELF = "GAMBIT"
+    DATABASE_NAME ="GAMBIT"
+
 
     class CAREER:
-        SELF = "career"
+        TABLE_NAME ="career"
 
         QUIZ_ID = "quiz_id"
         USER_ID = "user_id"
         END_AT = "end_at"
         MMR_OFFSET = "mmr_offset"
 
+
     class IP_PENALTY:
-        SELF = "ip_penalty"
+        TABLE_NAME ="ip_penalty"
 
         ADDRESS = "address"
         COUNT = "count"
 
+
     class NOTE_RELEVANCE:
-        SELF = "note_relevance"
+        TABLE_NAME ="note_relevance"
 
         NOTE_ID = "note_id"
         SUBJECT = "subject"
         HEADER = "header"
         DESCRIPTION = "description"
 
+
     class NOTE:
-        SELF = "note"
+        TABLE_NAME ="note"
 
         NOTE_ID = "note_id"
         USER_ID = "user_id"
 
+
     class PURCHASABLE:
-        SELF = "purchasable"
+        TABLE_NAME ="purchasable"
 
         ITEM_ID = "item_id"
         PRICE = "price"
         ADDED_ON = "added_on"
 
+
     class QUESTION:
-        SELF = "question"
+        TABLE_NAME ="question"
 
         QUESTION_ID = "question_id"
         TEXT = "text"
@@ -46,40 +52,53 @@ class Database:
         INCORRECT = "incorrect"
         ATTACHMENTS = "attachments"
 
+
     class QUIZ:
-        SELF = "quiz"
+        TABLE_NAME ="quiz"
 
         QUIZ_ID = "quiz_id"
         END_AT = "end_at"
         TEAM_DATA = "team_data"
         PLAYER_DATA = "player_data"
 
+
     class USER_INFO:
-        SELF = "user_info"
+        TABLE_NAME ="user_info"
 
         USER_ID = "user_id"
         PERSON_NAME = "person_name"
         AGE = "age"
         JOINED = "joined"
 
+
     class USER_AUTH:
-        SELF = "user_auth"
+        TABLE_NAME = "user_auth"
 
         USER_ID = "user_id"
         USERNAME = "username"
+        EMAIL = "email"
         PW_HASH = "pw_hash"
 
+
     class USER_DEVICES:
-        SELF = "user_devices"
+        TABLE_NAME ="user_devices"
 
         VIEWER_ID = "viewer_id"
         USER_ID = "user_id"
-        CREATED = "created"
+        LAST_SEEN = "last_seen"
+
 
     class PURCHASES:
-        SELF = "purchases"
+        TABLE_NAME ="purchases"
 
         PURCHASE_ID = "purchase_id"
         USER_ID = "user_id"
         ITEM_ID = "item_id"
 
+
+    class FRIEND:
+        TABLE_NAME ="friend"
+
+        CONNECTION_ID = "connection_id"
+        P1 = "p1"
+        P2 = "p2"

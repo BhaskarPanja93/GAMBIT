@@ -6,3 +6,5 @@ class DivID:
     ghost3d = "ghost3d"
     musicTray = "music-tray"
     auth = "auth"
+    registerForm = "register-form"
+    loginForm = "login-form"

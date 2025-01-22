@@ -16,4 +16,6 @@ class FileNames:
         AuthPre = "AuthPre.html"
         AuthPost = "AuthPost.html"
         AuthForm = "AuthForm.html"
+        Register = "Register.html"
+        Login = "Login.html"
         NotesFullPage = "NotesFullPage.html"
