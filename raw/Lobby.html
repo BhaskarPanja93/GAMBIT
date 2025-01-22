@@ -118,7 +118,19 @@
                 <!-- FriendList -->
                 <div id="friend-list" class=" backdrop-blur-sm absolute top-0 left-0 h-full bg-black/50 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.5)] transition-all duration-300 ease-in-out overflow-y-auto" style="z-index: 50;">
                     <div class="p-4 text-gray-50">
-                        <h2 class="font-bold text-lg mb-4">Friends</h2>
+                        <h2 class="font-bold text-lg mb-4">Friends</h2>                        <!-- Friend Invite Section -->
+                        <div
+                            id="friend-invite"
+                            class="flex justify-center items-center rounded-full bg-gray-600 border border-gray-200 p-1 my-2 cursor-pointer"
+                        >
+                            <!-- The "1" span will fade out on hover -->
+                            <span class="text-center transition-opacity duration-300 ease-in-out hover:opacity-0">1</span>
+
+                            <!-- The "Party Invites" span will fade in on hover -->
+                            <span class="hidden text-center transition-opacity duration-300 ease-in-out opacity-0 hover:opacity-100 hover:visible">
+                                Party Invites
+                            </span>
+                        </div>
 
                         <!-- Online Friends Section -->
                         <div>
@@ -133,32 +145,52 @@
                             </div>
                             <div class="space-y-4">
 
-                                <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
-                                    <img src="https://i.pinimg.com/564x/05/93/c2/0593c22a578bf58e4bf01a4a063a3587.jpg" alt="User PFP" class="h-10 w-10 ">
-                                    <div class="hidden hover:flex flex-col text-sm">
-                                        <div>Username1</div>
-                                        <div class="text-green-400">Online</div>
+                            <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
+                                <img src="https://i.pinimg.com/564x/05/93/c2/0593c22a578bf58e4bf01a4a063a3587.jpg" alt="User PFP" class="h-10 w-10">
+                                <div class="hidden hover:flex flex-col text-sm">
+                                    <div class="flex items-center space-x-6">
+                                        <span>Username1</span>
+                                        <button class="px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded">
+                                            Invite
+                                        </button>
                                     </div>
+                                    <div class="text-green-400">Online</div>
                                 </div>
+                            </div>
 
                                 <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
                                     <img src="https://i.pinimg.com/564x/18/0e/65/180e6574a9aa0e4c7c23a252db4184dc.jpg" alt="User PFP" class="h-10 w-10 ">
                                     <div class="hidden hover:flex flex-col text-sm">
-                                        <div>Username1</div>
+                                        <div class="flex items-center space-x-6">
+                                            <span>Username1</span>
+                                            <button class="px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded">
+                                                Invite
+                                            </button>
+                                        </div>
                                         <div class="text-green-400">Online</div>
                                     </div>
                                 </div>
                                 <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
                                     <img src="https://i.pinimg.com/236x/20/69/04/2069047e6b5be475b93a3a1fe37a2e54.jpg" alt="User PFP" class="h-10 w-10 ">
                                     <div class="hidden hover:flex flex-col text-sm">
-                                        <div>Username1</div>
+                                        <div class="flex items-center space-x-6">
+                                            <span>Username1</span>
+                                            <button class="px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded">
+                                                Invite
+                                            </button>
+                                        </div>
                                         <div class="text-green-400">Online</div>
                                     </div>
                                 </div>
                                 <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
                                     <img src="https://pbs.twimg.com/media/FP6DoSeXEAAAIqG.png" alt="User PFP" class="h-10 w-10 ">
                                     <div class="hidden hover:flex flex-col text-sm">
-                                        <div>Username1</div>
+                                        <div class="flex items-center space-x-6">
+                                            <span>Username1</span>
+                                            <button class="px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded">
+                                                Invite
+                                            </button>
+                                        </div>
                                         <div class="text-green-400">Online</div>
                                     </div>
                                 </div>
@@ -166,8 +198,13 @@
                                 <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
                                     <img src="https://i.pinimg.com/564x/2f/b9/f7/2fb9f7a42f940e2300323da45af47e84.jpg" alt="User PFP" class="h-10 w-10 ">
                                     <div class="hidden hover:flex flex-col text-sm">
-                                        <div>Username2</div>
-                                        <div class="text-yellow-400">Playing</div>
+                                        <div class="flex items-center space-x-6">
+                                            <span>Username1</span>
+                                            <button class="px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded">
+                                                Invite
+                                            </button>
+                                        </div>
+                                        <div class="text-green-400">Online</div>
                                     </div>
                                 </div>
                             </div>
