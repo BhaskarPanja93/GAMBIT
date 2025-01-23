@@ -43,66 +43,6 @@
         <!--   Music Button   -->
 
 
-            <div class="music-tray" id="music-tray">
-                <button id="music-tray-toggle-btn" class="toggle-btn">
-                    <img src="music-tray-up.png" style="height: 15px; width: 15px" alt="Toggle" />
-                </button>
-
-
-
-                <div class="music-tray-category-grp">
-                    <button class="music-tray-button-global">Lo-fi</button>
-
-                    <div class="music-tray-sub-category-grp">
-                        <button class="music-tray-button-global music-tray-sub-category-button">Chill Beats</button>
-                        <button class="music-tray-button-global music-tray-sub-category-button">Study Mix</button>
-                        <button class="music-tray-button-global music-tray-sub-category-button">Sleep Sounds</button>
-                    </div>
-                </div>
-
-                <div class="music-tray-category-grp">
-                    <button class="music-tray-button-global">Ambient</button>
-
-                    <div class="music-tray-sub-category-grp">
-                        <button class="music-tray-button-global music-tray-sub-category-button">Chill Beats</button>
-                        <button class="music-tray-button-global music-tray-sub-category-button">Study Mix</button>
-                        <button class="music-tray-button-global music-tray-sub-category-button">Sleep Sounds</button>
-                    </div>
-                </div>
-
-                <div class="music-tray-category-grp">
-                    <button class="music-tray-button-global">Jazz</button>
-
-                    <div class="music-tray-sub-category-grp">
-                        <button class="music-tray-button-global music-tray-sub-category-button">Chill Beats</button>
-                        <button class="music-tray-button-global music-tray-sub-category-button">Study Mix</button>
-                        <button class="music-tray-button-global music-tray-sub-category-button">Sleep Sounds</button>
-                    </div>
-                </div>
-
-                <div class="music-tray-category-grp">
-                    <button class="music-tray-button-global">Classical</button>
-
-                    <div class="music-tray-sub-category-grp">
-                        <button class="music-tray-button-global music-tray-sub-category-button">Chill Beats</button>
-                        <button class="music-tray-button-global music-tray-sub-category-button">Study Mix</button>
-                        <button class="music-tray-button-global music-tray-sub-category-button">Sleep Sounds</button>
-                        <button class="music-tray-button-global music-tray-sub-category-button">Chill Beats</button>
-                    </div>
-                </div>
-
-                <div id="music-pp-btn" class="music-tray-play-pause">
-                    <img id="icon" src="mouse-tray-play.png" alt="Play" style="height: 25px;width: 25px;">
-                </div>
-            </div>
-
-
-
-
-        <script>
-
-        </script>
-
         <!--        CHANGE THIS      -->
 
         <div class="flex w-full">
@@ -118,31 +58,24 @@
                 <!-- FriendList -->
                 <div id="friend-list" class=" backdrop-blur-sm absolute top-0 left-0 h-full bg-black/50 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.5)] transition-all duration-300 ease-in-out overflow-y-auto" style="z-index: 50;">
                     <div class="p-4 text-gray-50">
-                        <h2 class="font-bold text-lg mb-4">Friends</h2>                        <!-- Friend Invite Section -->
-                        <div
-                            id="friend-invite"
-                            class="flex justify-center items-center rounded-full bg-gray-600 border border-gray-200 p-1 my-2 cursor-pointer"
-                        >
+                        <h2 class="font-bold text-lg mb-4">Friends</h2>
+                    <div>
+                        <div id="friend-invite" class="flex justify-center items-center rounded-full bg-gray-600 border border-gray-200 p-1 my-2 cursor-pointer">
                             <!-- The "1" span will fade out on hover -->
                             <span class="text-center transition-opacity duration-300 ease-in-out hover:opacity-0">1</span>
 
                             <!-- The "Party Invites" span will fade in on hover -->
                             <span class="hidden text-center transition-opacity duration-300 ease-in-out opacity-0 hover:opacity-100 hover:visible">
-                                Party Invites
-                            </span>
+                                                    Party Invites
+                                                </span>
                         </div>
+                    </div>
+                        <!-- Friend Invite Section -->
+
 
                         <!-- Online Friends Section -->
                         <div>
-                            <div class="flex gap-32">
-                                <h3 class="text-md font-semibold mb-2">Offline</h3>
 
-                                <button id="onlineToggle" class="hidden focus:outline-none">
-                                        <span id="onlineArrow" class="inline-block transform transition-transform duration-300" style="font-size: 10px; padding-bottom: 10px">
-                                            ▲
-                                        </span>
-                                </button>
-                            </div>
                             <div class="space-y-4">
 
                             <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
@@ -154,7 +87,6 @@
                                             Invite
                                         </button>
                                     </div>
-                                    <div class="text-green-400">Online</div>
                                 </div>
                             </div>
 
@@ -205,57 +137,6 @@
                                             </button>
                                         </div>
                                         <div class="text-green-400">Online</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-
-                        <!-- Offline Friends Section -->
-                        <div class="mt-6">
-                            <div class="flex gap-32">
-                                <h3 class="text-md font-semibold mb-2">Offline</h3>
-
-                                <button id="offlineToggle" class="hidden focus:outline-none">
-                                        <span id="offlineArrow" class="inline-block transform transition-transform duration-300" style="font-size: 10px; padding-bottom: 10px">
-                                            ▼
-                                        </span>
-                                </button>
-                            </div>
-                            <div class="space-y-4">
-                                <!-- Friend Item -->
-                                <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
-                                    <img src="https://i.pinimg.com/236x/9a/32/1b/9a321b907189f15a91469ca730421459.jpg" alt="User PFP" class="h-10 w-10 ">
-                                    <div class="hidden hover:flex flex-col text-sm">
-                                        <div class="text-gray-300">Username3</div>
-                                        <div class="text-gray-500">Offline</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
-                                    <img src="https://i.pinimg.com/236x/b4/6a/98/b46a989d1dfaa3bb5354d63867a58bd3.jpg" alt="User PFP" class="h-10 w-10 ">
-                                    <div class="hidden hover:flex flex-col text-sm">
-                                        <div class="text-gray-300">Username4</div>
-                                        <div class="text-gray-500">Offline</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
-                                    <img src="https://pbs.twimg.com/media/FP6Dpk2XEAgco1F.png" alt="User PFP" class="h-10 w-10 ">
-                                    <div class="hidden hover:flex flex-col text-sm">
-                                        <div class="text-gray-300">Username4</div>
-                                        <div class="text-gray-500">Offline</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
-                                    <img src="https://i.pinimg.com/originals/14/98/90/14989073ad9b9c8efddd8dcaff076db5.png" alt="User PFP" class="h-10 w-10 ">
-                                    <div class="hidden hover:flex flex-col text-sm">
-                                        <div class="text-gray-300">Username4</div>
-                                        <div class="text-gray-500">Offline</div>
-                                    </div>
-                                </div>
-                                <div class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
-                                    <img src="https://i.pinimg.com/170x/dc/c8/55/dcc855cbfcc5ae9bc9e7bfdaee27a3dc.jpg" alt="User PFP" class="h-10 w-10 ">
-                                    <div class="hidden hover:flex flex-col text-sm">
-                                        <div class="text-gray-300">Username4</div>
-                                        <div class="text-gray-500">Offline</div>
                                     </div>
                                 </div>
                             </div>

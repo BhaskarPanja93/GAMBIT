@@ -18,4 +18,6 @@ class FileNames:
         AuthForm = "AuthForm.html"
         Register = "Register.html"
         Login = "Login.html"
+        FriendBase = "FriendBase.html"
+        FriendElement = "FriendElement.html"
         NotesFullPage = "NotesFullPage.html"

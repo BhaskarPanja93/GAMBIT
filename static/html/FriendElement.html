@@ -1,0 +1,12 @@
+<div id="{{ Player.connectionID }}" class="flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg">
+    <img src="{{ Player.displayPFP() }}" alt="{{ Player.displayUserName() }}" class="h-10 w-10 ">
+    <div class="hidden hover:flex flex-col text-sm">
+        <div class="flex items-center space-x-6">
+            <span>{{ Player.displayUserName() }}</span>
+            <button class="px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded">
+                Invite
+            </button>
+        </div>
+        <div class="text-green-400">{{ Player.getStatus() }}</div>
+    </div>
+</div>

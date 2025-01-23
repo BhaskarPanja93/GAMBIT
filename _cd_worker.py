@@ -22,6 +22,7 @@ cdApp = Flask(CoreValues.cdName)
 musicCollection = MusicCollection()
 allowed_origins = [
     "https://bhindi1.ddns.net",
+    "https://bhindi2.ddns.net",
     "https://127.0.0.1",
     "https://localhost"
 ]

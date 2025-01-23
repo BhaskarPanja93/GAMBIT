@@ -15,6 +15,7 @@ from OtherClasses.CachedElements import CachedElements
 from OtherClasses.CoreValues import CoreValues
 from OtherClasses.DivIDs import DivID
 from OtherClasses.Pages import Pages
+from OtherClasses.Player import Player
 from OtherClasses.Routes import Routes
 from OtherClasses.CommonFunctions import connectDB, WSGIRunner
 
@@ -53,7 +54,27 @@ def sendRegisterForm(viewerObj: DynamicWebsite.Viewer):
 def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
     renderAuthFullPage(viewerObj)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPost), DivID.auth, UpdateMethods.update)
+    renderFriendList(viewerObj)
     viewerObj.privateData["currentPage"] = Pages.postAuth
+
+
+def renderFriendBase(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPre), DivID.auth, UpdateMethods.update)
+    viewerObj.privateData["currentPage"] = Pages.preAuth
+
+
+def renderFriendList(viewerObj: DynamicWebsite.Viewer):
+    renderFriendBase()
+    # friendList = SQLconn.execute(f"""SELECT
+    # CASE
+    #     WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
+    #     WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
+    # END AS result
+    # FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData["userID"], viewerObj.privateData["userID"]])
+    for _ in range(10):
+        friend = Player()
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendElement)).render(Friend=friend), DivID.loginForm, UpdateMethods.update)
+
 
 
 def renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
@@ -174,6 +195,8 @@ def autoLogin(viewerObj: DynamicWebsite.Viewer):
         print("Auto Logged In")
         return True, "Auto Logged In"
     return False, "Unknown Device"
+
+
 
 
 serverStartTime = time()
