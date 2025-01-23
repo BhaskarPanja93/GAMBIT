@@ -1,10 +1,11 @@
 class FileNames:
     class JS:
+        Universal = "Universal.js"
         Music = "Music.js"
+        Friends = "Friends.js"
         Trail = "Trail.js"
     class CSS:
-        auth = "Auth.css"
-        form = "Form.css"
+        Universal = "Universal.css"
     class HTML:
         BodyBase = "BodyBase.html"
         ExtraHead = "ExtraHead.html"
@@ -18,6 +19,9 @@ class FileNames:
         AuthForm = "AuthForm.html"
         Register = "Register.html"
         Login = "Login.html"
-        FriendBase = "FriendBase.html"
+        FriendsFull = "FriendsFull.html"
         FriendElement = "FriendElement.html"
+        PartyInvitesCount = "PartyInvitesCount.html"
+        PartyInvitesFull = "PartyInvitesFull.html"
+        PartyInvitesElement = "PartyInvitesElement.html"
         NotesFullPage = "NotesFullPage.html"

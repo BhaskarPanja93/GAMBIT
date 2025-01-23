@@ -8,3 +8,7 @@ class DivID:
     auth = "auth"
     registerForm = "register-form"
     loginForm = "login-form"
+    friendsFull = "friends-content"
+    onlineFriends = "online-friend-list"
+    offlineFriends = "offline-friend-list"
+    partyInvites = "party-invites"

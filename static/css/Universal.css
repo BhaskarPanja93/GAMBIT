@@ -26,6 +26,8 @@ body{
     }
 }
 
+div::-webkit-scrollbar { display: none; }
+
 /* Music button */
 
 .music-tray {

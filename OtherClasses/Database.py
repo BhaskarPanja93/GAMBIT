@@ -99,6 +99,5 @@ class Database:
     class FRIEND:
         TABLE_NAME ="friend"
 
-        CONNECTION_ID = "connection_id"
         P1 = "p1"
         P2 = "p2"

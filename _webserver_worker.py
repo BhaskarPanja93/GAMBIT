@@ -1,4 +1,6 @@
-from gevent import monkey; monkey.patch_all()
+from gevent import monkey
+
+monkey.patch_all()
 
 from time import time, sleep
 from sys import argv
@@ -16,6 +18,7 @@ from OtherClasses.CoreValues import CoreValues
 from OtherClasses.DivIDs import DivID
 from OtherClasses.Pages import Pages
 from OtherClasses.Player import Player
+from OtherClasses.Friend import Friend
 from OtherClasses.Routes import Routes
 from OtherClasses.CommonFunctions import connectDB, WSGIRunner
 
@@ -24,7 +27,7 @@ from internal.dynamicWebsite import DynamicWebsite
 
 
 def renderAuthFullPage(viewerObj: DynamicWebsite.Viewer):
-    if viewerObj.privateData is None or viewerObj.privateData.get("currentPage") not in [Pages.auth, Pages.preAuth, Pages.postAuth]:
+    if viewerObj.privateData.get("currentPage") not in [Pages.auth, Pages.preAuth, Pages.postAuth]:
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthFullPage), DivID.basePage, UpdateMethods.update)
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Ghost3d), DivID.ghost3d, UpdateMethods.update)
 
@@ -53,28 +56,39 @@ def sendRegisterForm(viewerObj: DynamicWebsite.Viewer):
 
 def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
     renderAuthFullPage(viewerObj)
-    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPost), DivID.auth, UpdateMethods.update)
-    renderFriendList(viewerObj)
+    #viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPost), DivID.auth, UpdateMethods.update)
     viewerObj.privateData["currentPage"] = Pages.postAuth
+    renderFriends(viewerObj)
 
 
-def renderFriendBase(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPre), DivID.auth, UpdateMethods.update)
-    viewerObj.privateData["currentPage"] = Pages.preAuth
+def renderFriendPage(viewerObj: DynamicWebsite.Viewer):
+    if viewerObj.privateData.get("currentPage") not in [None, Pages.auth, Pages.preAuth] and not viewerObj.privateData.get("friendsRendered"):
+        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsFull), DivID.friendsFull, UpdateMethods.update)
+        viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Friends)+"</script>", DivID.scripts, UpdateMethods.append)
+        viewerObj.privateData["friendsRendered"] = True
 
 
-def renderFriendList(viewerObj: DynamicWebsite.Viewer):
-    renderFriendBase()
+def renderFriends(viewerObj: DynamicWebsite.Viewer):
+    renderFriendPage(viewerObj)
     # friendList = SQLconn.execute(f"""SELECT
     # CASE
     #     WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
     #     WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
     # END AS result
     # FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData["userID"], viewerObj.privateData["userID"]])
-    for _ in range(10):
-        friend = Player()
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendElement)).render(Friend=friend), DivID.loginForm, UpdateMethods.update)
+    me = Player()
+    others = []
+    for _ in range(5):
+        sleep(1)
+        other = Player()
+        friend = Friend(me, other)
+        others.append(friend)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendElement)).render(connectionID=friend.connectionID, PFP=other.displayPFP(), userName=other.displayUserName(), state=other.displayState()), DivID.onlineFriends, UpdateMethods.append)
+    #for other in others:
+        #sleep(1)
+        #viewerObj.updateHTML("", other.connectionID, UpdateMethods.remove)
 
+        #viewerObj.sendCustomMessage({"TASK":"FRIEND_REMOVED", "CONNECTION_ID":other.connectionID})
 
 
 def renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
@@ -91,6 +105,7 @@ def renderUniversal(viewerObj: DynamicWebsite.Viewer):
     viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)}</script>', DivID.scripts, UpdateMethods.append)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.MusicTray), DivID.musicTray, UpdateMethods.update)
     viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)}</script>', DivID.scripts, UpdateMethods.append)
+    viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Universal)}</script>', DivID.scripts, UpdateMethods.append)
 
 
 def rejectForm(form: dict, reason):

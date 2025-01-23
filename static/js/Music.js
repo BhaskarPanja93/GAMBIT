@@ -22,15 +22,12 @@ fetch("/music-categories").then((response) => {
             if (document.getElementById(mainCat + "-music-category") === null) {
                 let mainCategoryDiv = document.createElement('div');
                 let subCategoryDiv = document.createElement('div');
-                let mainCatButton = document.createElement('button');
                 mainCategoryDiv.className = "music-tray-category-grp py-1"
                 mainCategoryDiv.id = mainCat + "-music-category";
                 mainCategoryDiv.innerHTML = mainCat;
                 mainCategoryDiv.style.color = "rgba(255, 255, 255, 0.4)"
                 subCategoryDiv.className = "music-tray-sub-category-grp"
                 subCategoryDiv.id = mainCat + "-music-subcategory"
-                mainCatButton.className = "music-tray-button-global"
-                mainCategoryDiv.append(mainCatButton);
                 mainCategoryDiv.append(subCategoryDiv);
                 musicTrayCategories.appendChild(mainCategoryDiv);
             }
