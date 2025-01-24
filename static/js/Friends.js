@@ -49,7 +49,7 @@ friendsPage.onmouseleave = function() {
     Array.prototype.filter.call(
         friendElements,
         (friendElement) => {
-            friendElement.classList.remove("w-60")
+            friendElement.classList.remove("w-48")
             friendElement.classList.add("w-16")
         },
     );
@@ -66,7 +66,7 @@ friendsPage.onmouseenter = function() {
     Array.prototype.filter.call(
         friendElements,
         (friendElement) => {
-            friendElement.classList.add("w-60")
+            friendElement.classList.add("w-48")
             friendElement.classList.remove("w-16")
         },
     );
