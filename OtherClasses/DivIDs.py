@@ -12,3 +12,5 @@ class DivID:
     onlineFriends = "online-friend-list"
     offlineFriends = "offline-friend-list"
     partyInvites = "party-invites"
+    lobbyPlayerSuffix = "player-"
+    partyCode = "party-code"

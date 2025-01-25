@@ -44,6 +44,13 @@ function addFriend(connectionID, friendData) {
     // TODO:
 }
 
+function inviteFriend(connectionID) {
+
+}
+
+function joinFriend(connectionID) {
+
+}
 
 friendsPage.onmouseleave = function() {
     Array.prototype.filter.call(

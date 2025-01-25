@@ -1,7 +1,7 @@
 class Pages:
     preAuth = "Pre-Auth"
-    postAuth = "Post-Auth"
     auth = "Auth"
-    home = "Home"
-    music = "Music"
+    postAuth = "Post-Auth"
+    lobby = "Lobby"
+    notes = "Notes"
     marketPlace = "Market-Place"

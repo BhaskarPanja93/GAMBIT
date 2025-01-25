@@ -22,6 +22,7 @@ class FileNames:
         FriendsFull = "FriendsFull.html"
         FriendElement = "FriendElement.html"
         PartyInvitesCount = "PartyInvitesCount.html"
-        PartyInvitesFull = "PartyInvitesFull.html"
         PartyInvitesElement = "PartyInvitesElement.html"
+        LobbyFull = "LobbyFull.html"
+        LobbyMember = "LobbyMember.html"
         NotesFullPage = "NotesFullPage.html"

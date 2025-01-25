@@ -7,10 +7,10 @@ from sys import argv
 from typing import Any
 from flask import request, redirect
 from jinja2 import Template
-from datetime import datetime
 from werkzeug.sansio.utils import get_current_url
 from argon2 import PasswordHasher
 
+from OtherClasses.PrivateData import PrivateData
 from OtherClasses.FileNames import FileNames
 from OtherClasses.Database import Database
 from OtherClasses.CachedElements import CachedElements
@@ -18,8 +18,10 @@ from OtherClasses.CoreValues import CoreValues
 from OtherClasses.DivIDs import DivID
 from OtherClasses.Pages import Pages
 from OtherClasses.Player import Player
+from OtherClasses.Party import Party
 from OtherClasses.Friend import Friend
 from OtherClasses.Routes import Routes
+from OtherClasses.CustomMessageTasks import CustomMessageTask
 from OtherClasses.CommonFunctions import connectDB, WSGIRunner
 
 from customisedLogs import CustomisedLogs
@@ -27,7 +29,7 @@ from internal.dynamicWebsite import DynamicWebsite
 
 
 def renderAuthFullPage(viewerObj: DynamicWebsite.Viewer):
-    if viewerObj.privateData.get("currentPage") not in [Pages.auth, Pages.preAuth, Pages.postAuth]:
+    if viewerObj.privateData.currentPage not in [Pages.auth, Pages.preAuth, Pages.postAuth]:
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthFullPage), DivID.basePage, UpdateMethods.update)
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Ghost3d), DivID.ghost3d, UpdateMethods.update)
 
@@ -35,59 +37,79 @@ def renderAuthFullPage(viewerObj: DynamicWebsite.Viewer):
 def renderAuthPre(viewerObj: DynamicWebsite.Viewer):
     renderAuthFullPage(viewerObj)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPre), DivID.auth, UpdateMethods.update)
-    viewerObj.privateData["currentPage"] = Pages.preAuth
+    viewerObj.privateData.currentPage = Pages.preAuth
+    viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.preAuth})
 
 
 def renderAuth(viewerObj: DynamicWebsite.Viewer):
     renderAuthFullPage(viewerObj)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthForm), DivID.auth, UpdateMethods.update)
-    viewerObj.privateData["currentPage"] = Pages.auth
+    viewerObj.privateData.currentPage = Pages.auth
+    viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.auth})
     sendLoginForm(viewerObj)
     sendRegisterForm(viewerObj)
-
-
-def sendLoginForm(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Login)).render(CSRF=viewerObj.purposeManager.createCSRF("LOGIN")), DivID.loginForm, UpdateMethods.update)
-
-
-def sendRegisterForm(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Register)).render(CSRF=viewerObj.purposeManager.createCSRF("REGISTER")), DivID.registerForm, UpdateMethods.update)
 
 
 def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
     renderAuthFullPage(viewerObj)
     #viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPost), DivID.auth, UpdateMethods.update)
-    viewerObj.privateData["currentPage"] = Pages.postAuth
+    viewerObj.privateData.currentPage = Pages.postAuth
+    viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.postAuth})
     renderFriends(viewerObj)
 
 
-def renderFriendPage(viewerObj: DynamicWebsite.Viewer):
-    if viewerObj.privateData.get("currentPage") not in [None, Pages.auth, Pages.preAuth] and not viewerObj.privateData.get("friendsRendered"):
+def renderLobbyFullPage(viewerObj: DynamicWebsite.Viewer):
+    if viewerObj.privateData.currentPage not in [Pages.lobby]:
+        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyFull), DivID.basePage, UpdateMethods.update)
+
+
+def renderLobby(viewerObj: DynamicWebsite.Viewer):
+    renderLobbyFullPage(viewerObj)
+    viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.lobby})
+    party = Party()
+    party.addPlayer(viewerObj.privateData.player)
+    party.addPlayer(Player(None))
+    party.addPlayer(Player(None))
+    sleep(1)
+
+
+def renderPartyJoined(viewerObj: DynamicWebsite.Viewer):
+    pass
+
+
+def renderPartyLeft(viewerObj: DynamicWebsite.Viewer):
+    pass
+
+
+def kickedFromParty(viewerObj: DynamicWebsite.Viewer):
+    pass
+
+
+def renderFriendFull(viewerObj: DynamicWebsite.Viewer):
+    if viewerObj.privateData.currentPage not in [None, Pages.auth, Pages.preAuth] and not viewerObj.privateData.friendsRendered:
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsFull), DivID.friendsFull, UpdateMethods.update)
         viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Friends)+"</script>", DivID.scripts, UpdateMethods.append)
-        viewerObj.privateData["friendsRendered"] = True
+        viewerObj.privateData.friendsRendered = True
 
 
 def renderFriends(viewerObj: DynamicWebsite.Viewer):
-    renderFriendPage(viewerObj)
+    renderFriendFull(viewerObj)
     # friendList = SQLconn.execute(f"""SELECT
     # CASE
     #     WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
     #     WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
     # END AS result
-    # FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData["userID"], viewerObj.privateData["userID"]])
-    me = Player()
+    # FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userID, viewerObj.privateData.userID])
     others = []
     for _ in range(5):
-        sleep(1)
-        other = Player()
-        friend = Friend(me, other)
+        sleep(0.1)
+        other = Player(None)
+        friend = Friend(viewerObj.privateData.player, other)
         others.append(friend)
         viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendElement)).render(connectionID=friend.connectionID, PFP=other.displayPFP(), userName=other.displayUserName(), state=other.displayState()), DivID.onlineFriends, UpdateMethods.append)
     #for other in others:
         #sleep(1)
         #viewerObj.updateHTML("", other.connectionID, UpdateMethods.remove)
-
         #viewerObj.sendCustomMessage({"TASK":"FRIEND_REMOVED", "CONNECTION_ID":other.connectionID})
 
 
@@ -96,16 +118,22 @@ def renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderNotes(viewerObj: DynamicWebsite.Viewer):
-    pass
+    viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.postAuth})
 
 
 def renderUniversal(viewerObj: DynamicWebsite.Viewer):
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer), DivID.root, UpdateMethods.update)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Navbar), DivID.navbar, UpdateMethods.update)
-    viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)}</script>', DivID.scripts, UpdateMethods.append)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.MusicTray), DivID.musicTray, UpdateMethods.update)
+    viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)}</script>', DivID.scripts, UpdateMethods.append)
     viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)}</script>', DivID.scripts, UpdateMethods.append)
     viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Universal)}</script>', DivID.scripts, UpdateMethods.append)
+
+
+def renderFirstPage(viewerObj: DynamicWebsite.Viewer):
+    if viewerObj.privateData.expectedPostAuthPage == Pages.lobby: renderLobby(viewerObj)
+    #elif viewerObj.privateData.expectedPostAuthPage == Pages.marketPlace: renderMarketPlace(viewerObj)
+    else: renderAuthPost(viewerObj)
 
 
 def rejectForm(form: dict, reason):
@@ -116,14 +144,14 @@ def formSubmitCallback(viewerObj: DynamicWebsite.Viewer, form: dict):
     print("Form received: ", viewerObj.viewerID, form)
     if "PURPOSE" not in form: return rejectForm(form, "Lacks Purpose")
     purpose = form.pop("PURPOSE")
-    if viewerObj.privateData.get("currentPage") == Pages.auth:
+    if viewerObj.privateData.currentPage == Pages.auth:
         if purpose == "LOGIN":
             identifier = form.get("identifier")
             password = form.get("password")
             if not identifier: return rejectForm(form, "Invalid Username/Email")
             if not password: return rejectForm(form, "Invalid Password")
             accepted, reason = manualLogin(viewerObj, identifier, password)
-            if accepted: return renderAuthPost(viewerObj)
+            if accepted: return renderFirstPage(viewerObj)
             else:
                 rejectForm(form, reason)
                 return sendLoginForm(viewerObj)
@@ -139,7 +167,7 @@ def formSubmitCallback(viewerObj: DynamicWebsite.Viewer, form: dict):
             if not email: return rejectForm(form, "Invalid Email")
             if not name: return rejectForm(form, "Invalid Name")
             accepted, reason = createUser(viewerObj, username, password, name, email)
-            if accepted: return renderAuthPost(viewerObj)
+            if accepted: return renderFirstPage(viewerObj)
             else:
                 rejectForm(form, reason)
                 return sendRegisterForm(viewerObj)
@@ -156,11 +184,20 @@ def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
 
 def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Joined: ", viewerObj.viewerID)
-    viewerObj.privateData = {"activeSince": datetime.now()}
+    viewerObj.privateData = PrivateData()
+    assignPlayerDetails(viewerObj)
     renderUniversal(viewerObj)
     accepted, reason = autoLogin(viewerObj)
-    if accepted: renderAuthPost(viewerObj)
-    else: renderAuth(viewerObj)
+    if accepted: renderFirstPage(viewerObj)
+    else: renderAuthPre(viewerObj)
+
+
+def sendLoginForm(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Login)).render(CSRF=viewerObj.purposeManager.createCSRF("LOGIN")), DivID.loginForm, UpdateMethods.update)
+
+
+def sendRegisterForm(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Register)).render(CSRF=viewerObj.purposeManager.createCSRF("REGISTER")), DivID.registerForm, UpdateMethods.update)
 
 
 def checkPasswordStrength(password:str):
@@ -173,7 +210,11 @@ def logoutDevice(viewerObj: DynamicWebsite.Viewer):
 
 def loginDevice(viewerObj: DynamicWebsite.Viewer):
     logoutDevice(viewerObj)
-    SQLconn.execute(f"INSERT INTO {Database.USER_DEVICES.TABLE_NAME} VALUES (?, ?, ?)", [viewerObj.viewerID, viewerObj.privateData["userID"],  viewerObj.privateData["activeSince"]])
+    SQLconn.execute(f"INSERT INTO {Database.USER_DEVICES.TABLE_NAME} VALUES (?, ?, ?)", [viewerObj.viewerID, viewerObj.privateData.userID,  viewerObj.privateData.activeSince])
+
+
+def assignPlayerDetails(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.privateData.player = Player(None)
 
 
 def createUser(viewerObj: DynamicWebsite.Viewer, username:str, password:str, personName:str, email:str):
@@ -181,8 +222,8 @@ def createUser(viewerObj: DynamicWebsite.Viewer, username:str, password:str, per
     if SQLconn.execute(f"SELECT {Database.USER_AUTH.USER_ID} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.USERNAME}=? LIMIT 1", [username]): return False, "Username already registered"
     if SQLconn.execute(f"SELECT {Database.USER_AUTH.USER_ID} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.EMAIL}=? LIMIT 1", [email]): return False, "Email already registered"
     SQLconn.execute(f"INSERT INTO {Database.USER_AUTH.TABLE_NAME} VALUES (?, ?, ?, ?)", [userID, username, email, passwordHasher.hash(password)])
-    SQLconn.execute(f"INSERT INTO {Database.USER_INFO.TABLE_NAME} VALUES (?, ?, ?)", [userID, personName, viewerObj.privateData["activeSince"]])
-    viewerObj.privateData["userID"] = userID
+    SQLconn.execute(f"INSERT INTO {Database.USER_INFO.TABLE_NAME} VALUES (?, ?, ?)", [userID, personName, viewerObj.privateData.activeSince])
+    viewerObj.privateData.userID = userID
     loginDevice(viewerObj)
     print("User registered")
     return True, "User registered"
@@ -195,7 +236,7 @@ def manualLogin(viewerObj: DynamicWebsite.Viewer, identifier:str, password:str):
         userID = savedCredentials[Database.USER_AUTH.USER_ID]
         pwHash = savedCredentials[Database.USER_AUTH.PW_HASH]
         if passwordHasher.verify(pwHash.decode(), password):
-            viewerObj.privateData["userID"] = userID
+            viewerObj.privateData.userID = userID
             loginDevice(viewerObj)
             print("Manual Logged In")
         return True, "Manual Logged In"
@@ -206,12 +247,10 @@ def autoLogin(viewerObj: DynamicWebsite.Viewer):
     savedDevice = SQLconn.execute(f"SELECT {Database.USER_DEVICES.USER_ID} FROM {Database.USER_DEVICES.TABLE_NAME} WHERE {Database.USER_DEVICES.VIEWER_ID}=? LIMIT 1", [viewerObj.viewerID])
     if savedDevice:
         savedDevice = savedDevice[0]
-        viewerObj.privateData["UserID"] = savedDevice[Database.USER_DEVICES.USER_ID]
+        viewerObj.privateData.userID = savedDevice[Database.USER_DEVICES.USER_ID]
         print("Auto Logged In")
         return True, "Auto Logged In"
     return False, "Unknown Device"
-
-
 
 
 serverStartTime = time()
