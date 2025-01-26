@@ -32,9 +32,6 @@ div::-webkit-scrollbar { display: none; }
 
 .music-tray {
     z-index: 1000;
-    position: absolute;
-    bottom: 90px;
-    right: 80px;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -149,19 +146,19 @@ div::-webkit-scrollbar { display: none; }
     font-size: 24px;
 }
 
-@media (max-width: 768px) {
-    .music-tray {
-        bottom: 60px;
-        right: 60px;
-    }
-}
+/*@media (max-width: 768px) {*/
+/*    .music-tray {*/
+/*        bottom: 60px;*/
+/*        right: 60px;*/
+/*    }*/
+/*}*/
 
-@media (max-width: 480px) {
-    .music-tray {
-        bottom: 50px;
-        right: 40px;
-    }
-}
+/*@media (max-width: 480px) {*/
+/*    .music-tray {*/
+/*        bottom: 50px;*/
+/*        right: 40px;*/
+/*    }*/
+/*}*/
 
 /* glow Button */
 

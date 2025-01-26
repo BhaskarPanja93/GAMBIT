@@ -55,7 +55,6 @@ def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
     #viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPost), DivID.auth, UpdateMethods.update)
     viewerObj.privateData.currentPage = Pages.postAuth
     viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.postAuth})
-    renderFriends(viewerObj)
 
 
 def renderLobbyFullPage(viewerObj: DynamicWebsite.Viewer):
@@ -124,7 +123,8 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
 def renderUniversal(viewerObj: DynamicWebsite.Viewer):
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer), DivID.root, UpdateMethods.update)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Navbar), DivID.navbar, UpdateMethods.update)
-    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.MusicTray), DivID.musicTray, UpdateMethods.update)
+    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.MusicTray), DivID.musicTrayHolder, UpdateMethods.update)
+    renderFriends(viewerObj)
     viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)}</script>', DivID.scripts, UpdateMethods.append)
     viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)}</script>', DivID.scripts, UpdateMethods.append)
     viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Universal)}</script>', DivID.scripts, UpdateMethods.append)

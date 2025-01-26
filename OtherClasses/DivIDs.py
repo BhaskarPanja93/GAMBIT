@@ -4,7 +4,7 @@ class DivID:
     scripts = "script"
     navbar = "navbar"
     ghost3d = "ghost3d"
-    musicTray = "music-tray"
+    musicTrayHolder = "music-tray-holder"
     auth = "auth"
     registerForm = "register-form"
     loginForm = "login-form"
