@@ -1,7 +1,7 @@
 from randomisedString import RandomisedString
 
 class Player:
-    def __init__(self, viewerObj):
+    def __init__(self, viewerObj = None):
         self.viewer = viewerObj
         self.PFP = "https://i.pinimg.com/originals/e4/3d/2d/e43d2dea1d8793fcf016d2a634bdf761.png"
         self.userName = "username-"+RandomisedString().AlphaNumeric(5, 5)

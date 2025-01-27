@@ -21,7 +21,7 @@ from OtherClasses.Player import Player
 from OtherClasses.Party import Party
 from OtherClasses.Friend import Friend
 from OtherClasses.Routes import Routes
-from OtherClasses.CustomMessageTasks import CustomMessageTask
+from OtherClasses.CustomMessages import CustomMessages
 from OtherClasses.CommonFunctions import connectDB, WSGIRunner
 
 from customisedLogs import CustomisedLogs
@@ -38,23 +38,23 @@ def renderAuthPre(viewerObj: DynamicWebsite.Viewer):
     renderAuthFullPage(viewerObj)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPre), DivID.auth, UpdateMethods.update)
     viewerObj.privateData.currentPage = Pages.preAuth
-    viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.preAuth})
+    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.preAuth))
 
 
 def renderAuth(viewerObj: DynamicWebsite.Viewer):
     renderAuthFullPage(viewerObj)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthForm), DivID.auth, UpdateMethods.update)
     viewerObj.privateData.currentPage = Pages.auth
-    viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.auth})
+    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.auth))
     sendLoginForm(viewerObj)
     sendRegisterForm(viewerObj)
 
 
 def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
     renderAuthFullPage(viewerObj)
-    #viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPost), DivID.auth, UpdateMethods.update)
+    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPost), DivID.auth, UpdateMethods.update)
     viewerObj.privateData.currentPage = Pages.postAuth
-    viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.postAuth})
+    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.postAuth))
 
 
 def renderLobbyFullPage(viewerObj: DynamicWebsite.Viewer):
@@ -64,12 +64,16 @@ def renderLobbyFullPage(viewerObj: DynamicWebsite.Viewer):
 
 def renderLobby(viewerObj: DynamicWebsite.Viewer):
     renderLobbyFullPage(viewerObj)
-    viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.lobby})
-    party = Party()
-    party.addPlayer(viewerObj.privateData.player)
-    party.addPlayer(Player(None))
-    party.addPlayer(Player(None))
-    sleep(1)
+    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.lobby))
+    if viewerObj.privateData.party is None:
+        print("NEW PARTY")
+        viewerObj.privateData.party = Party()
+        #sleep(2)
+        viewerObj.privateData.party.addPlayer(viewerObj.privateData.player)
+        sleep(2)
+        # viewerObj.privateData.party.addPlayer(Player())
+        # sleep(2)
+        # viewerObj.privateData.party.addPlayer(Player())
 
 
 def renderPartyJoined(viewerObj: DynamicWebsite.Viewer):
@@ -102,14 +106,14 @@ def renderFriends(viewerObj: DynamicWebsite.Viewer):
     others = []
     for _ in range(5):
         sleep(0.1)
-        other = Player(None)
+        other = Player()
         friend = Friend(viewerObj.privateData.player, other)
         others.append(friend)
         viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendElement)).render(connectionID=friend.connectionID, PFP=other.displayPFP(), userName=other.displayUserName(), state=other.displayState()), DivID.onlineFriends, UpdateMethods.append)
     #for other in others:
         #sleep(1)
         #viewerObj.updateHTML("", other.connectionID, UpdateMethods.remove)
-        #viewerObj.sendCustomMessage({"TASK":"FRIEND_REMOVED", "CONNECTION_ID":other.connectionID})
+        #viewerObj.sendCustomMessage()
 
 
 def renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
@@ -117,7 +121,7 @@ def renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderNotes(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.sendCustomMessage({"TASK": CustomMessageTask.PAGE_CHANGED, "PAGE": Pages.postAuth})
+    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.postAuth))
 
 
 def renderUniversal(viewerObj: DynamicWebsite.Viewer):
@@ -184,8 +188,7 @@ def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
 
 def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Joined: ", viewerObj.viewerID)
-    viewerObj.privateData = PrivateData()
-    assignPlayerDetails(viewerObj)
+    setPrivateDetails(viewerObj)
     renderUniversal(viewerObj)
     accepted, reason = autoLogin(viewerObj)
     if accepted: renderFirstPage(viewerObj)
@@ -213,8 +216,9 @@ def loginDevice(viewerObj: DynamicWebsite.Viewer):
     SQLconn.execute(f"INSERT INTO {Database.USER_DEVICES.TABLE_NAME} VALUES (?, ?, ?)", [viewerObj.viewerID, viewerObj.privateData.userID,  viewerObj.privateData.activeSince])
 
 
-def assignPlayerDetails(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.privateData.player = Player(None)
+def setPrivateDetails(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.privateData = PrivateData()
+    viewerObj.privateData.player = Player(viewerObj)
 
 
 def createUser(viewerObj: DynamicWebsite.Viewer, username:str, password:str, personName:str, email:str):

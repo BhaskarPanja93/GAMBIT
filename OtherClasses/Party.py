@@ -1,20 +1,21 @@
-from jinja2 import Template
 from randomisedString import RandomisedString
 
 from OtherClasses.Player import Player
+from OtherClasses.CustomMessages import CustomMessages
 
 
 class Party:
     def __init__(self):
         self.partyID = RandomisedString().AlphaNumeric(5, 10)
         self.players:dict[int, Player|None] = {0:None, 1:None, 2:None}
-    def notifyPlayerJoined(self, index:int, player:Player):
-        for index in self.players:
-            toSendTo = self.players[index]
-            if toSendTo.viewer is not None:
-                if player.userName == toSendTo.userName:
-                    toSendTo.viewer.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyMember)).render(PFP=party.players[0].displayPFP(), username=party.players[0].displayUserName(), level=party.players[0].displayLevel(), rank=party.players[0].displayRank()), DivID.lobbyPlayerSuffix, UpdateMethods.update)
-
+    def notifyPlayerJoined(self, newPlayerIndex:int, newPlayer:Player):
+        print("NOTIFYING PLAYER JOIN")
+        for toSendIndex in self.players:
+            playerAtIndex = self.players[toSendIndex]
+            if newPlayer.viewer is not None:
+                newPlayer.viewer.sendCustomMessage(CustomMessages.addedPartyMember(toSendIndex, playerAtIndex.displayPFP(), playerAtIndex.displayUserName(), playerAtIndex.displayLevel(), playerAtIndex.displayRank()))
+            if toSendIndex != newPlayerIndex and playerAtIndex.viewer is not None:
+                playerAtIndex.viewer.sendCustomMessage(CustomMessages.addedPartyMember(newPlayerIndex, newPlayer.displayPFP(), newPlayer.displayUserName(), newPlayer.displayLevel(), newPlayer.displayRank()))
     def notifyPlayerLeft(self, index:int, player:Player):
         pass
     def addPlayer(self, player:Player):
@@ -24,10 +25,4 @@ class Party:
                 self.notifyPlayerJoined(playerIndex, player)
                 return playerIndex
     def removePlayer(self, player:Player):
-        for playerIndex in self.players:
-            if self.players[playerIndex] is not None and self.players[playerIndex].userName == player.userName:
-                self.players.pop(playerIndex)
-                newParty = Party()
-                newParty.addPlayer(player)
-                self.notifyPlayerLeft(playerIndex, player)
-                return playerIndex
+        pass
