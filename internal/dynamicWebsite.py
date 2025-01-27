@@ -414,6 +414,8 @@ class DynamicWebsite:
         def __init__(self, rawWS, salt: bytes, info: bytes):
             self.isActive = None
             self.rawWS = rawWS
+            self.purpose = None
+            self.queue = Imports.RateLimitedQueues()
 
             self.key = None
             self.salt = salt
@@ -443,7 +445,7 @@ class DynamicWebsite:
 
 
         def sendRaw(self, finalData):
-            self.rawWS.send(finalData)
+            self.queue.queueAction(self.rawWS.send, False, 0, None, None, None, None, finalData)
 
 
     class Viewer:
@@ -459,7 +461,6 @@ class DynamicWebsite:
             self.formSubmitCallback = self.dynamicWebsiteApp.formSubmitCallback
             self.customMessageCallback = self.dynamicWebsiteApp.customMessageCallback
             self.pendingFiles:dict[str, DynamicWebsite.FileHolder] = {}
-            self.queueHandler = Imports.RateLimitedQueues()
             self.currentWS:dict[str, DynamicWebsite.WSHolder|str|None] = {}
             self.futureWS:dict[str, str] = {}
             self.cookie: DynamicWebsite.CookieHolder|None = None
@@ -487,7 +488,7 @@ class DynamicWebsite:
             WSObj = self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE)
             if WSObj is None:
                 Imports.sleep(1)
-                return self.sendTurbo(data)
+                return self.sendCustomMessage(data)
             try:
                 if self.currentState != DynamicWebsite.VIEWER_STATES.DEAD:
                     toSend = Imports.dumps({"T":self.dynamicWebsiteApp.WS_DATA_TYPES.CUSTOM, "DATA": data})
@@ -556,10 +557,8 @@ class DynamicWebsite:
 
 
             stream =  f'<turbo-stream action="{method}" target="{divID}"><template>{htmlData}</template></turbo-stream>'
-            self.queueHandler.queueAction(self.sendTurbo, False, 0, None, None, None, None, stream)
-
+            self.sendTurbo(stream)
             if removeAfter: self.updateHTML("", divID, DynamicWebsite.UpdateMethods.remove, removeAfter)
-
             return divID
 
 
@@ -757,21 +756,21 @@ class DynamicWebsite:
             :param rawWS: The Sock object that will be used for communication
             :return:
             """
-            purpose = Imports.request.args.get("WS_PURPOSE")
             validCookie = self.CookieHolder().readL1(Imports.request)
             presentL1Cookie = self.CookieHolder().decrypt(Imports.request.cookies.get("DW-ID-L1"), self.fernetKey)
             presentL2Cookie = self.CookieHolder().decrypt(Imports.request.cookies.get("DW-ID-L2"), self.fernetKey)
-            if presentL1Cookie.instanceID in self.inCompleteViewers and self.inCompleteViewers[presentL1Cookie.instanceID].currentWS.get(purpose) is None and type(self.inCompleteViewers[presentL1Cookie.instanceID].futureWS.get(purpose)) == str and validCookie.match(presentL1Cookie, 1) and presentL2Cookie.match(presentL1Cookie, 1, True, True): # current person is recent person
+            WSObj = self.WSHolder(rawWS, self.stringGenerator.AlphaNumeric(10,10).encode(), self.stringGenerator.AlphaNumeric(10,10).encode())
+            WSObj.purpose = Imports.request.args.get("WS_PURPOSE")
+            if presentL1Cookie.instanceID in self.inCompleteViewers and self.inCompleteViewers[presentL1Cookie.instanceID].currentWS.get(WSObj.purpose) is None and type(self.inCompleteViewers[presentL1Cookie.instanceID].futureWS.get(WSObj.purpose)) == str and validCookie.match(presentL1Cookie, 1) and presentL2Cookie.match(presentL1Cookie, 1, True, True): # current person is recent person
                 viewerObj = self.inCompleteViewers[presentL1Cookie.instanceID]
-                WSObj = self.WSHolder(rawWS, self.stringGenerator.AlphaNumeric(10,10).encode(), self.stringGenerator.AlphaNumeric(10,10).encode())
                 CSRFVerified = False
                 while True:
                     try:
                         receivedBytes = rawWS.receive(timeout=60 if CSRFVerified else 5)
                     except (BrokenPipeError, Imports.ConnectionClosed):
                         WSObj.isActive = False
-                        viewerObj.currentWS[purpose] = None
-                        futureCSRF = viewerObj.futureWS.get(purpose)
+                        viewerObj.currentWS[WSObj.purpose] = None
+                        futureCSRF = viewerObj.futureWS.get(WSObj.purpose)
                         if futureCSRF is None:
                             for _WSObj in viewerObj.currentWS.values():
                                 if _WSObj.isActive: # Has active WS
@@ -787,9 +786,9 @@ class DynamicWebsite:
 
                         if WSObj.key is None: # Should be the first data from WS
                             if reason == self.WS_DATA_REASONS.IN.VERIFY_CSRF:
-                                if viewerObj.currentWS.get(purpose) is None and viewerObj.futureWS.get(purpose) == dictReceived["CSRF"] and viewerObj.futureWS.get(purpose): # Viewer has pending CSRF of same purpose and is valid
-                                    del viewerObj.futureWS[purpose]
-                                    viewerObj.currentWS[purpose] = WSObj
+                                if viewerObj.currentWS.get(WSObj.purpose) is None and viewerObj.futureWS.get(WSObj.purpose) == dictReceived["CSRF"] and viewerObj.futureWS.get(WSObj.purpose): # Viewer has pending CSRF of same purpose and is valid
+                                    del viewerObj.futureWS[WSObj.purpose]
+                                    viewerObj.currentWS[WSObj.purpose] = WSObj
                                     requireEncryption= dictReceived.get("REQUEST_ENCRYPTION", False)
                                     if requireEncryption:
                                         WSObj.key = self.serverKeys.sharedKey(dictReceived.get("CLIENT-KEY").get("PubB64"), WSObj.salt, WSObj.info)
@@ -806,9 +805,9 @@ class DynamicWebsite:
                                 reason = dictReceived.get("REASON")
                             if reason == self.WS_DATA_REASONS.IN.READY:
                                 if WSObj.key:
-                                    rawWS.send(Imports.dumps(WSObj.encrypt(Imports.dumps({"FUTURE-CSRF": self.createWSToken(viewerObj, purpose, True)}), self.stringGenerator.AlphaNumeric(12,12).encode())))
+                                    rawWS.send(Imports.dumps(WSObj.encrypt(Imports.dumps({"FUTURE-CSRF": self.createWSToken(viewerObj, WSObj.purpose, True)}), self.stringGenerator.AlphaNumeric(12,12).encode())))
                                 else:
-                                    rawWS.send(Imports.dumps({"FUTURE-CSRF": self.createWSToken(viewerObj, purpose, True)}))
+                                    rawWS.send(Imports.dumps({"FUTURE-CSRF": self.createWSToken(viewerObj, WSObj.purpose, True)}))
 
                                 WSObj.isActive = True
                                 for _WSObj in viewerObj.currentWS.values():

@@ -1,9 +1,6 @@
 class FileNames:
     class JS:
         Universal = "Universal.js"
-        Music = "Music.js"
-        Friends = "Friends.js"
-        Trail = "Trail.js"
     class CSS:
         Universal = "Universal.css"
     class HTML:
@@ -25,4 +22,5 @@ class FileNames:
         PartyInvitesElement = "PartyInvitesElement.html"
         LobbyFull = "LobbyFull.html"
         LobbyMember = "LobbyMember.html"
+        LobbyFeatures = "LobbyFeatures.html"
         NotesFullPage = "NotesFullPage.html"

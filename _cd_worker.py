@@ -21,15 +21,9 @@ cdPort = int(argv[3])
 cdApp = Flask(CoreValues.cdName)
 musicCollection = MusicCollection()
 allowed_origins = [
-    "https://bhindi1.ddns.net",
-    "https://bhindi2.ddns.net",
-    "https://127.0.0.1",
-    "https://localhost",
-    "http://127.0.0.1",
-    "http://localhost"
+    "*"
 ]
 
-# Enable CORS for all routes and specific origins
 CORS(cdApp, resources={r"/*": {"origins": allowed_origins}})
 @cdApp.get(Routes.cdFileContent)
 def _fileContent():

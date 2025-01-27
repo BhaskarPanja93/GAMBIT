@@ -1,17 +1,19 @@
+from time import sleep
 from randomisedString import RandomisedString
 
-from OtherClasses.Player import Player
 from OtherClasses.CustomMessages import CustomMessages
+from OtherClasses.Player import Player
 
 
 class Party:
     def __init__(self):
         self.partyID = RandomisedString().AlphaNumeric(5, 10)
         self.players:dict[int, Player|None] = {0:None, 1:None, 2:None}
+        sleep(0.1)
     def notifyPlayerJoined(self, newPlayerIndex:int, newPlayer:Player):
-        print("NOTIFYING PLAYER JOIN")
         for toSendIndex in self.players:
             playerAtIndex = self.players[toSendIndex]
+            if playerAtIndex is None: continue
             if newPlayer.viewer is not None:
                 newPlayer.viewer.sendCustomMessage(CustomMessages.addedPartyMember(toSendIndex, playerAtIndex.displayPFP(), playerAtIndex.displayUserName(), playerAtIndex.displayLevel(), playerAtIndex.displayRank()))
             if toSendIndex != newPlayerIndex and playerAtIndex.viewer is not None:

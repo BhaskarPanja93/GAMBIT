@@ -60,20 +60,16 @@ def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
 def renderLobbyFullPage(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage not in [Pages.lobby]:
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyFull), DivID.basePage, UpdateMethods.update)
+        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyFeatures), DivID.lobbyFeatures, UpdateMethods.update)
 
 
 def renderLobby(viewerObj: DynamicWebsite.Viewer):
     renderLobbyFullPage(viewerObj)
-    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.lobby))
     if viewerObj.privateData.party is None:
-        print("NEW PARTY")
         viewerObj.privateData.party = Party()
-        #sleep(2)
         viewerObj.privateData.party.addPlayer(viewerObj.privateData.player)
-        sleep(2)
-        # viewerObj.privateData.party.addPlayer(Player())
-        # sleep(2)
-        # viewerObj.privateData.party.addPlayer(Player())
+        viewerObj.privateData.party.addPlayer(Player())
+        viewerObj.privateData.party.addPlayer(Player())
 
 
 def renderPartyJoined(viewerObj: DynamicWebsite.Viewer):
@@ -91,7 +87,6 @@ def kickedFromParty(viewerObj: DynamicWebsite.Viewer):
 def renderFriendFull(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage not in [None, Pages.auth, Pages.preAuth] and not viewerObj.privateData.friendsRendered:
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsFull), DivID.friendsFull, UpdateMethods.update)
-        viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Friends)+"</script>", DivID.scripts, UpdateMethods.append)
         viewerObj.privateData.friendsRendered = True
 
 
@@ -105,7 +100,6 @@ def renderFriends(viewerObj: DynamicWebsite.Viewer):
     # FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userID, viewerObj.privateData.userID])
     others = []
     for _ in range(5):
-        sleep(0.1)
         other = Player()
         friend = Friend(viewerObj.privateData.player, other)
         others.append(friend)
@@ -128,13 +122,13 @@ def renderUniversal(viewerObj: DynamicWebsite.Viewer):
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer), DivID.root, UpdateMethods.update)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Navbar), DivID.navbar, UpdateMethods.update)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.MusicTray), DivID.musicTrayHolder, UpdateMethods.update)
-    renderFriends(viewerObj)
-    viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)}</script>', DivID.scripts, UpdateMethods.append)
-    viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)}</script>', DivID.scripts, UpdateMethods.append)
+    sleep(1)
     viewerObj.updateHTML(f'<script>{cachedHTMLElements.fetchStaticJS(FileNames.JS.Universal)}</script>', DivID.scripts, UpdateMethods.append)
+    renderFriends(viewerObj)
 
 
 def renderFirstPage(viewerObj: DynamicWebsite.Viewer):
+    print(viewerObj.privateData.expectedPostAuthPage, viewerObj.privateData.expectedPostAuthPage==Pages.lobby)
     if viewerObj.privateData.expectedPostAuthPage == Pages.lobby: renderLobby(viewerObj)
     #elif viewerObj.privateData.expectedPostAuthPage == Pages.marketPlace: renderMarketPlace(viewerObj)
     else: renderAuthPost(viewerObj)
@@ -190,9 +184,10 @@ def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Joined: ", viewerObj.viewerID)
     setPrivateDetails(viewerObj)
     renderUniversal(viewerObj)
-    accepted, reason = autoLogin(viewerObj)
-    if accepted: renderFirstPage(viewerObj)
-    else: renderAuthPre(viewerObj)
+    renderLobby(viewerObj)
+    # accepted, reason = autoLogin(viewerObj)
+    # if accepted: renderFirstPage(viewerObj)
+    # else: renderAuthPre(viewerObj)
 
 
 def sendLoginForm(viewerObj: DynamicWebsite.Viewer):

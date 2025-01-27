@@ -248,7 +248,7 @@ class WSConnectionManager extends EventEmitter {
             this.handler = handler
             this.purpose = purpose
             this.futureCSRF = null
-            this.key = (window.crypto.subtle !== undefined)
+            this.key = (window.crypto.subtle !== undefined) && false
             this.clientKeyPair = null
             this.rawWS = new WebSocket(`ws${location.protocol.substring(4)}//${location.host}/?WS_PURPOSE=${this.purpose}`)
         }
