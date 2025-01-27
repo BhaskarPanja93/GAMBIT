@@ -11,3 +11,4 @@ class PrivateData:
         self.player = None
         self.party = None
         self.friendsRendered = False
+
