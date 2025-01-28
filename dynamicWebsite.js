@@ -105,17 +105,19 @@ class EventEmitter {
 
 
 class WSConnectionManager extends EventEmitter {
-    constructor(RESPONSIVE_CSRF, LARGE_CSRF) {
+    constructor() {
         super();
-        this.createNewWS(WS_PURPOSES.RESPONSIVE, RESPONSIVE_CSRF).then()
-        this.createNewWS(WS_PURPOSES.LARGE, LARGE_CSRF).then()
         this.stopOperation = false
         window.addEventListener('beforeunload', (event) => {
             this.stopOperation = true;
             this.collectionWS.RESPONSIVE.close();
             this.collectionWS.LARGE.close();
         });
-        this.sendCustomMessage = sendCustomMessage
+    }
+
+    initiate(RESPONSIVE_CSRF, LARGE_CSRF) {
+        this.createNewWS(WS_PURPOSES.RESPONSIVE, RESPONSIVE_CSRF)
+        this.createNewWS(WS_PURPOSES.LARGE, LARGE_CSRF)
     }
 
     async createNewWS(purpose, CSRF) {
@@ -247,6 +249,8 @@ class WSConnectionManager extends EventEmitter {
         constructor (handler, purpose) {
             this.handler = handler
             this.purpose = purpose
+            this.messages = []
+            this.isProcessing = false
             this.futureCSRF = null
             this.key = (window.crypto.subtle !== undefined) && false
             this.clientKeyPair = null
@@ -275,7 +279,8 @@ class WSConnectionManager extends EventEmitter {
                 this.handler.handleClosedWS(this)
             })
             this.rawWS.addEventListener("message", (event) => {
-                this.processReceived(event.data)
+                this.messages.push(event.data);
+                this.processNextMessage()
             })
         }
 
@@ -285,6 +290,14 @@ class WSConnectionManager extends EventEmitter {
             } else {
                 this.rawWS.send(JSON.stringify(await this.encrypt(string)))
             }
+        }
+
+        processNextMessage = async() => {
+            if (this.isProcessing || this.messages.length === 0) return
+            this.isProcessing = true;
+            await this.processReceived(this.messages.shift())
+            this.isProcessing = false;
+            await this.processNextMessage()
         }
 
         processReceived = async(data) => {
@@ -410,6 +423,7 @@ class WSConnectionManager extends EventEmitter {
 window.CHUNK_SIZE = 1024*1024*10;
 window.MAX_BUFFER_SIZE = 1024*1024*5;
 window.DELAY_TIME = 500
+window.ConnmanagerWS = new WSConnectionManager()
 
 fetch('/?RECEIVE_NEW_L2_COOKIE', {
     method: 'POST',
@@ -418,7 +432,7 @@ fetch('/?RECEIVE_NEW_L2_COOKIE', {
     credentials: "include",
 }).then((response)=>{
     response.json().then((parsed)=>{
-        window.ConnmanagerWS = new WSConnectionManager(parsed[WS_PURPOSES.RESPONSIVE], parsed[WS_PURPOSES.LARGE])
+        window.ConnmanagerWS.initiate(parsed[WS_PURPOSES.RESPONSIVE], parsed[WS_PURPOSES.LARGE])
     })
 });
 

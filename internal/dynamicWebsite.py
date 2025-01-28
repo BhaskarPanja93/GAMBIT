@@ -484,8 +484,8 @@ class DynamicWebsite:
                 print("Unable to send. Connection closed")
 
 
-        def sendCustomMessage(self, data: Imports.Any):
-            WSObj = self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE)
+        def sendCustomMessage(self, data: Imports.Any, highPriority: bool = True):
+            WSObj = self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE) if highPriority and self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE) else self.currentWS.get(DynamicWebsite.WSPurposes.LARGE)
             if WSObj is None:
                 Imports.sleep(1)
                 return self.sendCustomMessage(data)
@@ -529,7 +529,7 @@ class DynamicWebsite:
                     self.pendingFiles[fileID].acceptNewData(data)
 
 
-        def updateHTML(self, htmlData: str, divID: str, method: str, nonBlockingWait: float = 0, removeAfter: float = 0, blockingWait: float = 0, newDivAttributes: dict|None = None) -> str|None:
+        def updateHTML(self, htmlData: str, divID: str, method: str, nonBlockingWait: float = 0, removeAfter: float = 0, blockingWait: float = 0, newDivAttributes: dict|None = None, highPriority: bool = True) -> str|None:
             if type(htmlData) != str:
                 try: htmlData = Imports.dumps(htmlData)
                 except:
@@ -557,7 +557,7 @@ class DynamicWebsite:
 
 
             stream =  f'<turbo-stream action="{method}" target="{divID}"><template>{htmlData}</template></turbo-stream>'
-            self.sendTurbo(stream)
+            self.sendTurbo(stream, highPriority)
             if removeAfter: self.updateHTML("", divID, DynamicWebsite.UpdateMethods.remove, removeAfter)
             return divID
 

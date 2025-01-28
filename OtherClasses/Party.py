@@ -1,4 +1,3 @@
-from time import sleep
 from randomisedString import RandomisedString
 
 from OtherClasses.CustomMessages import CustomMessages
@@ -9,7 +8,6 @@ class Party:
     def __init__(self):
         self.partyID = RandomisedString().AlphaNumeric(5, 10)
         self.players:dict[int, Player|None] = {0:None, 1:None, 2:None}
-        sleep(0.1)
     def notifyPlayerJoined(self, newPlayerIndex:int, newPlayer:Player):
         for toSendIndex in self.players:
             playerAtIndex = self.players[toSendIndex]

@@ -1,6 +1,6 @@
 class DivID:
     root = "root"
-    basePage = "base-page"
+    changingPage = "base-page"
     scripts = "script"
     navbar = "navbar"
     ghost3d = "ghost3d"
@@ -8,7 +8,8 @@ class DivID:
     auth = "auth"
     registerForm = "register-form"
     loginForm = "login-form"
-    friendsFull = "friends-content"
+    chatBox = "chat-box"
+    friendsStructure = "friends-content"
     onlineFriends = "online-friend-list"
     offlineFriends = "offline-friend-list"
     partyInvites = "party-invites"
