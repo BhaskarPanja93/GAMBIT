@@ -1,7 +1,8 @@
 class FileNames:
     class JS:
-        Universal = "Universal.js"
+        PreAuthUniversal = "Universal.js"
         Friends = "Friends.js"
+        Auth = "Auth.js"
         Lobby = "Lobby.js"
         Music = "Music.js"
         Trail = "Trail.js"
@@ -11,9 +12,10 @@ class FileNames:
         BodyBase = "BodyBase.html"
         ExtraHead = "ExtraHead.html"
         UniversalContainer = "UniversalContainer.html"
+        LogoutButton = "LogoutButton.html"
         Navbar = "navbar.html"
         MusicTray = "MusicTray.html"
-        AuthStructure = "AuthFullPage.html"
+        AuthStructure = "AuthStructure.html"
         Ghost3d = "Ghost3d.html"
         AuthPre = "AuthPre.html"
         AuthPost = "AuthPost.html"

@@ -6,9 +6,11 @@ from OtherClasses.Player import Player
 
 class Party:
     def __init__(self):
+        self.partyID = RandomisedString().AlphaNumeric(30, 30)
         self.defaultPartyCode = "Generate"
         self.partyCode = self.defaultPartyCode
         self.players:dict[int, Player|None] = {0:None, 1:None, 2:None}
+        self.onPartyCodeCreated = None
     def notifyPlayerJoined(self, newPlayerIndex:int, newPlayer:Player):
         for toSendIndex in self.players:
             playerAtIndex = self.players[toSendIndex]
@@ -34,6 +36,7 @@ class Party:
     def generatePartyCode(self):
         if self.partyCode == self.defaultPartyCode:
             self.partyCode = RandomisedString().AlphaNumeric(5, 5).upper()
+            self.onPartyCodeCreated(self)
             for toSendIndex in self.players:
                 playerAtIndex = self.players[toSendIndex]
                 if playerAtIndex is not None:

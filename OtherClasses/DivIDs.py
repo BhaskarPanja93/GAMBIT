@@ -1,5 +1,6 @@
 class DivID:
     root = "root"
+    logoutButton = "logout-button"
     changingPage = "base-page"
     scripts = "script"
     navbar = "navbar"
