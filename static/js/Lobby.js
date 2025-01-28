@@ -12,10 +12,26 @@ function addedPartyMember(playerData) {
     let rankImage = document.createElement("img");
     rankImage.src = playerData["RANK"]
     rankImage.className = "mx-auto h-10 w-10 mt-10 sm:h-10 sm:w-10 sm:mt-10 md:h-24 md:w-24 md:mt-20 lg:h-24 lg:w-24 lg:mt-20"
-    waitForElementCreation(`#player-${playerData["INDEX"]}`, (div)=>{
+    waitForElementPresence(`#player-${playerData["INDEX"]}`, (div)=>{
         div.appendChild(playerPFP)
         div.appendChild(playerNameHeading)
         div.appendChild(playerLevelParagraph)
         div.appendChild(rankImage)
     })
 }
+
+function removedPartyMember(playerData) {
+    waitForElementPresence(`#player-${playerData["index"]}`, (div)=>{
+        div.innerHTML = ""
+    })
+}
+
+function receivedPartyCode(data) {
+    waitForElementPresence("#party-code", (button)=>{
+        button.innerText = data["CODE"]
+    })
+}
+
+waitForElementPresence("#party-code", (button) => {
+    button.onclick = () => {sendCustomMessage({PURPOSE: CUSTOM_MESSAGE_TASKS.PARTY_CODE})}
+})

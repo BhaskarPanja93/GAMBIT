@@ -1,53 +1,47 @@
-function enableMusicService() {
-    fetch("/music-categories").then((response) => {
-        response.json().then((streams) => {
-            document.getElementById('music-tray-toggle-btn').addEventListener('click', toggleMusicTray)
-            document.getElementById('music-pp-btn').addEventListener('click', () => {
-                if (window.lastMusicCategory === null) {
-                    openMusicTray()
-                } else {
-                    toggleMusicMute()
-                }
-            });
-            knownStreams = streams
-            knownStreams.forEach((cat)=>{
-                let _split = cat.split("_")
-                let mainCat = _split[0]
-                let subCat = _split[1]
-                if (document.getElementById(mainCat + "-music-category") === null) {
-                    let mainCategoryDiv = document.createElement('div');
-                    let subCategoryDiv = document.createElement('div');
-                    mainCategoryDiv.className = "music-tray-category-grp py-1"
-                    mainCategoryDiv.id = mainCat + "-music-category";
-                    mainCategoryDiv.innerHTML = mainCat;
-                    mainCategoryDiv.style.color = "rgba(255, 255, 255, 0.4)"
-                    subCategoryDiv.className = "music-tray-sub-category-grp"
-                    subCategoryDiv.id = mainCat + "-music-subcategory"
-                    mainCategoryDiv.append(subCategoryDiv);
-                    document.getElementById('music-tray-categories').appendChild(mainCategoryDiv);
-                }
-                let subCatButton = document.createElement('button');
-                subCatButton.className = "music-tray-button-global music-tray-sub-category-button"
-                subCatButton.id = cat
-                subCatButton.innerHTML = subCat
-                subCatButton.style.color = "rgba(255, 255, 255, 0.4)"
-                subCatButton.onclick = () => {playMusicCategory(cat, mainCat).then()}
-                document.getElementById(mainCat + "-music-subcategory").append(subCatButton);
+waitForElementPresence("#music-player", () => {
+    waitForElementPresence("#music-tray-categories", (allCategoriesDiv) => {
+        fetch("/music-categories").then((response) => {
+            response.json().then((streams) => {
+                knownStreams = streams
+                knownStreams.forEach((cat)=>{
+                    let _split = cat.split("_")
+                    let mainCat = _split[0]
+                    let subCat = _split[1]
+                    if (document.getElementById(mainCat + "-music-category") === null) {
+                        let mainCategoryDiv = document.createElement('div');
+                        let subCategoryDiv = document.createElement('div');
+                        mainCategoryDiv.className = "music-tray-category-grp py-1"
+                        mainCategoryDiv.id = mainCat + "-music-category";
+                        mainCategoryDiv.innerHTML = mainCat;
+                        mainCategoryDiv.style.color = "rgba(255, 255, 255, 0.4)"
+                        subCategoryDiv.className = "music-tray-sub-category-grp"
+                        subCategoryDiv.id = mainCat + "-music-subcategory"
+                        mainCategoryDiv.append(subCategoryDiv);
+                        allCategoriesDiv.appendChild(mainCategoryDiv);
+                    }
+                    let subCatButton = document.createElement('button');
+                    subCatButton.className = "music-tray-button-global music-tray-sub-category-button"
+                    subCatButton.id = cat
+                    subCatButton.innerHTML = subCat
+                    subCatButton.style.color = "rgba(255, 255, 255, 0.4)"
+                    subCatButton.onclick = () => {playMusicCategory(cat, mainCat).then()}
+                    document.getElementById(mainCat + "-music-subcategory").append(subCatButton);
+                })
             })
         })
     })
-}
-
-
-const musicButtonRenderObserver = new MutationObserver(() => {
-    if (document.getElementById('music-player') !== null && document.getElementById('music-player') !== null) {
-        musicButtonRenderObserver.disconnect();
-        enableMusicService()
-    }
-});
-musicButtonRenderObserver.observe(document.body, {
-    childList: true,
-    subtree: true
+})
+waitForElementPresence("#music-tray-toggle-btn", (toggleButton) => {
+    toggleButton.addEventListener('click', toggleMusicTray)
+})
+waitForElementPresence("#music-pp-btn", (playPauseButton) => {
+    playPauseButton.addEventListener('click', () => {
+        if (window.lastMusicCategory === null) {
+            openMusicTray()
+        } else {
+            toggleMusicMute()
+        }
+    })
 })
 
 

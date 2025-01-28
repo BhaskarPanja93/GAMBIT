@@ -6,6 +6,7 @@ class CustomMessageTask:
     REMOVED_PARTY_MEMBER = 'REMOVED_PARTY_MEMBER'
     KICKED_FROM_PARTY = 'KICKED_FROM_PARTY'
     CHAT = 'CHAT'
+    PARTY_CODE = 'PARTY_CODE'
 
 
 class CustomMessages:
@@ -27,6 +28,9 @@ class CustomMessages:
     @staticmethod
     def kickedFromParty():
         return {"MESSAGE": CustomMessageTask.KICKED_FROM_PARTY}
+    @staticmethod
+    def partyCode(code):
+        return {"MESSAGE": CustomMessageTask.PARTY_CODE, "CODE": code}
     @staticmethod
     def chatMessage(sender, text):
         return {"MESSAGE": CustomMessageTask.CHAT, "SENDER": sender, "TEXT": text}

@@ -9,7 +9,7 @@
     </div>
 
     <!-- Chat Content -->
-    <div id="chatbox-content" class="hidden absolute top-12 left-0 w-full h-[calc(100%-3rem)] bg-blue-200 rounded-lg shadow-lg">
+    <div id="chatbox-content" class="hidden absolute left-0 w-full h-[calc(100%-3rem)] bg-blue-200 rounded-lg shadow-lg">
 
 
         <!-- Chat Messages -->
@@ -85,13 +85,13 @@
     chatContainer.addEventListener("mouseenter", () => {
         chatboxContent.classList.remove("hidden");
         plusIcon.classList.add("hidden");
-        chatTitle.classList.remove("hidden");
+        //chatTitle.classList.remove("hidden");
     });
 
     chatContainer.addEventListener("mouseleave", () => {
-        chatboxContent.classList.add("hidden");
-        plusIcon.classList.remove("hidden");
-        chatTitle.classList.add("hidden");
+        //chatboxContent.classList.add("hidden");
+        //plusIcon.classList.remove("hidden");
+        //chatTitle.classList.add("hidden");
     });
 
     // Add message to chat

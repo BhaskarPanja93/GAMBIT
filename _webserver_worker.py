@@ -44,7 +44,7 @@ def renderGhost3D(viewerObj: DynamicWebsite.Viewer):
 def __renderAuthStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.POST_AUTH]:
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthStructure), DivID.changingPage, UpdateMethods.update)
-        sleep(0.01)
+        sleep(0.1)
 
 
 def renderAuthPre(viewerObj: DynamicWebsite.Viewer):
@@ -80,7 +80,7 @@ def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
 def __renderFriendStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage not in [None, Pages.AUTH, Pages.PRE_AUTH] and not viewerObj.privateData.isElementRendered(FileNames.HTML.FriendsStructure):
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsStructure), DivID.friendsStructure, UpdateMethods.update)
-        sleep(0.01)
+        sleep(0.1)
 
 
 def renderFriends(viewerObj: DynamicWebsite.Viewer):
@@ -112,7 +112,7 @@ def __renderLobbyStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage != Pages.LOBBY:
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyStructure), DivID.changingPage, UpdateMethods.update)
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyFeatures), DivID.lobbyFeatures, UpdateMethods.update)
-        sleep(0.01)
+        sleep(0.1)
 
 
 def renderLobby(viewerObj: DynamicWebsite.Viewer):
@@ -120,9 +120,9 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
     viewerObj.privateData.newPage(Pages.LOBBY)
     if viewerObj.privateData.party is None:
         viewerObj.privateData.party = Party()
-        viewerObj.privateData.party.addPlayer(Player())
-        viewerObj.privateData.party.addPlayer(Player())
         viewerObj.privateData.party.addPlayer(viewerObj.privateData.player)
+        viewerObj.privateData.party.addPlayer(Player())
+        viewerObj.privateData.party.addPlayer(Player())
 
 
 def renderPartyJoined(viewerObj: DynamicWebsite.Viewer):
@@ -181,15 +181,18 @@ def renderNavbar(viewerObj: DynamicWebsite.Viewer):
 def renderUniversal(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Universal):
         viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Universal)+"</script>", DivID.scripts, UpdateMethods.append)
-    if not viewerObj.privateData.isScriptRendered(FileNames.JS.Lobby):
-        viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Lobby)+"</script>", DivID.scripts, UpdateMethods.append)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer), DivID.root, UpdateMethods.update)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Trail):
         viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)+"</script>", DivID.scripts, UpdateMethods.append)
+    if not viewerObj.privateData.isScriptRendered(FileNames.JS.Lobby):
+        viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Lobby)+"</script>", DivID.scripts, UpdateMethods.append)
+    if not viewerObj.privateData.isScriptRendered(FileNames.JS.Music):
+        viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)+"</script>", DivID.scripts, UpdateMethods.append)
     renderNavbar(viewerObj)
     renderMusicTray(viewerObj)
     renderChatStructure(viewerObj)
     renderFriends(viewerObj)
+    #sleep(0.1)
 
 
 ##############################################################################################################################
@@ -246,6 +249,10 @@ def formSubmitCallback(viewerObj: DynamicWebsite.Viewer, form: dict):
 
 def customWSMessageCallback(viewerObj: DynamicWebsite.Viewer, message: Any):
     print("WS received: ", viewerObj.viewerID, message)
+    purpose = message.pop("PURPOSE")
+    if purpose == "PARTY_CODE":
+        if viewerObj.privateData.party is not None:
+            viewerObj.privateData.party.generatePartyCode()
 
 
 def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
