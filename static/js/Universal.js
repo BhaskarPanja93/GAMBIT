@@ -5,11 +5,13 @@ const CUSTOM_MESSAGE_TASKS = {
     FRIEND_REMOVED: 'FRIEND_REMOVED',
     FRIEND_ADDED: 'FRIEND_ADDED',
     PAGE_CHANGED: 'PAGE_CHANGED',
-    PARTY_CODE: 'PARTY_CODE',
     ADDED_PARTY_MEMBER: 'ADDED_PARTY_MEMBER',
     REMOVED_PARTY_MEMBER: 'REMOVED_PARTY_MEMBER',
+    DECREMENT_PARTY_MEMBER_INDEX: 'DECREMENT_PARTY_MEMBER_INDEX',
+    NEW_LEADER: 'NEW_LEADER',
     KICKED_FROM_PARTY: 'KICKED_FROM_PARTY',
     CHAT: 'CHAT',
+    PARTY_CODE: 'PARTY_CODE',
 }
 
 
@@ -19,6 +21,8 @@ function WSListener(data) {
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_ADDED) addFriend(data["CONNECTION_ID"], data["FRIEND_DATA"])
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.ADDED_PARTY_MEMBER) addedPartyMember(data)
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.REMOVED_PARTY_MEMBER) removedPartyMember(data)
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.DECREMENT_PARTY_MEMBER_INDEX) decrementPartyMemberIndex(data)
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.NEW_LEADER) newLeader(data)
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.PARTY_CODE) receivedPartyCode(data)
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.PAGE_CHANGED) window["currentPage"] = data["PAGE"]
 }

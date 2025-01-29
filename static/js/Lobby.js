@@ -13,6 +13,7 @@ function addedPartyMember(playerData) {
     rankImage.src = playerData["RANK"]
     rankImage.className = "mx-auto h-10 w-10 mt-10 sm:h-10 sm:w-10 sm:mt-10 md:h-24 md:w-24 md:mt-20 lg:h-24 lg:w-24 lg:mt-20"
     waitForElementPresence(`#player-${playerData["INDEX"]}`, (div)=>{
+        div.setAttribute("player_index", playerData["INDEX"]);
         div.appendChild(playerPFP)
         div.appendChild(playerNameHeading)
         div.appendChild(playerLevelParagraph)
@@ -21,9 +22,26 @@ function addedPartyMember(playerData) {
 }
 
 function removedPartyMember(playerData) {
-    waitForElementPresence(`#player-${playerData["index"]}`, (div)=>{
+    waitForElementPresence(`#player-${playerData["INDEX"]}`, (div)=>{
         div.innerHTML = ""
     })
+}
+
+function decrementPartyMemberIndex(data) {
+    let startIndex = data["START"]
+    let endIndex = data["END"]
+    for (let index = startIndex; index < endIndex; index++) {
+        waitForElementPresence(`#player-${index}`, (tobeReplaced)=>{
+            waitForElementPresence(`#player-${index+1}`, (newElement)=>{
+                tobeReplaced.innerHTML = newElement.innerHTML
+                newElement.innerHTML = ""
+            })
+        })
+    }
+}
+
+function newLeader(data) {
+    console.log("New Leader")
 }
 
 function receivedPartyCode(data) {

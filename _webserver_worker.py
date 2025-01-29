@@ -94,9 +94,9 @@ def renderFriends(viewerObj: DynamicWebsite.Viewer):
     # END AS result
     # FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userID, viewerObj.privateData.userID])
     others = []
-    for _ in range(5):
+    for _ in range(15):
         #sleep(1)
-        other = Player()
+        other = Player(None, str(_))
         friend = Friend(viewerObj.privateData.player, other)
         others.append(friend)
         viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendElement)).render(connectionID=friend.connectionID, PFP=other.displayPFP(), userName=other.displayUserName(), state=other.displayState()), DivID.onlineFriends, UpdateMethods.append)
@@ -123,8 +123,17 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.party is None:
         viewerObj.privateData.party = createParty()
         viewerObj.privateData.party.addPlayer(viewerObj.privateData.player)
-        viewerObj.privateData.party.addPlayer(Player())
-        viewerObj.privateData.party.addPlayer(Player())
+        players = []
+        count = 0
+        while True:
+            count+=1
+            new = Player(None, str(count))
+            players.append(new)
+            viewerObj.privateData.party.addPlayer(new)
+            sleep(1)
+            if len(players) == 2:
+                viewerObj.privateData.party.removePlayer(players.pop(0))
+                sleep(1)
 
 
 def renderPartyJoined(viewerObj: DynamicWebsite.Viewer):
@@ -319,7 +328,7 @@ def loginDevice(viewerObj: DynamicWebsite.Viewer):
 
 def setPrivateDetails(viewerObj: DynamicWebsite.Viewer):
     viewerObj.privateData = PrivateData()
-    viewerObj.privateData.player = Player(viewerObj)
+    viewerObj.privateData.player = Player(viewerObj, "ME")
 
 
 def createUser(viewerObj: DynamicWebsite.Viewer, username:str, password:str, personName:str, email:str):
@@ -379,6 +388,7 @@ def createParty():
     partyIDs[party.partyID] = party
     party.onPartyCodeCreated = onPartyCodeGenerated
     party.onPartyClosed = closeParty
+    party.onKick = renderLobby
     print("NEW",partyCodes, partyIDs, sep='\n')
     return party
 

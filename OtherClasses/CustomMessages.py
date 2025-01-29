@@ -4,6 +4,8 @@ class CustomMessageTask:
     PAGE_CHANGED = 'PAGE_CHANGED'
     ADDED_PARTY_MEMBER = 'ADDED_PARTY_MEMBER'
     REMOVED_PARTY_MEMBER = 'REMOVED_PARTY_MEMBER'
+    DECREMENT_PARTY_MEMBER_INDEX = 'DECREMENT_PARTY_MEMBER_INDEX'
+    NEW_LEADER = 'NEW_LEADER'
     KICKED_FROM_PARTY = 'KICKED_FROM_PARTY'
     CHAT = 'CHAT'
     PARTY_CODE = 'PARTY_CODE'
@@ -23,11 +25,14 @@ class CustomMessages:
     def addedPartyMember(index, PFP, username, level, rank):
         return {"MESSAGE": CustomMessageTask.ADDED_PARTY_MEMBER, "INDEX": index, "PFP":PFP, "USERNAME": username, "LEVEL": level, "RANK": rank}
     @staticmethod
-    def removedPartyMember():
-        return {"MESSAGE": CustomMessageTask.REMOVED_PARTY_MEMBER}
+    def removedPartyMember(index):
+        return {"MESSAGE": CustomMessageTask.REMOVED_PARTY_MEMBER, "INDEX": index}
     @staticmethod
-    def kickedFromParty():
-        return {"MESSAGE": CustomMessageTask.KICKED_FROM_PARTY}
+    def decrementPartyMemberIndex(start, end):
+        return {"MESSAGE": CustomMessageTask.DECREMENT_PARTY_MEMBER_INDEX, "START": start, "END": end}
+    @staticmethod
+    def newLeader(oldIndex, newIndex):
+        return {"MESSAGE": CustomMessageTask.NEW_LEADER, "OLD": oldIndex, "NEW": newIndex}
     @staticmethod
     def partyCode(code):
         return {"MESSAGE": CustomMessageTask.PARTY_CODE, "CODE": code}
