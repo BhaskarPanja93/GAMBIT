@@ -38,7 +38,7 @@ class Party:
         if newPlayer.viewer is not None:
             for playerIndex in range(len(self.players)):
                 player = self.players[playerIndex]
-                player.viewer.sendCustomMessage(CustomMessages.addedPartyMember(newPlayerIndex, newPlayer.displayPFP(), newPlayer.displayUserName(), newPlayer.displayLevel(), newPlayer.displayRank()))
+                newPlayer.viewer.sendCustomMessage(CustomMessages.addedPartyMember(playerIndex, player.displayPFP(), player.displayUserName(), player.displayLevel(), player.displayRank()))
     def __notifySelfLeft(self, oldPlayerIndex:int):
         oldPlayer = self.players[oldPlayerIndex]
         if oldPlayer.viewer is not None:

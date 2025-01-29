@@ -122,18 +122,26 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
     viewerObj.privateData.newPage(Pages.LOBBY)
     if viewerObj.privateData.party is None:
         viewerObj.privateData.party = createParty()
-        viewerObj.privateData.party.addPlayer(viewerObj.privateData.player)
         players = []
         count = 0
-        while True:
-            count+=1
-            new = Player(None, str(count))
-            players.append(new)
-            viewerObj.privateData.party.addPlayer(new)
-            sleep(1)
-            if len(players) == 2:
-                viewerObj.privateData.party.removePlayer(players.pop(0))
-                sleep(1)
+        #while True:
+        count+=1
+        new1 = Player(None, str(count))
+        count+=1
+        new2 = Player(None, str(count))
+        players.append(new1)
+        players.append(new2)
+        viewerObj.privateData.party.addPlayer(new1)
+        viewerObj.privateData.party.addPlayer(new2)
+        viewerObj.privateData.party.addPlayer(viewerObj.privateData.player)
+        # sleep(1)
+        # viewerObj.privateData.party.removePlayer(new2)
+        # sleep(1)
+        # viewerObj.privateData.party.removePlayer(new1)
+            # sleep(1)
+            # if len(players) == 2:
+            #     viewerObj.privateData.party.removePlayer(players.pop(0))
+            #     sleep(1)
 
 
 def renderPartyJoined(viewerObj: DynamicWebsite.Viewer):
