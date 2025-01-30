@@ -276,20 +276,31 @@
     </div>
 
     <script>
-        document.getElementById("send-btn").addEventListener("click", function() {
-            let input = document.getElementById("chat-input");
-            let message = input.value.trim();
-            if (message) {
-                let chatbox = document.getElementById("chatbox");
-                let newMessage = document.createElement("div");
-                newMessage.classList.add("flex", "items-start", "space-x-2", "text-black", "rounded-lg", "px-2");
-                newMessage.innerHTML = `<span class='text-sm font-semibold text-white'>You:</span><p class="text-sm font-semibold text-white/50">${message}</p>`;
-                chatbox.appendChild(newMessage);
-                input.value = "";
-                chatbox.scrollTop = chatbox.scrollHeight;
-            }
-        });
-    </script>
+    function sendMessage() {
+        let input = document.getElementById("chat-input");
+        let message = input.value.trim();
+        if (message) {
+            let chatbox = document.getElementById("chatbox");
+            let newMessage = document.createElement("div");
+            newMessage.classList.add("flex", "items-start", "space-x-2", "text-black", "rounded-lg", "px-2");
+            newMessage.innerHTML = `<span class='text-sm font-semibold text-white'>You:</span><p class="text-sm font-semibold text-white/50">${message}</p>`;
+            chatbox.appendChild(newMessage);
+            input.value = "";
+            chatbox.scrollTop = chatbox.scrollHeight;
+        }
+    }
+
+    // Send message on button click
+    document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+    // Send message on Enter key press
+    document.getElementById("chat-input").addEventListener("keydown", function(event) {
+        if (event.key === "Enter") {
+            event.preventDefault(); // Prevents form submission behavior
+            sendMessage();
+        }
+    });
+</script>
 
 <!--<div id="chat-container" class="fixed bottom-20 right-14 mb-2 mr-4 w-20 h-12 bg-blue-500 text-white rounded-md overflow-hidden transition-all duration-300 hover:w-80 hover:h-80 hover:rounded-lg shadow-lg">-->
 <!--    &lt;!&ndash; Button &ndash;&gt;-->
