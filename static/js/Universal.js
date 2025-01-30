@@ -2,6 +2,7 @@ ConnmanagerWS.addEventListener("message", (data) => WSListener(data), false);
 
 
 const CUSTOM_MESSAGE_TASKS = {
+    REFRESH: "REFRESH",
     FRIEND_REMOVED: 'FRIEND_REMOVED',
     FRIEND_ADDED: 'FRIEND_ADDED',
     PAGE_CHANGED: 'PAGE_CHANGED',
@@ -17,7 +18,8 @@ const CUSTOM_MESSAGE_TASKS = {
 
 function WSListener(data) {
     console.log(data)
-    if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_REMOVED) removeFriend(data["CONNECTION_ID"])
+    if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.REFRESH) location.reload()
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_REMOVED) removeFriend(data["CONNECTION_ID"])
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_ADDED) addFriend(data["CONNECTION_ID"], data["FRIEND_DATA"])
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.ADDED_PARTY_MEMBER) addedPartyMember(data)
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.REMOVED_PARTY_MEMBER) removedPartyMember(data)
@@ -25,6 +27,7 @@ function WSListener(data) {
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.NEW_LEADER) newLeader(data)
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.PARTY_CODE) receivedPartyCode(data)
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.PAGE_CHANGED) window["currentPage"] = data["PAGE"]
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.CHAT) receiveText(data)
 }
 
 
@@ -45,5 +48,8 @@ function waitForElementPresence(selector, callback) {
     observer.observe(document.body, { childList: true, subtree: true });
 }
 
-
+waitForElementPresence("#logout-button", (button)=>{
+    console.log("BUTTONNNNN")
+    button.onclick = () => sendCustomMessage({PURPOSE: "LOGOUT"})
+})
 

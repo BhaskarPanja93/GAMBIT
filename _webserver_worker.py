@@ -45,7 +45,7 @@ def __renderAuthStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.POST_AUTH]:
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthStructure), DivID.changingPage, UpdateMethods.update)
         if not viewerObj.privateData.isScriptRendered(FileNames.JS.Auth):
-            viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Auth)+"</script>", DivID.scripts, UpdateMethods.append)
+            viewerObj.updateHTML(f"<script id='{FileNames.JS.Auth}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Auth)+"</script>", DivID.scripts, UpdateMethods.append)
         sleep(0.1)
         renderGhost3D(viewerObj)
 
@@ -85,7 +85,7 @@ def renderFriends(viewerObj: DynamicWebsite.Viewer):
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsStructure), DivID.friendsStructure, UpdateMethods.update)
         #sleep(0.1)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Friends):
-        viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Friends)+"</script>", DivID.scripts, UpdateMethods.append)
+        viewerObj.updateHTML(f"<script id='{FileNames.JS.Friends}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Friends)+"</script>", DivID.scripts, UpdateMethods.append)
 
     # friendList = SQLconn.execute(f"""SELECT
     # CASE
@@ -155,6 +155,7 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
 def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.ChatFull):
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.ChatFull), DivID.chatBox, UpdateMethods.update)
+        viewerObj.updateHTML(f"<script id='{FileNames.JS.Chat}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Chat)+"</script>", DivID.scripts, UpdateMethods.append)
 
 
 ##############################################################################################################################
@@ -175,7 +176,7 @@ def renderNavbar(viewerObj: DynamicWebsite.Viewer):
 
 def renderLogoutButton(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.LogoutButton):
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LogoutButton), DivID.logoutButton, UpdateMethods.update)
+        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LogoutButton), DivID.logoutContainer, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -185,16 +186,16 @@ def renderLogoutButton(viewerObj: DynamicWebsite.Viewer):
 def renderPreAuthUniversal(viewerObj: DynamicWebsite.Viewer):
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer), DivID.root, UpdateMethods.update)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.PreAuthUniversal):
-        viewerObj.updateHTML("<script>" + cachedHTMLElements.fetchStaticJS(FileNames.JS.PreAuthUniversal) + "</script>", DivID.scripts, UpdateMethods.append)
+        viewerObj.updateHTML(f"<script id='{FileNames.JS.PreAuthUniversal}'>" + cachedHTMLElements.fetchStaticJS(FileNames.JS.PreAuthUniversal) + "</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Trail):
-        viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)+"</script>", DivID.scripts, UpdateMethods.append)
+        viewerObj.updateHTML(f"<script id='{FileNames.JS.Trail}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)+"</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Music):
-        viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)+"</script>", DivID.scripts, UpdateMethods.append)
+        viewerObj.updateHTML(f"<script id='{FileNames.JS.Music}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)+"</script>", DivID.scripts, UpdateMethods.append)
 
 
 def renderPostAuthUniversal(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Lobby):
-        viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Lobby)+"</script>", DivID.scripts, UpdateMethods.append)
+        viewerObj.updateHTML(f"<script id='{FileNames.JS.Lobby}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Lobby)+"</script>", DivID.scripts, UpdateMethods.append)
 
 
 ##############################################################################################################################
@@ -208,8 +209,8 @@ def renderFirstPage(viewerObj: DynamicWebsite.Viewer, isAuthenticated: bool):
     if isAuthenticated:
         renderPostAuthUniversal(viewerObj)
         renderLogoutButton(viewerObj)
-        renderChatStructure(viewerObj)
         renderFriends(viewerObj)
+        renderChatStructure(viewerObj)
         if viewerObj.privateData.expectedPostAuthPage == Pages.LOBBY: renderLobby(viewerObj)
         #elif viewerObj.privateData.expectedPostAuthPage == Pages.marketPlace: renderMarketPlace(viewerObj)
         else: renderAuthPost(viewerObj)
@@ -224,6 +225,10 @@ def renderFirstPage(viewerObj: DynamicWebsite.Viewer, isAuthenticated: bool):
 def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSecure:bool):
     if "PURPOSE" not in form: return rejectForm(form, "Lacks Purpose")
     purpose = form.pop("PURPOSE")
+    if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
+        if purpose == "LOGOUT":
+            logoutDevice(viewerObj)
+            return viewerObj.sendCustomMessage(CustomMessages.refreshBrowser())
     if viewerObj.privateData.currentPage() == Pages.AUTH:
         if purpose == "LOGIN" and isSecure:
             identifier = form.get("identifier")
@@ -308,7 +313,7 @@ def checkPasswordStrength(password:str):
 
 
 def logoutDevice(viewerObj: DynamicWebsite.Viewer):
-    SQLconn.execute(f"DELETE FROM {Database.USER_DEVICES.TABLE_NAME} WHERE {Database.USER_DEVICES.VIEWER_ID}=?", [viewerObj.viewerID])
+    SQLconn.execute(f"DELETE FROM {Database.USER_DEVICES.TABLE_NAME} WHERE {Database.USER_DEVICES.VIEWER_ID}=? LIMIT 1", [viewerObj.viewerID])
 
 
 def loginDevice(viewerObj: DynamicWebsite.Viewer):

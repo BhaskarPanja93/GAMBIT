@@ -2,6 +2,7 @@ from OtherClasses.Player import Player
 
 
 class CustomMessageTask:
+    REFRESH = "REFRESH"
     FRIEND_REMOVED = 'FRIEND_REMOVED'
     FRIEND_ADDED = 'FRIEND_ADDED'
     PAGE_CHANGED = 'PAGE_CHANGED'
@@ -15,6 +16,9 @@ class CustomMessageTask:
 
 
 class CustomMessages:
+    @staticmethod
+    def refreshBrowser():
+        return {"MESSAGE": CustomMessageTask.REFRESH}
     @staticmethod
     def pageChanged(newPage):
         return {"MESSAGE": CustomMessageTask.PAGE_CHANGED, "PAGE": newPage}

@@ -3,6 +3,7 @@ class FileNames:
         PreAuthUniversal = "Universal.js"
         Friends = "Friends.js"
         Auth = "Auth.js"
+        Chat = "Chat.js"
         Lobby = "Lobby.js"
         Music = "Music.js"
         Trail = "Trail.js"

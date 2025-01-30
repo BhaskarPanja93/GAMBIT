@@ -1,7 +1,6 @@
-const friendsPage = document.getElementById("friends-page");
 const friendElements = document.getElementsByClassName("friend-element")
 const friendDetails = document.getElementsByClassName("friend-details")
-
+const friendConnections = new Set()
 
 const FRIEND_STATES = {
     AVAILABLE: "Available",
@@ -36,12 +35,13 @@ function removeFriend(connectionID) {
     let friendDiv = document.getElementById(connectionID)
     if (friendDiv !== null) {
         friendDiv.remove()
+        friendConnections.delete(connectionID)
     }
 }
 
 
 function addFriend(connectionID, friendData) {
-    // TODO:
+    friendConnections.add(connectionID)
 }
 
 function inviteFriend(connectionID) {
@@ -52,35 +52,38 @@ function joinFriend(connectionID) {
 
 }
 
-friendsPage.onmouseleave = function() {
-    Array.prototype.filter.call(
-        friendElements,
-        (friendElement) => {
-            friendElement.classList.remove("w-48")
-            friendElement.classList.add("w-16")
-        },
-    );
-    Array.prototype.filter.call(
-        friendDetails,
-        (friendDetail) => {
-            friendDetail.classList.add("hidden")
-        },
-    );
-}
+waitForElementPresence("#friends-page", (friendsPage)=>{
+    friendsPage.onmouseleave = function() {
+        Array.prototype.filter.call(
+            friendElements,
+            (friendElement) => {
+                friendElement.classList.remove("w-48")
+                friendElement.classList.add("w-16")
+            },
+        );
+        Array.prototype.filter.call(
+            friendDetails,
+            (friendDetail) => {
+                friendDetail.classList.add("hidden")
+            },
+        );
+    }
+})
 
-
-friendsPage.onmouseenter = function() {
-    Array.prototype.filter.call(
-        friendElements,
-        (friendElement) => {
-            friendElement.classList.add("w-48")
-            friendElement.classList.remove("w-16")
-        },
-    );
-    Array.prototype.filter.call(
-        friendDetails,
-        (friendDetail) => {
-            friendDetail.classList.remove("hidden")
-        },
-    );
-}
+waitForElementPresence("#friends-page", (friendsPage)=> {
+    friendsPage.onmouseenter = function () {
+        Array.prototype.filter.call(
+            friendElements,
+            (friendElement) => {
+                friendElement.classList.add("w-48")
+                friendElement.classList.remove("w-16")
+            },
+        );
+        Array.prototype.filter.call(
+            friendDetails,
+            (friendDetail) => {
+                friendDetail.classList.remove("hidden")
+            },
+        );
+    }
+})
