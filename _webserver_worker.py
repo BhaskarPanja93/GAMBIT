@@ -19,7 +19,6 @@ from OtherClasses.DivIDs import DivID
 from OtherClasses.Pages import Pages
 from OtherClasses.Player import Player
 from OtherClasses.Party import Party
-from OtherClasses.Friend import Friend
 from OtherClasses.Routes import Routes
 from OtherClasses.CustomMessages import CustomMessages
 from OtherClasses.CommonFunctions import connectDB, WSGIRunner
@@ -43,10 +42,9 @@ def renderGhost3D(viewerObj: DynamicWebsite.Viewer):
 
 def __renderAuthStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.POST_AUTH]:
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthStructure), DivID.changingPage, UpdateMethods.update)
         if not viewerObj.privateData.isScriptRendered(FileNames.JS.Auth):
             viewerObj.updateHTML(f"<script id='{FileNames.JS.Auth}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Auth)+"</script>", DivID.scripts, UpdateMethods.append)
-        sleep(0.1)
+        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthStructure), DivID.changingPage, UpdateMethods.update)
         renderGhost3D(viewerObj)
 
 
@@ -81,11 +79,10 @@ def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderFriends(viewerObj: DynamicWebsite.Viewer):
-    if not viewerObj.privateData.isElementRendered(FileNames.HTML.FriendsStructure):
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsStructure), DivID.friendsStructure, UpdateMethods.update)
-        #sleep(0.1)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Friends):
         viewerObj.updateHTML(f"<script id='{FileNames.JS.Friends}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Friends)+"</script>", DivID.scripts, UpdateMethods.append)
+    if not viewerObj.privateData.isElementRendered(FileNames.HTML.FriendsStructure):
+        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsStructure), DivID.friendsStructure, UpdateMethods.update)
 
     # friendList = SQLconn.execute(f"""SELECT
     # CASE
@@ -95,11 +92,12 @@ def renderFriends(viewerObj: DynamicWebsite.Viewer):
     # FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userID, viewerObj.privateData.userID])
     others = []
     for _ in range(15):
-        #sleep(1)
+        sleep(1)
         other = Player(None, str(_))
-        friend = Friend(viewerObj.privateData.player, other)
-        others.append(friend)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendElement)).render(connectionID=friend.connectionID, PFP=other.displayPFP(), userName=other.displayUserName(), state=other.displayState()), DivID.onlineFriends, UpdateMethods.append)
+        others.append(other)
+        print(CustomMessages.friendAdded(other.displayUserName(), other.displayPFP(), other.displayState()))
+        viewerObj.sendCustomMessage(CustomMessages.friendAdded(other.displayUserName(), other.displayPFP(), other.displayState()))
+
     # for other in others:
     #     sleep(1)
     #     viewerObj.updateHTML("", other.connectionID, UpdateMethods.remove)
@@ -114,7 +112,8 @@ def __renderLobbyStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() != Pages.LOBBY:
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyStructure), DivID.changingPage, UpdateMethods.update)
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyFeatures), DivID.lobbyFeatures, UpdateMethods.update)
-        sleep(0.1)
+        viewerObj.privateData.newPage(Pages.LOBBY)
+        viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.POST_AUTH))
 
 
 def renderLobby(viewerObj: DynamicWebsite.Viewer):
@@ -154,8 +153,8 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
 
 def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.ChatFull):
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.ChatFull), DivID.chatBox, UpdateMethods.update)
         viewerObj.updateHTML(f"<script id='{FileNames.JS.Chat}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Chat)+"</script>", DivID.scripts, UpdateMethods.append)
+        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.ChatFull), DivID.chatBox, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -184,13 +183,13 @@ def renderLogoutButton(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderPreAuthUniversal(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer), DivID.root, UpdateMethods.update)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.PreAuthUniversal):
         viewerObj.updateHTML(f"<script id='{FileNames.JS.PreAuthUniversal}'>" + cachedHTMLElements.fetchStaticJS(FileNames.JS.PreAuthUniversal) + "</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Trail):
         viewerObj.updateHTML(f"<script id='{FileNames.JS.Trail}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)+"</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Music):
         viewerObj.updateHTML(f"<script id='{FileNames.JS.Music}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)+"</script>", DivID.scripts, UpdateMethods.append)
+    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer), DivID.root, UpdateMethods.update)
 
 
 def renderPostAuthUniversal(viewerObj: DynamicWebsite.Viewer):

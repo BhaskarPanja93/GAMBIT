@@ -23,11 +23,11 @@ class CustomMessages:
     def pageChanged(newPage):
         return {"MESSAGE": CustomMessageTask.PAGE_CHANGED, "PAGE": newPage}
     @staticmethod
-    def friendRemoved(connectionID):
-        return {"MESSAGE": CustomMessageTask.FRIEND_REMOVED, "CONNECTION_ID":connectionID}
+    def friendRemoved(username):
+        return {"MESSAGE": CustomMessageTask.FRIEND_REMOVED, "USERNAME":username}
     @staticmethod
-    def friendAdded():
-        return {"MESSAGE": CustomMessageTask.FRIEND_ADDED, "FRIEND_DATA": {}}
+    def friendAdded(username, pfp, state):
+        return {"MESSAGE": CustomMessageTask.FRIEND_ADDED, "FRIEND_DATA": {"USERNAME": username, "PFP": pfp, "STATE": state}}
     @staticmethod
     def addedPartyMember(index, player: Player):
         return {"MESSAGE": CustomMessageTask.ADDED_PARTY_MEMBER, "INDEX": index, "PFP":player.displayPFP(), "USERNAME": player.displayUserName(), "LEVEL": player.displayLevel(), "RANK": player.displayRank()}

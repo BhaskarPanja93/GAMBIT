@@ -1,32 +1,30 @@
-waitForElementPresence("#music-player", () => {
-    waitForElementPresence("#music-tray-categories", (allCategoriesDiv) => {
-        fetch("/music-categories").then((response) => {
-            response.json().then((streams) => {
-                knownStreams = streams
-                knownStreams.forEach((cat)=>{
-                    let _split = cat.split("_")
-                    let mainCat = _split[0]
-                    let subCat = _split[1]
-                    if (document.getElementById(mainCat + "-music-category") === null) {
-                        let mainCategoryDiv = document.createElement('div');
-                        let subCategoryDiv = document.createElement('div');
-                        mainCategoryDiv.className = "music-tray-category-grp py-1"
-                        mainCategoryDiv.id = mainCat + "-music-category";
-                        mainCategoryDiv.innerHTML = mainCat;
-                        mainCategoryDiv.style.color = "rgba(255, 255, 255, 0.4)"
-                        subCategoryDiv.className = "music-tray-sub-category-grp"
-                        subCategoryDiv.id = mainCat + "-music-subcategory"
-                        mainCategoryDiv.append(subCategoryDiv);
-                        allCategoriesDiv.appendChild(mainCategoryDiv);
-                    }
-                    let subCatButton = document.createElement('button');
-                    subCatButton.className = "music-tray-button-global music-tray-sub-category-button"
-                    subCatButton.id = cat
-                    subCatButton.innerHTML = subCat
-                    subCatButton.style.color = "rgba(255, 255, 255, 0.4)"
-                    subCatButton.onclick = () => {playMusicCategory(cat, mainCat).then()}
-                    document.getElementById(mainCat + "-music-subcategory").append(subCatButton);
-                })
+waitForElementPresence("#music-tray-categories", (allCategoriesDiv) => {
+    fetch("/music-categories").then((response) => {
+        response.json().then((streams) => {
+            knownStreams = streams
+            knownStreams.forEach((cat)=>{
+                let _split = cat.split("_")
+                let mainCat = _split[0]
+                let subCat = _split[1]
+                if (document.getElementById(mainCat + "-music-category") === null) {
+                    let mainCategoryDiv = document.createElement('div');
+                    let subCategoryDiv = document.createElement('div');
+                    mainCategoryDiv.className = "music-tray-category-grp py-1"
+                    mainCategoryDiv.id = mainCat + "-music-category";
+                    mainCategoryDiv.innerHTML = mainCat;
+                    mainCategoryDiv.style.color = "rgba(255, 255, 255, 0.4)"
+                    subCategoryDiv.className = "music-tray-sub-category-grp"
+                    subCategoryDiv.id = mainCat + "-music-subcategory"
+                    mainCategoryDiv.append(subCategoryDiv);
+                    allCategoriesDiv.appendChild(mainCategoryDiv);
+                }
+                let subCatButton = document.createElement('button');
+                subCatButton.className = "music-tray-button-global music-tray-sub-category-button"
+                subCatButton.id = cat
+                subCatButton.innerHTML = subCat
+                subCatButton.style.color = "rgba(255, 255, 255, 0.4)"
+                subCatButton.onclick = () => {playMusicCategory(cat, mainCat).then()}
+                document.getElementById(mainCat + "-music-subcategory").append(subCatButton);
             })
         })
     })
@@ -100,6 +98,7 @@ function openMusicTray() {
     if (document.getElementById('music-tray').classList.contains('collapsed')) {
         document.getElementById('music-tray').classList.toggle('collapsed');
         document.getElementById('music-tray-toggle-btn').querySelector('img').src = '/cd?type=image&name=music-tray-down.png';
+        if (typeof closeChatHistory !== "undefined") closeChatHistory()
         return true
     }
     return null

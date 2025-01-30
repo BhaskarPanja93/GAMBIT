@@ -296,7 +296,7 @@ class WSConnectionManager extends EventEmitter {
         processNextMessage = async() => {
             if (this.isProcessing || this.messages.length === 0) return
             this.isProcessing = true;
-            await this.processReceived(this.messages.shift())
+            this.processReceived(this.messages.shift())
             this.isProcessing = false;
             await this.processNextMessage()
         }

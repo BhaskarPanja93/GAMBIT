@@ -1,15 +1,16 @@
 const MESSAGE_CATEGORY = {
-    PARTY: "PARTY",
-    TEAM: "TEAM",
-    PLAYER: "PLAYER",
+    PARTY: "Party",
+    TEAM: "Team",
+    PLAYER: "Player",
     YOU: "You",
-    SYSTEM: "SYSTEM",
+    SYSTEM: "System",
 }
 
 function openChatHistory() {
     waitForElementPresence("#chat-history", (chatHistory)=>{
         chatHistory.style.display = "block"
     })
+    if (typeof closeMusicTray !== "undefined") closeMusicTray()
 }
 
 function closeChatHistory() {
@@ -78,18 +79,26 @@ function sendTriggered() {
 }
 
 function changeChatCategory(category) {
-    let realCategory = category
+    let probablyUsername = category
     category = category.toUpperCase()
-    // MAKE INPUT COLOUR CHANGE FOR DIFFERENT PEOPLE
-    if (category===MESSAGE_CATEGORY.TEAM) {
+    if (category===MESSAGE_CATEGORY.TEAM.toUpperCase()) {
         selectedChatCategory = category
+        waitForElementPresence("#chat-sending-to", (element)=>{
+            element.innerText = `[Team]:`
+        })
         return true
-    } else if (category===MESSAGE_CATEGORY.PARTY) {
+    } else if (category===MESSAGE_CATEGORY.PARTY.toUpperCase()) {
         selectedChatCategory = category
+        waitForElementPresence("#chat-sending-to", (element)=>{
+            element.innerText = `[Party]:`
+        })
         return true
-    } else if (friendConnections.has(realCategory)) {
+    } else if (allFriendUsernames.has(probablyUsername)) {
         selectedChatCategory = MESSAGE_CATEGORY.PLAYER
-        selectedReceiver = realCategory
+        selectedReceiver = probablyUsername
+        waitForElementPresence("#chat-sending-to", (element)=>{
+            element.innerText = `[${probablyUsername}]:`
+        })
         return true
     }
     return false
