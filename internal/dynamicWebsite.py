@@ -469,6 +469,7 @@ class DynamicWebsite:
 
 
         def sendTurbo(self, stream, highPriority: bool = True):
+            if self.currentState == DynamicWebsite.VIEWER_STATES.DEAD: return
             WSObj = self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE) if highPriority and self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE) else self.currentWS.get(DynamicWebsite.WSPurposes.LARGE)
             if WSObj is None:
                 Imports.sleep(1)
@@ -485,6 +486,7 @@ class DynamicWebsite:
 
 
         def sendCustomMessage(self, data: Imports.Any, highPriority: bool = True):
+            if self.currentState == DynamicWebsite.VIEWER_STATES.DEAD: return
             WSObj = self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE) if highPriority and self.currentWS.get(DynamicWebsite.WSPurposes.RESPONSIVE) else self.currentWS.get(DynamicWebsite.WSPurposes.LARGE)
             if WSObj is None:
                 Imports.sleep(1)
@@ -582,7 +584,6 @@ class DynamicWebsite:
         self.stringGenerator = Imports.RandomisedString()
 
         self.baseApp = Imports.Flask(self.appName)
-        self.visitorLeftCallback = visitorLeftCallback
         self.baseApp.config.setdefault('TURBO_WEBSOCKET_ROUTE', actionsRoute)
         self.sock = Imports.Sock(self.baseApp)
 
@@ -664,19 +665,20 @@ class DynamicWebsite:
 
     def makeViewerDying(self, viewer: DynamicWebsite.Viewer, timeToWait: int, triggerViewerLeftCallback: bool = True):
         for countDown in range(timeToWait, 0, -1):
-            Imports.sleep(1)
-            if viewer.currentState != self.VIEWER_STATES.DYING:
+            if viewer.currentState not in [self.VIEWER_STATES.DYING, self.VIEWER_STATES.INCOMPLETE]:
                 return
+            Imports.sleep(1)
         self.makeViewerDead(viewer, triggerViewerLeftCallback)
 
 
     def makeViewerDead(self, viewer: DynamicWebsite.Viewer, triggerViewerLeftCallback: bool = True):
         viewer.currentState = self.VIEWER_STATES.DEAD
-        if viewer.cookie.instanceID not in self.inCompleteViewers:
+        if triggerViewerLeftCallback:
+            Imports.Thread(target=self.visitorLeftCallback, args=(viewer,)).start()
+        if viewer.cookie.instanceID in self.inCompleteViewers:
             del self.inCompleteViewers[viewer.cookie.instanceID]
-        if viewer.cookie.instanceID not in self.completeViewers:
+        if viewer.cookie.instanceID in self.completeViewers:
             del self.completeViewers[viewer.cookie.instanceID]
-        if triggerViewerLeftCallback: self.visitorLeftCallback(viewer)
 
 
     def createFile(self, viewer: DynamicWebsite.Viewer, fileID):
@@ -770,20 +772,17 @@ class DynamicWebsite:
                     except (BrokenPipeError, Imports.ConnectionClosed):
                         WSObj.isActive = False
                         viewerObj.currentWS[WSObj.purpose] = None
-                        futureCSRF = viewerObj.futureWS.get(WSObj.purpose)
-                        if futureCSRF is None:
-                            for _WSObj in viewerObj.currentWS.values():
-                                if _WSObj.isActive: # Has active WS
-                                    self.makeViewerInComplete(viewerObj)
-                                    break
-                            else: # No active WS
-                                self.makeViewerDying(viewerObj, 2) ## Viewer left callback is called 2 seconds after he actually leaves (giving them a scope to reconnect in cases of network disconnections)
+                        for _WSObj in viewerObj.currentWS.values():
+                            if _WSObj is not None and _WSObj.isActive: # Has active WS
+                                self.makeViewerInComplete(viewerObj)
+                                break
+                        else: # No active WS
+                            self.makeViewerDying(viewerObj, 2) ## Viewer left callback is called 2 seconds after he actually leaves (giving them a scope to reconnect in cases of network disconnections)
                         break
                     if receivedBytes is None and not CSRFVerified: break # WS couldn't prove authenticity in specified time
                     if receivedBytes:
                         dictReceived:dict = Imports.loads(receivedBytes)
                         reason = dictReceived.get("REASON")
-
                         if WSObj.key is None: # Should be the first data from WS
                             if reason == self.WS_DATA_REASONS.IN.VERIFY_CSRF:
                                 if viewerObj.currentWS.get(WSObj.purpose) is None and viewerObj.futureWS.get(WSObj.purpose) == dictReceived["CSRF"] and viewerObj.futureWS.get(WSObj.purpose): # Viewer has pending CSRF of same purpose and is valid
@@ -805,10 +804,9 @@ class DynamicWebsite:
                                 reason = dictReceived.get("REASON")
                             if reason == self.WS_DATA_REASONS.IN.READY:
                                 if WSObj.key:
-                                    rawWS.send(Imports.dumps(WSObj.encrypt(Imports.dumps({"FUTURE-CSRF": self.createWSToken(viewerObj, WSObj.purpose, True)}), self.stringGenerator.AlphaNumeric(12,12).encode())))
+                                    rawWS.send(Imports.dumps(WSObj.encrypt(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.FUTURE_CSRF, "CSRF": self.createWSToken(viewerObj, WSObj.purpose, True)}), self.stringGenerator.AlphaNumeric(12,12).encode())))
                                 else:
-                                    rawWS.send(Imports.dumps({"FUTURE-CSRF": self.createWSToken(viewerObj, WSObj.purpose, True)}))
-
+                                    rawWS.send(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.FUTURE_CSRF, "CSRF": self.createWSToken(viewerObj, WSObj.purpose, True)}))
                                 WSObj.isActive = True
                                 for _WSObj in viewerObj.currentWS.values():
                                     if _WSObj is None or WSObj.isActive is None: # Has incomplete CSRF

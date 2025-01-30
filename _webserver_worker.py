@@ -120,28 +120,7 @@ def __renderLobbyStructure(viewerObj: DynamicWebsite.Viewer):
 def renderLobby(viewerObj: DynamicWebsite.Viewer):
     __renderLobbyStructure(viewerObj)
     viewerObj.privateData.newPage(Pages.LOBBY)
-    if viewerObj.privateData.party is None:
-        viewerObj.privateData.party = createParty()
-        players = []
-        count = 0
-        #while True:
-        count+=1
-        new1 = Player(None, str(count))
-        count+=1
-        new2 = Player(None, str(count))
-        players.append(new1)
-        players.append(new2)
-        viewerObj.privateData.party.addPlayer(new1)
-        viewerObj.privateData.party.addPlayer(new2)
-        viewerObj.privateData.party.addPlayer(viewerObj.privateData.player)
-        # sleep(1)
-        # viewerObj.privateData.party.removePlayer(new2)
-        # sleep(1)
-        # viewerObj.privateData.party.removePlayer(new1)
-            # sleep(1)
-            # if len(players) == 2:
-            #     viewerObj.privateData.party.removePlayer(players.pop(0))
-            #     sleep(1)
+    viewerObj.sendCustomMessage(CustomMessages.addedPartyMember(0, viewerObj.privateData.player))
 
 
 def renderPartyJoined(viewerObj: DynamicWebsite.Viewer):
@@ -211,8 +190,6 @@ def renderPreAuthUniversal(viewerObj: DynamicWebsite.Viewer):
         viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)+"</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Music):
         viewerObj.updateHTML("<script>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)+"</script>", DivID.scripts, UpdateMethods.append)
-    #sleep(0.1)
-
 
 
 def renderPostAuthUniversal(viewerObj: DynamicWebsite.Viewer):
@@ -279,8 +256,10 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             return renderAuthForms(viewerObj)
     elif viewerObj.privateData.currentPage() == Pages.LOBBY:
         if purpose == "PARTY_CODE":
-            if viewerObj.privateData.party is not None:
-                return viewerObj.privateData.party.generatePartyCode()
+            if viewerObj.privateData.party is None:
+                viewerObj.privateData.party = createParty()
+                viewerObj.privateData.party.addPlayer(viewerObj.privateData.player)
+            return viewerObj.privateData.party.generatePartyCode()
     return rejectForm(form, "Unknown Purpose")
 
 
@@ -300,6 +279,9 @@ def customWSMessageCallback(viewerObj: DynamicWebsite.Viewer, message: Any):
 
 def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Left: ", viewerObj.viewerID)
+    print(viewerObj.privateData.party)
+    if viewerObj.privateData.party is not None:
+        viewerObj.privateData.party.removePlayer(viewerObj.privateData.player)
 
 
 def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
@@ -381,14 +363,14 @@ def autoLogin(viewerObj: DynamicWebsite.Viewer):
 
 
 def closeParty(party: Party):
+    print(f"CLOSING PARTY {party.partyID}")
     if party.partyID in partyIDs: del partyIDs[party.partyID]
     if party.partyCode in partyCodes: del partyCodes[party.partyCode]
-    print("NEW",partyCodes, partyIDs, sep='\n')
 
 
 def onPartyCodeGenerated(party: Party):
     partyCodes[party.partyCode] = party
-    print("PARTYCODE",partyCodes, partyIDs, sep='\n')
+    print(f"GEN PARTY CODE {partyCodes=} {partyIDs=}", sep='\n')
 
 
 def createParty():
@@ -397,7 +379,7 @@ def createParty():
     party.onPartyCodeCreated = onPartyCodeGenerated
     party.onPartyClosed = closeParty
     party.onKick = renderLobby
-    print("NEW",partyCodes, partyIDs, sep='\n')
+    print(f"NEW PARTY {partyCodes=} {partyIDs=}", sep='\n')
     return party
 
 

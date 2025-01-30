@@ -1,3 +1,6 @@
+from OtherClasses.Player import Player
+
+
 class CustomMessageTask:
     FRIEND_REMOVED = 'FRIEND_REMOVED'
     FRIEND_ADDED = 'FRIEND_ADDED'
@@ -22,8 +25,8 @@ class CustomMessages:
     def friendAdded():
         return {"MESSAGE": CustomMessageTask.FRIEND_ADDED, "FRIEND_DATA": {}}
     @staticmethod
-    def addedPartyMember(index, PFP, username, level, rank):
-        return {"MESSAGE": CustomMessageTask.ADDED_PARTY_MEMBER, "INDEX": index, "PFP":PFP, "USERNAME": username, "LEVEL": level, "RANK": rank}
+    def addedPartyMember(index, player: Player):
+        return {"MESSAGE": CustomMessageTask.ADDED_PARTY_MEMBER, "INDEX": index, "PFP":player.displayPFP(), "USERNAME": player.displayUserName(), "LEVEL": player.displayLevel(), "RANK": player.displayRank()}
     @staticmethod
     def removedPartyMember(index):
         return {"MESSAGE": CustomMessageTask.REMOVED_PARTY_MEMBER, "INDEX": index}
@@ -37,5 +40,5 @@ class CustomMessages:
     def partyCode(code):
         return {"MESSAGE": CustomMessageTask.PARTY_CODE, "CODE": code}
     @staticmethod
-    def chatMessage(sender, text):
-        return {"MESSAGE": CustomMessageTask.CHAT, "SENDER": sender, "TEXT": text}
+    def chatMessage(category, sender, text):
+        return {"MESSAGE": CustomMessageTask.CHAT, "CATEGORY":category, "SENDER": sender, "TEXT": text}

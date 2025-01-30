@@ -140,7 +140,8 @@ class WSConnectionManager extends EventEmitter {
     handleClosedWS(WSObj) {
         if (this.collectionWS[WSObj.purpose] !== undefined && this.stopOperation === false) {
             delete this.collectionWS[WSObj.purpose]
-            if (WSObj.futureCSRF !== null) this.createNewWS(WSObj.purpose, WSObj.futureCSRF)
+            if (WSObj.futureCSRF !== null)
+                this.createNewWS(WSObj.purpose, WSObj.futureCSRF).then()
         }
     }
 
@@ -252,7 +253,7 @@ class WSConnectionManager extends EventEmitter {
             this.messages = []
             this.isProcessing = false
             this.futureCSRF = null
-            this.key = (window.crypto.subtle !== undefined) && false
+            this.key = (window.crypto.subtle !== undefined)
             this.clientKeyPair = null
             this.rawWS = new WebSocket(`ws${location.protocol.substring(4)}//${location.host}/?WS_PURPOSE=${this.purpose}`)
         }
@@ -304,7 +305,6 @@ class WSConnectionManager extends EventEmitter {
             let receivedDict = await JSON.parse(data)
             if (this.key !== false && this.key !== true) receivedDict = await JSON.parse(await this.decrypt(receivedDict["eB64"], receivedDict["ivB64"], receivedDict["tagB64"]))
             let reason = receivedDict["REASON"]
-
             if (reason === WS_DATA_REASONS.IN.CSRF_ACCEPTED) {
                 if (this.key === true) await this.generateSharedKey(receivedDict["SERVER-KEY"])
                 await this.sendWS(JSON.stringify({REASON: WS_DATA_REASONS.OUT.READY}))

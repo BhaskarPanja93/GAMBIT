@@ -1,134 +1,67 @@
-<div id="chat-container" class="fixed bottom-20 right-14 mb-2 mr-4 w-20 h-12 bg-white/30 text-white rounded-md overflow-hidden transition-all duration-300 hover:w-80 hover:h-80 hover:rounded-lg shadow-lg z-50">
-    <!-- Button -->
-    <div id="chat-header" class="flex items-center justify-center w-full h-12 cursor-pointer hover:cursor-default">
-        <div class="flex items-center justify-center">
-            <div id="plus-icon" class="font-bold text-align flex items-center">+1</div>
-
+<div id="chat-container" class="fixed bottom-20 right-14 mb-2 mr-4 bg-gradient-to-t from-transparent to-gray-700/70 text-white z-50 p-2 rounded-lg shadow-lg w-80">
+    <div id="chat-history" style="display: block" class="hidden p-2 h-[14rem] overflow-y-auto backdrop-blur-md space-y-2 rounded-lg shadow-md">
+       <!--
+        <div class="flex items-start space-x-2 text-gray-700 rounded-lg py-1 px-2">
+            <span class="text-sm font-semibold text-cyan-300">You:</span>
+            <p class="text-sm text-gray-300">Hello! How can I assist you today?</p>
         </div>
+        <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2">
+            <span class="text-sm font-semibold text-blue-500">Player1:</span>
+            <p class="text-sm text-gray-300">Hello! How can I assist you today?</p>
+        </div>
+        <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2 bg-white/10">
+            <span class="text-sm font-bold color-change">ADMIN:</span>
+            <p class="text-sm font-semibold italic color-change">Hello! How can I assist you today?</p>
+        </div>
+        <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2">
+            <span class="text-sm font-semibold text-green-500">Player2:</span>
+            <p class="text-sm text-gray-300">
+                Hello! How can I assist you today?
+            </p>
+        </div>
+        <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2">
+            <span class="text-sm font-semibold text-yellow-500">Player3:</span>
+            <p class="text-sm text-gray-300">
+                Hello! How can I assist you today?
+            </p>
+        </div>
+        <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2">
+            <span class="text-sm font-semibold text-blue-500">Player4:</span>
+            <p class="text-sm text-gray-300">
+                Hello! How can I assist you today?
+            </p>
+        </div>
+        <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2">
+            <span class="text-sm font-semibold text-purple-500">Player5:</span>
+            <p class="text-sm text-gray-300">
+                Hello! How can I assist you today?
+            </p>
+        </div>
+       -->
     </div>
 
-    <!-- Chat Content -->
-    <div id="chatbox-content" class="hidden absolute left-0 w-full h-[calc(100%-3rem)] bg-blue-200 rounded-lg shadow-lg">
 
-
-        <!-- Chat Messages -->
-        <div id="chatbox" class="p-3 h-[14rem] overflow-y-auto backdrop-blur-md space-y-1">
-            <!-- All types of messages -->
-            <div class="flex items-start space-x-1 text-black rounded-lg px-2">
-                <span class="text-sm font-semibold text-gray-500 ">You:</span>
-                <p>
-                    Hello! How can I assist you today?
-                </p>
-            </div>
-            <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2">
-                <span class="text-sm font-semibold text-blue-500">Player1:</span>
-                <p class="text-sm font-semibold text-gray-500">
-                    Hello! How can I assist you today?
-                </p>
-            </div>
-            <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2 bg-gray-100">
-                <span class="text-sm font-bold ">ADMIN:</span>
-                <p class="text-sm font-semibold italic text-black">
-                    Hello! How can I assist you today?
-                </p>
-            </div>
-
-            <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2">
-                <span class="text-sm font-semibold text-green-500">Player2:</span>
-                <p class="text-sm font-semibold text-gray-500">
-                    Hello! How can I assist you today?
-                </p>
-            </div>
-            <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2">
-                <span class="text-sm font-semibold text-yellow-500">Player3:</span>
-                <p class="text-sm font-semibold text-gray-500">
-                    Hello! How can I assist you today?
-                </p>
-            </div>
-            <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2">
-                <span class="text-sm font-semibold text-blue-500">Player4:</span>
-                <p class="text-sm font-semibold text-gray-500">
-                    Hello! How can I assist you today?
-                </p>
-            </div>
-            <div class="flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2">
-                <span class="text-sm font-semibold text-blue-500">Player5:</span>
-                <p class="text-sm font-semibold text-gray-500">
-                    Hello! How can I assist you today?
-                </p>
-            </div>
-
-        </div>
-
-
-        <!-- Input Area -->
-        <div class="p-2 bg-blue-200 bg-opacity-75 flex items-center space-x-2 backdrop-blur-md">
-            <input id="user-input" type="text" placeholder="Type a message" class="w-full px-3 py-1 border rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-            <button id="send-button" class="bg-blue-500 text-white px-3 py-1 rounded-lg hover:bg-blue-600 transition duration-300">
-                Send
-            </button>
-        </div>
+    <div class="flex items-center rounded-lg mt-2">
+        <input id="chat-input" type="text" placeholder="Type a message..." class="bg-transparent flex-1 p-1 text-white rounded-md outline-none">
+        <button id="send-btn" class="ml-2">
+            <img src="/cd?type=image&name=send-button.png" alt="Send" class="w-4 h-4">
+        </button>
     </div>
+
 </div>
 
 <script>
-    const chatContainer = document.getElementById("chat-container");
-    const chatboxContent = document.getElementById("chatbox-content");
-    const userInput = document.getElementById("user-input");
-    const sendButton = document.getElementById("send-button");
-    const chatbox = document.getElementById("chatbox");
-    const plusIcon = document.getElementById("plus-icon");
-    const chatTitle = document.getElementById("chat-title");
-
-    // Show chatbox content and toggle icon/title on hover
-    chatContainer.addEventListener("mouseenter", () => {
-        chatboxContent.classList.remove("hidden");
-        plusIcon.classList.add("hidden");
-        //chatTitle.classList.remove("hidden");
-    });
-
-    chatContainer.addEventListener("mouseleave", () => {
-        //chatboxContent.classList.add("hidden");
-        //plusIcon.classList.remove("hidden");
-        //chatTitle.classList.add("hidden");
-    });
-
-    // Add message to chat
-    function addMessage(message, isUser = false) {
-        const messageElement = document.createElement("div");
-        messageElement.classList.add(
-            "max-w-[80%]",
-            isUser ? "ml-auto" : "mr-auto",
-            "rounded-lg",
-            "py-1",
-            "px-3",
-            isUser ? "bg-blue-500" : "bg-white bg-opacity-75",
-            isUser ? "text-white" : "text-gray-700"
-        );
-        messageElement.textContent = message;
-        chatbox.appendChild(messageElement);
-        chatbox.scrollTop = chatbox.scrollHeight;
-    }
-
-    // Send message
-    function sendMessage() {
-        const message = userInput.value.trim();
+    document.getElementById("send-btn").addEventListener("click", function() {
+        let input = document.getElementById("chat-input");
+        let message = input.value.trim();
         if (message) {
-            addMessage(message, true);
-            userInput.value = "";
-            // Simulate bot response
-            setTimeout(() => {
-                addMessage("This is a response from the chatbot.");
-            }, 500);
-        }
-    }
-
-    // Event listeners for sending messages
-    sendButton.addEventListener("click", sendMessage);
-    userInput.addEventListener("keyup", (event) => {
-        if (event.key === "Enter") {
-            sendMessage();
+            let chatbox = document.getElementById("chatbox");
+            let newMessage = document.createElement("div");
+            newMessage.classList.add("flex", "items-start", "space-x-2", "text-black", "rounded-lg", "px-2");
+            newMessage.innerHTML = `<span class='text-sm font-semibold text-white'>You:</span><p class="text-sm font-semibold text-white/50">${message}</p>`;
+            chatbox.appendChild(newMessage);
+            input.value = "";
+            chatbox.scrollTop = chatbox.scrollHeight;
         }
     });
-
 </script>

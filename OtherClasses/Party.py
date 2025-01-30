@@ -12,6 +12,7 @@ class Party:
         self.players:list[Player] = []
         self.leaderIndex = None
         self.maxPlayers = 3
+        self.onPartyClosed = None
         self.onPartyCodeCreated = None
         self.onKick = None
     def __notifyOtherPlayersIndexDecrement(self, hollowIndex:int):
@@ -20,49 +21,49 @@ class Party:
             player.viewer.sendCustomMessage(CustomMessages.decrementPartyMemberIndex(hollowIndex, len(self.players)))
     def __notifyPlayerPromotion(self, oldLeaderIndex:int, newLeaderIndex:int):
         for player in self.players:
-            if player.viewer is None: continue
-            player.viewer.sendCustomMessage(CustomMessages.newLeader(oldLeaderIndex, newLeaderIndex))
+            if player.viewer is not None:
+                player.viewer.sendCustomMessage(CustomMessages.newLeader(oldLeaderIndex, newLeaderIndex))
     def __notifyOtherPlayersJoined(self, newPlayerIndex:int, newPlayer:Player):
         for playerIndex in range(len(self.players)):
             player = self.players[playerIndex]
             if playerIndex != newPlayerIndex:
                 if player.viewer is None: continue
-                player.viewer.sendCustomMessage(CustomMessages.addedPartyMember(newPlayerIndex, newPlayer.displayPFP(), newPlayer.displayUserName(), newPlayer.displayLevel(), newPlayer.displayRank()))
+                player.viewer.sendCustomMessage(CustomMessages.addedPartyMember(newPlayerIndex, newPlayer))
     def __notifyOtherPlayersLeft(self, oldPlayerIndex:int):
         for player in self.players:
             if player.viewer is not None:
-                if player.viewer is None: continue
                 player.viewer.sendCustomMessage(CustomMessages.removedPartyMember(oldPlayerIndex))
     def __notifySelfJoined(self, newPlayerIndex:int):
         newPlayer = self.players[newPlayerIndex]
         if newPlayer.viewer is not None:
             for playerIndex in range(len(self.players)):
                 player = self.players[playerIndex]
-                newPlayer.viewer.sendCustomMessage(CustomMessages.addedPartyMember(playerIndex, player.displayPFP(), player.displayUserName(), player.displayLevel(), player.displayRank()))
-    def __notifySelfLeft(self, oldPlayerIndex:int):
-        oldPlayer = self.players[oldPlayerIndex]
+                newPlayer.viewer.sendCustomMessage(CustomMessages.addedPartyMember(playerIndex, player))
+    def __notifySelfLeft(self, oldPlayer:Player):
         if oldPlayer.viewer is not None:
-            for player in self.players:
-                if player.viewer is not None:
-                    if player.viewer is None: continue
-                    player.viewer.sendCustomMessage(CustomMessages.removedPartyMember(oldPlayerIndex))
+            for playerIndex in range(len(self.players)):
+                oldPlayer.viewer.sendCustomMessage(CustomMessages.removedPartyMember(playerIndex))
             oldPlayer.viewer.privateData.party = None
             self.onKick(oldPlayer.viewer)
     def addPlayer(self, newPlayer:Player):
         if len(self.players) < self.maxPlayers:
             self.players.append(newPlayer)
             index = len(self.players) - 1
-            self.__notifySelfJoined(index)
-            self.__notifyOtherPlayersJoined(index, newPlayer)
+            if len(self.players) != 1:
+                self.__notifySelfJoined(index)
+                self.__notifyOtherPlayersJoined(index, newPlayer)
             return index
     def removePlayer(self, oldPlayer:Player):
         for index in range(len(self.players)):
             if self.players[index].userName == oldPlayer.userName:
-                self.players.pop(index)
                 if index == self.leaderIndex or self.leaderIndex is None: self.__transferLeader()
-                self.__notifySelfLeft(index)
-                self.__notifyOtherPlayersLeft(index)
-                self.__notifyOtherPlayersIndexDecrement(index)
+                if len(self.players) != 1:
+                    self.__notifySelfLeft(oldPlayer)
+                    self.__notifyOtherPlayersLeft(index)
+                    self.__notifyOtherPlayersIndexDecrement(index)
+                self.players.pop(index)
+                if len(self.players) == 0:
+                    self.onPartyClosed(self)
                 return index
     def sendPartyCode(self, player):
         if player.viewer is not None:
@@ -86,3 +87,6 @@ class Party:
             toKick = self.players[playerIndex]
             if toKick is not None:
                 self.removePlayer(toKick)
+    def sendMessage(self, category:str, sender, text):
+        for player in self.players:
+            player.viewer.sendCustomMessage(CustomMessages.chatMessage(category, sender, text))
