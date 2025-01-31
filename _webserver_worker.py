@@ -42,8 +42,8 @@ def renderGhost3D(viewerObj: DynamicWebsite.Viewer):
 
 def __renderAuthStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.POST_AUTH]:
-        if not viewerObj.privateData.isScriptRendered(FileNames.JS.Auth):
-            viewerObj.updateHTML(f"<script id='{FileNames.JS.Auth}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Auth)+"</script>", DivID.scripts, UpdateMethods.append)
+        # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Auth):
+        #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Auth}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Auth)+"</script>", DivID.scripts, UpdateMethods.append)
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthStructure), DivID.changingPage, UpdateMethods.update)
         renderGhost3D(viewerObj)
 
@@ -79,8 +79,8 @@ def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderFriends(viewerObj: DynamicWebsite.Viewer):
-    if not viewerObj.privateData.isScriptRendered(FileNames.JS.Friends):
-        viewerObj.updateHTML(f"<script id='{FileNames.JS.Friends}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Friends)+"</script>", DivID.scripts, UpdateMethods.append)
+    # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Friends):
+    #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Friends}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Friends)+"</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.FriendsStructure):
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsStructure), DivID.friendsStructure, UpdateMethods.update)
 
@@ -92,7 +92,7 @@ def renderFriends(viewerObj: DynamicWebsite.Viewer):
     # FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userID, viewerObj.privateData.userID])
     others = []
     for _ in range(15):
-        sleep(1)
+        #sleep(1)
         other = Player(None, str(_))
         others.append(other)
         print(CustomMessages.friendAdded(other.displayUserName(), other.displayPFP(), other.displayState()))
@@ -153,7 +153,7 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
 
 def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.ChatFull):
-        viewerObj.updateHTML(f"<script id='{FileNames.JS.Chat}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Chat)+"</script>", DivID.scripts, UpdateMethods.append)
+        # viewerObj.updateHTML(f"<script id='{FileNames.JS.Chat}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Chat)+"</script>", DivID.scripts, UpdateMethods.append)
         viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.ChatFull), DivID.chatBox, UpdateMethods.update)
 
 
@@ -187,15 +187,15 @@ def renderPreAuthUniversal(viewerObj: DynamicWebsite.Viewer):
         viewerObj.updateHTML(f"<script id='{FileNames.JS.PreAuthUniversal}'>" + cachedHTMLElements.fetchStaticJS(FileNames.JS.PreAuthUniversal) + "</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Trail):
         viewerObj.updateHTML(f"<script id='{FileNames.JS.Trail}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)+"</script>", DivID.scripts, UpdateMethods.append)
-    if not viewerObj.privateData.isScriptRendered(FileNames.JS.Music):
-        viewerObj.updateHTML(f"<script id='{FileNames.JS.Music}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)+"</script>", DivID.scripts, UpdateMethods.append)
+    # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Music):
+    #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Music}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)+"</script>", DivID.scripts, UpdateMethods.append)
     viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer), DivID.root, UpdateMethods.update)
 
 
 def renderPostAuthUniversal(viewerObj: DynamicWebsite.Viewer):
-    if not viewerObj.privateData.isScriptRendered(FileNames.JS.Lobby):
-        viewerObj.updateHTML(f"<script id='{FileNames.JS.Lobby}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Lobby)+"</script>", DivID.scripts, UpdateMethods.append)
-
+    # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Lobby):
+    #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Lobby}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Lobby)+"</script>", DivID.scripts, UpdateMethods.append)
+    pass
 
 ##############################################################################################################################
 # DECIDE FIRST PAGE
