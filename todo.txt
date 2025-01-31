@@ -1,0 +1,2 @@
+- Fix start button on pre auth and auth page
+- LOWER case code generator
