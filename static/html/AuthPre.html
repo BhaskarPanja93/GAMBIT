@@ -10,3 +10,8 @@
         Log In
     </button></div>
 </div>
+<script id="script-auth">
+    waitForElementPresence("#auth-renderer", (button)=>{
+        button.onclick = () => sendCustomMessage({PURPOSE: "RENDER_AUTH_FORMS"})
+    })
+</script>
