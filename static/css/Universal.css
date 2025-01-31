@@ -30,8 +30,11 @@ div::-webkit-scrollbar { display: none; }
 
 /* Music button */
 
+#music-tray-holder{
+    z-index: 100;
+}
+
 .music-tray {
-    z-index: 1000;
     display: flex;
     flex-direction: column;
     align-items: center;
@@ -67,7 +70,6 @@ div::-webkit-scrollbar { display: none; }
     top: 50%;
     right: calc(100% + 8px);
     transform: translateY(-50%);
-    z-index: 1000;
     display: flex;
     flex-direction: column;
     gap: 8px;
@@ -169,7 +171,7 @@ div::-webkit-scrollbar { display: none; }
     box-shadow: 0 0 15px 5px rgba(11, 11, 11, 0.8);
     border-radius: 8px;
     position: relative;
-    z-index: 2;
+    z-index: 10;
 }
 
 .button-glow:hover {
@@ -402,7 +404,7 @@ div::-webkit-scrollbar { display: none; }
 
 #container3D {
     background-color: rgba(255, 0, 0, 0.8);
-    z-index: 100;
+    z-index: 50;
 }
 @media (min-width: 1024px) {
     #container3D {
@@ -721,7 +723,7 @@ h6 {
     top: 30px;
     right: 30px;
     display: block;
-    z-index: 100;
+    z-index: 90;
     transition: all 250ms linear;
 }
 .logo img {
