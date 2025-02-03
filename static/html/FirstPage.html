@@ -1,0 +1,18 @@
+<html>
+    <head>
+        <base href="{{ baseURI }}">
+        <script>const baseURI = '{{ baseURI }}'</script>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <link rel="stylesheet" href="{{ baseURI | safe }}/cd?type=css&name=Universal.css">
+        <script src="https://cdn.tailwindcss.com"></script>
+        <script src="{{ baseURI | safe }}/cd?type=js&name=dynamicWebsite.js"></script>
+        <script src="{{ baseURI | safe }}/cd?type=js&name=hotwire.js"></script>
+        <title>{{ title | safe }}</title>
+    </head>
+    <body style="background-color: #ffffff;">
+        <div id="root"></div>
+        <audio id="music-player" preload="none" muted><source src="" type="audio/mpeg"></audio>
+        <div id="script" style="display:none"></div>
+    </body>
+</html>

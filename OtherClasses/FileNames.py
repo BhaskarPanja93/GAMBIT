@@ -10,8 +10,7 @@ class FileNames:
     class CSS:
         Universal = "Universal.css"
     class HTML:
-        BodyBase = "BodyBase.html"
-        ExtraHead = "ExtraHead.html"
+        FirstPage = "FirstPage.html"
         UniversalContainer = "UniversalContainer.html"
         LogoutButton = "LogoutButton.html"
         Navbar = "navbar.html"

@@ -52,7 +52,7 @@ class SSLSuppressedLoggerAttachedWSGIHandler(WSGIHandler):
         client_address = '[%s]' % (self.headers.get("X-Forwarded-For") if self.headers.get("X-Forwarded-For") is not None else (self.client_address[0] if isinstance(self.client_address, tuple) else self.client_address))
         logger:CustomisedLogs = self.server.logger
         color = logger.Colors.green_800 if self.code == -200 else logger.Colors.green_700_accent if self.code == 200 else logger.Colors.green_400 if 200 < self.code < 400 else logger.Colors.red_800
-        #logger.log(color, self.application.name, format_log(delta, client_address , self.code, self.command, length, self.path))
+        logger.log(color, self.application.name, format_log(delta, client_address , self.code, self.command, length, self.path))
 
 
 class LoggerAttachedWSGIServer(WSGIServer):

@@ -72,9 +72,11 @@ def _allMusicCategories():
     return list(musicCollection.activeStreams)
 
 
+
 @cdApp.errorhandler(Exception)
 def handle_404(error):
-   return "ITEM_NOT_FOUND", 404
+    return "Doesnt Exist in CD", 404
+
 
 logger = CustomisedLogs()
 WSGIRunner(cdApp, cdPort, "", logger)

@@ -13,7 +13,7 @@ window.lastMusicCategory = null
 window.currentlyPlaying = false
 
 
-fetch("/music-categories").then((response) => {
+fetch(baseURI+"/music-categories").then((response) => {
     response.json().then((streams) => {
         knownStreams = streams
         knownStreams.forEach((cat)=>{
@@ -52,7 +52,7 @@ async function playMusicCategory(category) {
         if (window.lastMusicCategory !== null) document.getElementById(window.lastMusicCategory).style.color = "rgba(255, 255, 255, 0.5)";
         document.getElementById(category).style.color = "rgba(255, 255, 255, 1)";
         window.lastMusicCategory = category
-        musicPlayer.children[0].src = "/music/" + category
+        musicPlayer.children[0].src = baseURI + "/music/" + category
         await musicPlayer.load()
         unmuteMusic()
         await musicPlayer.play()
@@ -64,7 +64,7 @@ function unmuteMusic() {
     if (window.lastMusicCategory === null || musicPlayer.muted === true) {
         musicPlayer.volume = 0.01;
         musicPlayer.muted = false
-        musicTrayPPIcon.src = '/cd?type=image&name=music-tray-pause.png';
+        musicTrayPPIcon.src = baseURI+'/cd?type=image&name=music-tray-pause.png';
         musicTrayPPIcon.alt = 'Pause';
         return true
     }
@@ -75,7 +75,7 @@ function unmuteMusic() {
 function muteMusic() {
     if (musicPlayer.muted === false) {
         musicPlayer.muted = true
-        musicTrayPPIcon.src = '/cd?type=image&name=music-tray-resume.png';
+        musicTrayPPIcon.src = baseURI+'/cd?type=image&name=music-tray-resume.png';
         musicTrayPPIcon.alt = 'Play';
         return false
     }
@@ -91,7 +91,7 @@ function toggleMusicMute() {
 function openMusicTray() {
     if (musicTray.classList.contains('collapsed')) {
         musicTray.classList.toggle('collapsed');
-        musicTrayToggleIcon.src = '/cd?type=image&name=music-tray-down.png';
+        musicTrayToggleIcon.src = baseURI+'/cd?type=image&name=music-tray-down.png';
         return true
     }
     return null
@@ -101,7 +101,7 @@ function openMusicTray() {
 function closeMusicTray() {
     if (!musicTray.classList.contains('collapsed')) {
         musicTray.classList.toggle('collapsed');
-        musicTrayToggleIcon.src = '/cd?type=image&name=music-tray-up.png';
+        musicTrayToggleIcon.src = baseURI+'/cd?type=image&name=music-tray-up.png';
         return false
     }
     return null

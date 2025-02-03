@@ -39,7 +39,7 @@ def updatePackage():
 
 
 class Imports:
-    from flask import Flask, Request, Response, send_file, render_template_string, make_response, request
+    from flask import Flask, Request, Response, send_file, make_response, request
     from flask_sock import Sock, ConnectionClosed
     from json import dumps, loads
     from time import time, sleep
@@ -117,23 +117,6 @@ class DynamicWebsite:
         replaceExtraHeadsPlaceholder = "REPLACE_EXTRA_HEADS"
         replaceTitlePlaceholder = "REPLACE_TITLE"
         replaceBodyPlaceholder = "REPLACE_BODY"
-
-        baseBody = """
-        <body>
-            <div id="root"></div>
-        </body>"""
-
-        baseHTML = f"""
-            <html>
-                <head>
-                    <script type="text/javascript" src="{replaceActionRoutePlaceholder}?{giveMeTheFile}={hotWireFilename}"></script>
-                    <script type="text/javascript" src="{replaceActionRoutePlaceholder}?{giveMeTheFile}={dynamicWebsiteFilename}"></script>
-                    <title>{replaceTitlePlaceholder}</title>
-                    {replaceExtraHeadsPlaceholder}
-                </head>
-                {replaceBodyPlaceholder}
-            </html>
-            """
 
 
     class CookieHolder:
@@ -458,8 +441,8 @@ class DynamicWebsite:
             self.dynamicWebsiteApp = dynamicWebsiteApp
             self.purposeManager = DynamicWebsite.PurposeManager(self, self.dynamicWebsiteApp.stringGenerator)
             self.addCSRF = self.createCSRF = self.purposeManager.createCSRF
-            self.formSubmitCallback = self.dynamicWebsiteApp.formSubmitCallback
-            self.customMessageCallback = self.dynamicWebsiteApp.customMessageCallback
+            self.formSubmitCallback = self.dynamicWebsiteApp.secureFormSubmitCallback
+            self.customMessageCallback = self.dynamicWebsiteApp.customMessageReceivedCallback
             self.pendingFiles:dict[str, DynamicWebsite.FileHolder] = {}
             self.currentWS:dict[str, DynamicWebsite.WSHolder|str|None] = {}
             self.futureWS:dict[str, str] = {}
@@ -564,17 +547,15 @@ class DynamicWebsite:
             return divID
 
 
-    def __init__(self, visitorArrivedCallback, visitorLeftCallback, formCallback, customMessageCallback, fernetKey:str=Imports.Fernet.generate_key(), appName:str = "Live App", actionsRoute:str= "/", extraHeads:str= "", body:str= HTMLElements.baseBody, title:str= "Live"):
-        self.formSubmitCallback = formCallback
-        self.customMessageCallback = customMessageCallback
-        self.visitorArrivedCallback = visitorArrivedCallback
-        self.visitorLeftCallback = visitorLeftCallback
+    def __init__(self, firstPageRendererCallback, viewerConnectedCallback, viewerDisconnectedCallback, secureFormSubmitCallback, customMessageReceivedCallback, fernetKey:str=Imports.Fernet.generate_key(), appName:str = "Live App", actionsRoute:str= "/"):
+        self.secureFormSubmitCallback = secureFormSubmitCallback
+        self.customMessageReceivedCallback = customMessageReceivedCallback
+        self.viewerConnectedCallback = viewerConnectedCallback
+        self.viewerDisconnectedCallback = viewerDisconnectedCallback
         self.appName = appName
         self.actionsRoute = actionsRoute
         self.fernetKey = fernetKey
-        self.extraHeads = extraHeads
-        self.body = body
-        self.title = title
+        self.firstPageRendererCallback = firstPageRendererCallback
 
         self.pendingL1Cookies:dict[str, dict[int, DynamicWebsite.CookieHolder|None]] = {}
         self.inCompleteViewers:dict[str, DynamicWebsite.Viewer] = {}
@@ -674,7 +655,7 @@ class DynamicWebsite:
     def makeViewerDead(self, viewer: DynamicWebsite.Viewer, triggerViewerLeftCallback: bool = True):
         viewer.currentState = self.VIEWER_STATES.DEAD
         if triggerViewerLeftCallback:
-            Imports.Thread(target=self.visitorLeftCallback, args=(viewer,)).start()
+            Imports.Thread(target=self.viewerDisconnectedCallback, args=(viewer,)).start()
         if viewer.cookie.instanceID in self.inCompleteViewers:
             del self.inCompleteViewers[viewer.cookie.instanceID]
         if viewer.cookie.instanceID in self.completeViewers:
@@ -702,22 +683,6 @@ class DynamicWebsite:
 
 
     def start(self):
-
-
-        @self.baseApp.before_request
-        def _modHeadersBeforeRequest():
-            """
-            Before any request goes to any route, it passes through this function.
-            Applies user remote address correctly (received from proxy)
-            :return:
-            """
-            if Imports.request.remote_addr == "127.0.0.1":
-                if Imports.request.environ.get("HTTP_X_FORWARDED_FOR") is not None:
-                    address = Imports.request.environ.get("HTTP_X_FORWARDED_FOR")
-                else: address = "LOCALHOST"
-                Imports.request.remote_addr = address
-
-
         @self.baseApp.route(self.actionsRoute, methods=["GET", "POST"])
         def _actionRoute():
             """
@@ -743,12 +708,7 @@ class DynamicWebsite:
 
             # Requesting L1 Cookie
             else:
-                response = Imports.make_response(Imports.render_template_string(self.HTMLElements.baseHTML
-                                                                                .replace(self.HTMLElements.replaceActionRoutePlaceholder, self.actionsRoute)
-                                                                                .replace(self.HTMLElements.replaceBodyPlaceholder, self.body)
-                                                                                .replace(self.HTMLElements.replaceExtraHeadsPlaceholder, self.extraHeads)
-                                                                                .replace(self.HTMLElements.replaceTitlePlaceholder, self.title)))
-                return self.createL1Cookie(Imports.request).wrapResponse(response, self.fernetKey)
+                return self.createL1Cookie(Imports.request).wrapResponse(self.firstPageRendererCallback(), self.fernetKey)
 
 
         @self.sock.route(self.actionsRoute)
@@ -814,7 +774,7 @@ class DynamicWebsite:
                                 else:
                                     if not viewerObj.arrivalCalled:
                                         viewerObj.arrivalCalled = True
-                                        self.visitorArrivedCallback(viewerObj)
+                                        self.viewerConnectedCallback(viewerObj)
                                     self.makeViewerComplete(viewerObj)
                                 continue
                             Imports.Thread(target=viewerObj.receive, args=(dictReceived,)).start()

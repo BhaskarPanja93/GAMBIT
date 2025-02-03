@@ -253,9 +253,9 @@ class WSConnectionManager extends EventEmitter {
             this.messages = []
             this.isProcessing = false
             this.futureCSRF = null
-            this.key = (window.crypto.subtle !== undefined)
+            this.key = (window.crypto.subtle !== undefined) && false
             this.clientKeyPair = null
-            this.rawWS = new WebSocket(`ws${location.protocol.substring(4)}//${location.host}/?WS_PURPOSE=${this.purpose}`)
+            this.rawWS = new WebSocket(`ws${location.protocol.substring(4)}//${location.host}${location.pathname}/?WS_PURPOSE=${this.purpose}`)
         }
 
         bufferedAmount = () => {
@@ -425,7 +425,7 @@ window.MAX_BUFFER_SIZE = 1024*1024*5;
 window.DELAY_TIME = 500
 window.ConnmanagerWS = new WSConnectionManager()
 
-fetch('/?RECEIVE_NEW_L2_COOKIE', {
+fetch(baseURI+"?RECEIVE_NEW_L2_COOKIE", {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: getDeviceFingerprint(),

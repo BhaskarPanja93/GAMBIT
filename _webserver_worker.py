@@ -2,12 +2,11 @@ from gevent import monkey
 
 monkey.patch_all()
 
-from time import time, sleep
+from time import time
 from sys import argv
 from typing import Any
-from flask import request, redirect
+from flask import request, redirect, make_response
 from jinja2 import Template
-from werkzeug.sansio.utils import get_current_url
 from argon2 import PasswordHasher
 
 from OtherClasses.PrivateData import PrivateData
@@ -33,7 +32,7 @@ from internal.dynamicWebsite import DynamicWebsite
 
 def renderGhost3D(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.Ghost3d):
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Ghost3d), DivID.ghost3d, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Ghost3d)).render(baseURI=viewerObj.privateData.baseURI), DivID.ghost3d, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -44,14 +43,14 @@ def __renderAuthStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.POST_AUTH]:
         # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Auth):
         #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Auth}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Auth)+"</script>", DivID.scripts, UpdateMethods.append)
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthStructure), DivID.changingPage, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
         renderGhost3D(viewerObj)
 
 
 def renderAuthPre(viewerObj: DynamicWebsite.Viewer):
     __renderAuthStructure(viewerObj)
     if viewerObj.privateData.currentPage() != Pages.PRE_AUTH:
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPre), DivID.auth, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPre)).render(baseURI=viewerObj.privateData.baseURI), DivID.auth, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.PRE_AUTH)
         viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.PRE_AUTH))
 
@@ -59,7 +58,7 @@ def renderAuthPre(viewerObj: DynamicWebsite.Viewer):
 def renderAuthForms(viewerObj: DynamicWebsite.Viewer):
     __renderAuthStructure(viewerObj)
     if viewerObj.privateData.currentPage() != Pages.AUTH:
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthForms), DivID.auth, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthForms)).render(baseURI=viewerObj.privateData.baseURI), DivID.auth, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.AUTH)
         viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.AUTH))
         sendLoginForm(viewerObj)
@@ -69,7 +68,7 @@ def renderAuthForms(viewerObj: DynamicWebsite.Viewer):
 def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
     __renderAuthStructure(viewerObj)
     if viewerObj.privateData.currentPage() != Pages.POST_AUTH:
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPost), DivID.auth, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPost)).render(baseURI=viewerObj.privateData.baseURI), DivID.auth, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.POST_AUTH)
         viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.POST_AUTH))
 
@@ -82,7 +81,7 @@ def renderFriends(viewerObj: DynamicWebsite.Viewer):
     # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Friends):
     #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Friends}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Friends)+"</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.FriendsStructure):
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsStructure), DivID.friendsStructure, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.friendsStructure, UpdateMethods.update)
 
     # friendList = SQLconn.execute(f"""SELECT
     # CASE
@@ -110,8 +109,8 @@ def renderFriends(viewerObj: DynamicWebsite.Viewer):
 
 def __renderLobbyStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() != Pages.LOBBY:
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyStructure), DivID.changingPage, UpdateMethods.update)
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyFeatures), DivID.lobbyFeatures, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyFeatures)).render(baseURI=viewerObj.privateData.baseURI), DivID.lobbyFeatures, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.LOBBY)
         viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.POST_AUTH))
 
@@ -139,7 +138,7 @@ def kickedFromParty(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.NotesFullPage), DivID.changingPage, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.NotesFullPage)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
 
 
 def renderNotes(viewerObj: DynamicWebsite.Viewer):
@@ -154,7 +153,7 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
 def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.ChatFull):
         # viewerObj.updateHTML(f"<script id='{FileNames.JS.Chat}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Chat)+"</script>", DivID.scripts, UpdateMethods.append)
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.ChatFull), DivID.chatBox, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.ChatFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.chatBox, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -162,7 +161,7 @@ def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderMusicTray(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.MusicTray), DivID.musicTrayHolder, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.MusicTray)).render(baseURI=viewerObj.privateData.baseURI), DivID.musicTrayHolder, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -170,12 +169,12 @@ def renderMusicTray(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderNavbar(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Navbar), DivID.navbar, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Navbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar, UpdateMethods.update)
 
 
 def renderLogoutButton(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.LogoutButton):
-        viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LogoutButton), DivID.logoutContainer, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LogoutButton)).render(baseURI=viewerObj.privateData.baseURI), DivID.logoutContainer, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -189,7 +188,7 @@ def renderPreAuthUniversal(viewerObj: DynamicWebsite.Viewer):
         viewerObj.updateHTML(f"<script id='{FileNames.JS.Trail}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)+"</script>", DivID.scripts, UpdateMethods.append)
     # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Music):
     #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Music}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)+"</script>", DivID.scripts, UpdateMethods.append)
-    viewerObj.updateHTML(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer), DivID.root, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer)).render(baseURI=viewerObj.privateData.baseURI), DivID.root, UpdateMethods.update)
 
 
 def renderPostAuthUniversal(viewerObj: DynamicWebsite.Viewer):
@@ -295,16 +294,20 @@ def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
     renderFirstPage(viewerObj, accepted)
 
 
+def firstPageCreator():
+    return make_response(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FirstPage)).render(title="GAMBIT", baseURI=request.path))
+
+
 ##############################################################################################################################
 # AUTHENTICATION
 
 
 def sendLoginForm(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Login)).render(CSRF=viewerObj.purposeManager.createCSRF("LOGIN")), DivID.loginForm, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Login)).render(CSRF=viewerObj.purposeManager.createCSRF("LOGIN"), baseURI=viewerObj.privateData.baseURI), DivID.loginForm, UpdateMethods.update)
 
 
 def sendRegisterForm(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Register)).render(CSRF=viewerObj.purposeManager.createCSRF("REGISTER")), DivID.registerForm, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Register)).render(CSRF=viewerObj.purposeManager.createCSRF("REGISTER"), baseURI=viewerObj.privateData.baseURI), DivID.registerForm, UpdateMethods.update)
 
 
 def checkPasswordStrength(password:str):
@@ -323,6 +326,7 @@ def loginDevice(viewerObj: DynamicWebsite.Viewer):
 def setPrivateDetails(viewerObj: DynamicWebsite.Viewer):
     viewerObj.privateData = PrivateData()
     viewerObj.privateData.player = Player(viewerObj, "ME")
+    viewerObj.privateData.baseURI = request.path.split("?")[0]
 
 
 def createUser(viewerObj: DynamicWebsite.Viewer, username:str, password:str, personName:str, email:str):
@@ -403,19 +407,33 @@ UpdateMethods = DynamicWebsite.UpdateMethods
 cachedHTMLElements = CachedElements()
 logger = CustomisedLogs()
 SQLconn = connectDB(logger)
-dynamicWebsiteApp = DynamicWebsite(newVisitorCallback, visitorLeftCallback, formSubmitCallback, customWSMessageCallback, fernetKey, CoreValues.appName, Routes.webHomePage, cachedHTMLElements.fetchStaticHTML(FileNames.HTML.ExtraHead), cachedHTMLElements.fetchStaticHTML(FileNames.HTML.BodyBase), CoreValues.title)
+dynamicWebsiteApp = DynamicWebsite(firstPageCreator, newVisitorCallback, visitorLeftCallback, formSubmitCallback, customWSMessageCallback, fernetKey, CoreValues.appName, Routes.webHomePage)
 baseApp, WSSock = dynamicWebsiteApp.start()
+
+
+@baseApp.before_request
+def _modHeadersBeforeRequest():
+    """
+    Before any request goes to any route, it passes through this function.
+    Applies user remote address correctly (received from proxy)
+    :return:
+    """
+    if request.remote_addr == "127.0.0.1":
+        if request.environ.get("HTTP_X_FORWARDED_FOR") is not None:
+            address = request.environ.get("HTTP_X_FORWARDED_FOR")
+        else: address = "LOCALHOST"
+        request.remote_addr = address
+    if request.environ.get("HTTP_X_FORWARDED_PATH") is not None:
+        request.path = request.environ.get("HTTP_X_FORWARDED_PATH")
+    else:
+        request.path = ""
+    if request.environ.get("HTTP_X_FORWARDED_PROTO") is not None:
+        request.scheme = request.environ.get("HTTP_X_FORWARDED_PROTO")
 
 
 @baseApp.errorhandler(Exception)
 def handle_404(error):
-    if ':' in request.host:
-        host, port = request.host.split(':')
-        port = int(port)
-    else:
-        host = request.host
-        if request.scheme == 'https': port = 443
-        else: port = 80
-    return redirect(get_current_url(request.scheme, f"{host}:{port+1}", request.root_path, request.path, request.query_string))
+    return redirect("http://"+request.environ["HTTP_HOST"].replace(str(webPort), str(cdPort))+request.environ["PATH_INFO"]+"?"+request.environ["QUERY_STRING"])
+
 
 WSGIRunner(baseApp, webPort, Routes.webHomePage, logger)

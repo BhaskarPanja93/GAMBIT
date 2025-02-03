@@ -4,17 +4,17 @@
         <div id="chat-sending-to" class="text-sm font-semibold text-white/50"></div>
         <input id="chat-input-text" type="text" placeholder="Type a message..." class="bg-transparent flex-1 p-1 text-white rounded-md outline-none">
         <button id="chat-send-btn" class="ml-2">
-            <img src="/cd?type=image&name=send-button.png" alt="Send" class="w-4 h-4">
+            <img src="{{ baseURI | safe }}/cd?type=image&name=send-button.png" alt="Send" class="w-4 h-4">
         </button>
     </div>
 </div>
 <script id="script-chat">
-    const MESSAGE_CATEGORY = {
-        PARTY: "Party",
-        TEAM: "Team",
-        PLAYER: "Player",
-        YOU: "You",
-        SYSTEM: "System",
+    const MESSAGE_NODES = {
+        PARTY: autoCapitaliseWord("PARTY"),
+        TEAM: autoCapitaliseWord("TEAM"),
+        FRIEND: autoCapitaliseWord("FRIEND"),
+        YOU: autoCapitaliseWord("YOU"),
+        SYSTEM: autoCapitaliseWord("SYSTEM"),
     }
 
     function openChatHistory() {
@@ -31,87 +31,92 @@
     }
 
     function receiveText(data) {
-        console.log(data)
-        let backgroundDiv, senderSpan, textPara
-        if (data["CATEGORY"] === MESSAGE_CATEGORY.PARTY) {
-            backgroundDiv = document.createElement("div")
-            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
-            senderSpan = document.createElement("span")
-            senderSpan.className = "text-sm font-semibold text-purple-500"
-            textPara = document.createElement("p")
-            textPara.className = "text-sm text-gray-300"
-        } else if (data["CATEGORY"] === MESSAGE_CATEGORY.TEAM) {
-            backgroundDiv = document.createElement("div")
-            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
-            senderSpan = document.createElement("span")
-            senderSpan.className = "text-sm font-semibold text-green-500"
-            textPara = document.createElement("p")
-            textPara.className = "text-sm text-gray-300"
-        } else if (data["CATEGORY"] === MESSAGE_CATEGORY.PLAYER) {
-            backgroundDiv = document.createElement("div")
-            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
-            senderSpan = document.createElement("span")
-            senderSpan.className = "text-sm font-semibold text-blue-500"
-            textPara = document.createElement("p")
-            textPara.className = "text-sm text-gray-300"
-        } else if (data["CATEGORY"] === MESSAGE_CATEGORY.YOU) {
-            backgroundDiv = document.createElement("div")
-            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
-            senderSpan = document.createElement("span")
-            senderSpan.className = "text-sm font-semibold text-yellow-500"
-            textPara = document.createElement("p")
-            textPara.className = "text-sm text-gray-300"
-        } else if (data["CATEGORY"] === MESSAGE_CATEGORY.SYSTEM) {
-            backgroundDiv = document.createElement("div")
+        let isValid = false
+        let backgroundDiv = document.createElement("div"),  senderSpan = document.createElement("span"), textPara = document.createElement("p")
+        if (data["FROM"] === MESSAGE_NODES.SYSTEM) { // From system
             backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2 bg-white/10"
-            senderSpan = document.createElement("span")
             senderSpan.className = "text-sm font-bold color-change"
-            textPara = document.createElement("p")
             textPara.className = "text-sm font-semibold italic color-change"
+            isValid = true
+        } else if (data["FROM"] === MESSAGE_NODES.YOU) { // From Me
+            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
+            senderSpan.className = "text-sm font-semibold text-yellow-500"
+            textPara.className = "text-sm text-gray-300"
+            if (allFriendUsernames.has(data["TO"])) { // Me - Friend
+                data["FROM"] = data["TO"]
+                data["TO"] = "TO"
+                isValid = true
+            } else if ([MESSAGE_NODES.PARTY, MESSAGE_NODES.TEAM].includes(data["TO"])) { // Me - Other
+                isValid = true
+            }
+        } else if (data["TO"] === MESSAGE_NODES.YOU) { // To Me
+            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
+            senderSpan.className = "text-sm font-semibold text-red-500"
+            textPara.className = "text-sm text-gray-300"
+            if (allFriendUsernames.has(data["FROM"])) {
+                data["TO"] = "FROM"
+                isValid = true
+            } else if ([MESSAGE_NODES.SYSTEM, MESSAGE_NODES.PARTY, MESSAGE_NODES.TEAM].includes(data["TO"])) {
+                isValid = true
+            }
+        } else if (data["TO"] === MESSAGE_NODES.PARTY) {
+            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
+            senderSpan.className = "text-sm font-semibold text-purple-500"
+            textPara.className = "text-sm text-gray-300"
+            isValid = true
+        } else if (data["TO"] === MESSAGE_NODES.TEAM) {
+            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
+            senderSpan.className = "text-sm font-semibold text-green-500"
+            textPara.className = "text-sm text-gray-300"
+            isValid = true
         }
-        senderSpan.innerText = `[${data["CATEGORY"]}] ${data["SENDER"]}`
-        textPara.innerText = data["TEXT"]
-        backgroundDiv.append(senderSpan)
-        backgroundDiv.append(textPara)
-        waitForElementPresence("#chat-history", (historyDiv) => {
-            historyDiv.append(backgroundDiv)
-            historyDiv.scrollTop = historyDiv.scrollHeight
-        })
+        if (isValid) {
+            senderSpan.innerText = `[${data["TO"]}] ${data["FROM"]}: `
+            textPara.innerText = data["TEXT"]
+            backgroundDiv.append(senderSpan)
+            backgroundDiv.append(textPara)
+            waitForElementPresence("#chat-history", (historyDiv) => {
+                historyDiv.append(backgroundDiv)
+                historyDiv.scrollTop = historyDiv.scrollHeight
+            })
+        }
     }
 
     function sendTriggered() {
         waitForElementPresence("#chat-input-text", (input)=>{
             if (input.value !== "") {
-                sendCustomMessage({PURPOSE: "CHAT", "CATEGORY": selectedChatCategory, "RECEIVER": selectedReceiver, "TEXT": input.value})
-                receiveText({"CATEGORY": selectedChatCategory, "SENDER": MESSAGE_CATEGORY.YOU, "TEXT": input.value})
+                console.log("SENDING", {PURPOSE: "CHAT", "TO": selectedReceiver, "TEXT": input.value})
+                sendCustomMessage({PURPOSE: "CHAT", "TO": selectedReceiver, "TEXT": input.value})
+                receiveText({"FROM": MESSAGE_NODES.YOU, "TO": selectedReceiver, "TEXT": input.value})
                 input.value = ""
             }
         })
     }
 
-    function changeChatCategory(category) {
-        let probablyUsername = category
-        category = category.toUpperCase()
-        if (category===MESSAGE_CATEGORY.TEAM.toUpperCase()) {
-            selectedChatCategory = category
+    function changeChatReceiver(capitalisedReceiver) {
+        let unmodifiedReceiver = capitalisedReceiver
+        capitalisedReceiver = autoCapitaliseWord(capitalisedReceiver)
+        if (capitalisedReceiver===MESSAGE_NODES.TEAM) {
+            selectedReceiver = capitalisedReceiver
             waitForElementPresence("#chat-sending-to", (element)=>{
-                element.innerText = `[Team]:`
+                element.innerText = `[${capitalisedReceiver}]:`
             })
             return true
-        } else if (category===MESSAGE_CATEGORY.PARTY.toUpperCase()) {
-            selectedChatCategory = category
+        } else if (capitalisedReceiver===MESSAGE_NODES.PARTY) {
+            selectedReceiver = capitalisedReceiver
             waitForElementPresence("#chat-sending-to", (element)=>{
-                element.innerText = `[Party]:`
+                element.innerText = `[${capitalisedReceiver}]:`
             })
             return true
-        } else if (allFriendUsernames.has(probablyUsername)) {
-            selectedChatCategory = MESSAGE_CATEGORY.PLAYER
-            selectedReceiver = probablyUsername
+        } else if (allFriendUsernames.has(unmodifiedReceiver)) {
+            selectedReceiver = unmodifiedReceiver
             waitForElementPresence("#chat-sending-to", (element)=>{
-                element.innerText = `[${probablyUsername}]:`
+                element.innerText = `[${unmodifiedReceiver}]:`
             })
+            console.log(selectedReceiver)
             return true
         }
+        console.log("error", selectedReceiver, capitalisedReceiver, unmodifiedReceiver)
         return false
     }
 
@@ -121,7 +126,7 @@
             input.value = input.value.trim()
             let content = input.value
             if (content[0] === "/") {
-                if (changeChatCategory(content.slice(1)) === true) {
+                if (changeChatReceiver(content.slice(1)) === true) {
                     input.value = ""
                 }
             }
@@ -160,8 +165,7 @@
     })
 
     let chatFocusCount = 0
-    let selectedChatCategory = ""
     let selectedReceiver = ""
-    changeChatCategory(MESSAGE_CATEGORY.PARTY)
+    changeChatReceiver(MESSAGE_NODES.PARTY.toUpperCase())
 </script>
 
