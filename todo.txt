@@ -1,5 +1,3 @@
-✓ LOWER case code generator (Uppercase letters can cause confusions)
-
 [R]
 x Display auth pages error
 x Make Invite received and Party Join request placeholders
@@ -11,3 +9,5 @@ x Hide start button when not required
 x Make invite join and message button div on click instead of on hover
 
 KEEP 1080p RESOLUTION
+
+✓ LOWER case code generator (Uppercase letters can cause confusions)
