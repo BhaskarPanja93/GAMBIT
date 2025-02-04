@@ -62,7 +62,7 @@
         }
     }
 
-
+    let lastFriendActionPage = null
     function friendAdded(friendData) {
         allFriendUsernames.add(friendData["USERNAME"])
         let friendElement = document.createElement("div")
@@ -86,7 +86,7 @@
         visiblePart.append(stateDiv)
         group.appendChild(visiblePart)
         let hoverPart = document.createElement("div")
-        hoverPart.className = "gap-1 flex flex-col absolute top-1/2 left-full transform -translate-y-1/2 translate-x-2 p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100 whitespace-nowrap"
+        hoverPart.className = "gap-1 flex flex-col absolute top-1/2 left-full transform -translate-y-1/2 translate-x-2 p-2 rounded shadow-md opacity-100 transition-opacity duration-300 whitespace-nowrap z-10"
         let inviteButton = document.createElement("button")
         inviteButton.className = "bg-gray-800 text-white border border-white/30 text-sm rounded px-2 py-1 friend-action-invite friend-sub-category-button"
         inviteButton.innerText = "INVITE"
@@ -102,6 +102,11 @@
         hoverPart.append(messageButton)
         group.appendChild(hoverPart)
         friendElement.appendChild(group)
+        friendElement.onclick = function() {
+            hideLastOpenedFriendAction()
+            lastFriendActionPage = hoverPart
+            lastFriendActionPage.classList.remove("hidden")
+        }
         waitForElementPresence("#online-friend-list", (div)=> {
             if (div.classList.contains("expanded") === true) {
                 friendElement.classList.add("w-48")
@@ -110,11 +115,15 @@
                 visiblePart.classList.add("hidden")
                 friendElement.classList.add("w-16")
                 friendElement.classList.remove("w-48")
+                hoverPart.classList.add("hidden")
             }
             div.append(friendElement)
         })
     }
 
+    function hideLastOpenedFriendAction() {
+        if (lastFriendActionPage) lastFriendActionPage.classList.add("hidden")
+    }
 
     function inviteFriend(username) {
 
@@ -128,6 +137,7 @@
 
     waitForElementPresence("#friends-page", (friendsPage)=> {
         friendsPage.onmouseleave = function() {
+            hideLastOpenedFriendAction()
             Array.prototype.filter.call(
                 friendElements,
                 (friendElement) => {

@@ -6,10 +6,12 @@ x Fix friend list scroll and size
 
 [B]
 x Hide start button when not required
-x Make invite join and message button div on click instead of on hover
 
 KEEP 1080p RESOLUTION
 
 ✓ LOWER case code generator (Uppercase letters can cause confusions)
 ✓ Send message for friends work
 ✓ Chat colours modified
+✓ Chat text wrapping
+✓ Chat send button works
+✓ Make invite join and message button div on click instead of on hover

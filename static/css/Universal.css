@@ -31,7 +31,7 @@ div::-webkit-scrollbar { display: none; }
 /* Music button */
 
 #music-tray-holder{
-    z-index: 100;
+    z-index: -1;
 }
 
 .music-tray {
@@ -46,7 +46,9 @@ div::-webkit-scrollbar { display: none; }
     padding: 7px;
     border-radius: 50px;
 
-    transition: all 0.5s ease;}
+    transition: all 0.5s ease;
+    z-index: 100;
+}
 
 .music-tray-category-grp {
     position: relative;
