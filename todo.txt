@@ -1,8 +1,11 @@
 [R]
-x Display auth pages error
+✓ Display auth pages error
 x Make Invite received and Party Join request placeholders
-x Make Friend request received placeholder
-x Fix friend list scroll and size
+✓ Make Friend request received placeholder
+✓ Fix friend list scroll and size
+x Adjust pop-up
+x Adjust friend req css in static
+
 
 [B]
 x Hide start button when not required
