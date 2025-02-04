@@ -70,7 +70,7 @@ class Party:
             player.viewer.sendCustomMessage(CustomMessages.partyCode(self.partyCode))
     def generatePartyCode(self):
         if self.partyCode == self.defaultPartyCode:
-            self.partyCode = RandomisedString().AlphaNumeric(5, 5).upper()
+            self.partyCode = RandomisedString().AlphaNumeric(5, 5).lower()
             self.onPartyCodeCreated(self)
             for player in self.players:
                 if player is not None:

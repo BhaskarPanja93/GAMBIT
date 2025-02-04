@@ -10,11 +10,11 @@
 </div>
 <script id="script-chat">
     const MESSAGE_NODES = {
-        PARTY: autoCapitaliseWord("PARTY"),
-        TEAM: autoCapitaliseWord("TEAM"),
-        FRIEND: autoCapitaliseWord("FRIEND"),
-        YOU: autoCapitaliseWord("YOU"),
-        SYSTEM: autoCapitaliseWord("SYSTEM"),
+        PARTY: firstLetterCapitalised("PARTY"),
+        TEAM: firstLetterCapitalised("TEAM"),
+        FRIEND: firstLetterCapitalised("FRIEND"),
+        YOU: firstLetterCapitalised("YOU"),
+        SYSTEM: firstLetterCapitalised("SYSTEM"),
     }
 
     function openChatHistory() {
@@ -32,47 +32,64 @@
 
     function receiveText(data) {
         let isValid = false
-        let backgroundDiv = document.createElement("div"),  senderSpan = document.createElement("span"), textPara = document.createElement("p")
+        const backgroundDiv = document.createElement("div"),  senderSpan = document.createElement("span"), categorySpan = document.createElement("span"), textPara = document.createElement("p")
+        let categoryText = "", personText = ""
+
+        textPara.className = "text-sm text-gray-300"
+        backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
+
+        // party: text-purple-400   you: text-yellow-500    other: text-purple-400
+        // team: text-blue-500      you: text-yellow-500    other: text-blue-500
+        // to: text-[#ffa4ff]       person: text-[#ffa4ff]
+        // from: text-cyan-300      person: text-cyan-300
         if (data["FROM"] === MESSAGE_NODES.SYSTEM) { // From system
+            isValid = true
+            categoryText = "System"
             backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2 bg-white/10"
             senderSpan.className = "text-sm font-bold color-change"
             textPara.className = "text-sm font-semibold italic color-change"
+        } else if (data["TO"] === MESSAGE_NODES.PARTY) { // To Party
             isValid = true
-        } else if (data["FROM"] === MESSAGE_NODES.YOU) { // From Me
-            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
-            senderSpan.className = "text-sm font-semibold text-yellow-500"
-            textPara.className = "text-sm text-gray-300"
-            if (allFriendUsernames.has(data["TO"])) { // Me - Friend
-                data["FROM"] = data["TO"]
-                data["TO"] = "TO"
-                isValid = true
-            } else if ([MESSAGE_NODES.PARTY, MESSAGE_NODES.TEAM].includes(data["TO"])) { // Me - Other
-                isValid = true
+            categoryText = "Party"
+            categorySpan.className = "text-sm font-semibold text-purple-400"
+            if (data["FROM"] === MESSAGE_NODES.YOU) {
+                personText = "You"
+                senderSpan.className = "text-sm font-semibold text-yellow-500"
+            } else {
+                personText = data["FROM"]
+                senderSpan.className = "text-sm font-semibold text-purple-400"
             }
-        } else if (data["TO"] === MESSAGE_NODES.YOU) { // To Me
-            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
-            senderSpan.className = "text-sm font-semibold text-red-500"
-            textPara.className = "text-sm text-gray-300"
-            if (allFriendUsernames.has(data["FROM"])) {
-                data["TO"] = "FROM"
-                isValid = true
-            } else if ([MESSAGE_NODES.SYSTEM, MESSAGE_NODES.PARTY, MESSAGE_NODES.TEAM].includes(data["TO"])) {
-                isValid = true
+        } else if (data["TO"] === MESSAGE_NODES.TEAM) { // To Team
+            isValid = true
+            categoryText = "Team"
+            categorySpan.className = "text-sm font-semibold text-blue-500"
+            if (data["FROM"] === MESSAGE_NODES.YOU) {
+                personText = "You"
+                senderSpan.className = "text-sm font-semibold text-yellow-500"
+            } else {
+                personText = data["FROM"]
+                senderSpan.className = "text-sm font-semibold text-blue-500"
             }
-        } else if (data["TO"] === MESSAGE_NODES.PARTY) {
-            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
-            senderSpan.className = "text-sm font-semibold text-purple-500"
-            textPara.className = "text-sm text-gray-300"
+        } else if (data["TO"] === MESSAGE_NODES.YOU && allFriendUsernames.has(data["FROM"])) { // To Me
             isValid = true
-        } else if (data["TO"] === MESSAGE_NODES.TEAM) {
-            backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
-            senderSpan.className = "text-sm font-semibold text-green-500"
-            textPara.className = "text-sm text-gray-300"
+            categoryText = "From"
+            personText = data["FROM"]
+            categorySpan.className = "text-sm font-semibold text-cyan-300"
+            senderSpan.className = "text-sm font-semibold text-cyan-300"
+        } else if (data["FROM"] === MESSAGE_NODES.YOU && allFriendUsernames.has(data["TO"])) { // To Friend
             isValid = true
+            categoryText = "To"
+            personText = data["TO"]
+            categorySpan.className = "text-sm font-semibold text-[#ffa4ff]"
+            senderSpan.className = "text-sm font-semibold text-[#ffa4ff]"
         }
         if (isValid) {
-            senderSpan.innerText = `[${data["TO"]}] ${data["FROM"]}: `
+            if (personText!=="") personText=" "+personText
+            personText +=": "
+            categorySpan.innerText = `[${categoryText}]`
+            senderSpan.innerText = personText
             textPara.innerText = data["TEXT"]
+            backgroundDiv.append(categorySpan)
             backgroundDiv.append(senderSpan)
             backgroundDiv.append(textPara)
             waitForElementPresence("#chat-history", (historyDiv) => {
@@ -82,8 +99,9 @@
         }
     }
 
-    function sendTriggered() {
+    function triggerSend() {
         waitForElementPresence("#chat-input-text", (input)=>{
+            input.value = input.value.trim()
             if (input.value !== "") {
                 console.log("SENDING", {PURPOSE: "CHAT", "TO": selectedReceiver, "TEXT": input.value})
                 sendCustomMessage({PURPOSE: "CHAT", "TO": selectedReceiver, "TEXT": input.value})
@@ -93,9 +111,10 @@
         })
     }
 
-    function changeChatReceiver(capitalisedReceiver) {
-        let unmodifiedReceiver = capitalisedReceiver
-        capitalisedReceiver = autoCapitaliseWord(capitalisedReceiver)
+    function changeChatReceiver(receiver) {
+        if (receiver.value) receiver.value = receiver.value.trim()
+        let unmodifiedReceiver = receiver
+        let capitalisedReceiver = firstLetterCapitalised(receiver)
         if (capitalisedReceiver===MESSAGE_NODES.TEAM) {
             selectedReceiver = capitalisedReceiver
             waitForElementPresence("#chat-sending-to", (element)=>{
@@ -123,7 +142,6 @@
 
     waitForElementPresence("#chat-input-text", (input)=>{
         input.addEventListener("input", function() {
-            input.value = input.value.trim()
             let content = input.value
             if (content[0] === "/") {
                 if (changeChatReceiver(content.slice(1)) === true) {
@@ -142,14 +160,14 @@
         input.addEventListener("keydown", function(e) {
             if (e.key === "Enter") {
                 e.preventDefault()
-                sendTriggered()
+                triggerSend()
             }
         })
     })
 
     waitForElementPresence("#chat-send-btn", (sendButton)=>{
         sendButton.addEventListener("click", function() {
-            sendTriggered()
+            triggerSend()
         })
     })
 

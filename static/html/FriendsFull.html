@@ -46,7 +46,7 @@
     }
 
 
-    function changeFriendState(username, state) {
+    function friendStateChanged(username, state) {
         let friendDiv = document.getElementById(`connection-${username}`)
         if (state === FRIEND_STATES.AVAILABLE) createInviteButton()
         else deleteInviteButton({username})
@@ -54,7 +54,7 @@
     }
 
 
-    function removeFriend(username) {
+    function friendRemoved(username) {
         allFriendUsernames.delete(`connection-${username}`)
         let friendDiv = document.getElementById(`connection-${username}`)
         if (friendDiv !== null) {
@@ -63,7 +63,7 @@
     }
 
 
-    function addFriend(friendData) {
+    function friendAdded(friendData) {
         allFriendUsernames.add(friendData["USERNAME"])
         let friendElement = document.createElement("div")
         friendElement.id = `connection-${friendData["USERNAME"]}`
@@ -96,6 +96,7 @@
         let messageButton = document.createElement("button")
         messageButton.className = "bg-gray-800 text-white border border-white/30 text-sm rounded px-2 py-1 friend-action-request friend-sub-category-button"
         messageButton.innerText = "MESSAGE"
+        messageButton.onclick = function () { changeChatReceiver(friendData["USERNAME"]) }
         hoverPart.append(inviteButton)
         hoverPart.append(joinButton)
         hoverPart.append(messageButton)
@@ -124,7 +125,7 @@
 
     }
 
-t
+
     waitForElementPresence("#friends-page", (friendsPage)=> {
         friendsPage.onmouseleave = function() {
             Array.prototype.filter.call(

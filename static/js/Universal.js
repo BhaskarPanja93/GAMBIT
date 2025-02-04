@@ -19,8 +19,8 @@ const CUSTOM_MESSAGE_TASKS = {
 function WSListener(data) {
     console.log(data)
     if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.REFRESH) location.reload()
-    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_REMOVED) waitForElementPresence("#script-friends", ()=>removeFriend(data["FRIEND_DATA"]))
-    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_ADDED) waitForElementPresence("#script-friends", ()=>addFriend(data["FRIEND_DATA"]))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_REMOVED) waitForElementPresence("#script-friends", ()=>friendRemoved(data["FRIEND_DATA"]))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_ADDED) waitForElementPresence("#script-friends", ()=>friendAdded(data["FRIEND_DATA"]))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.ADDED_PARTY_MEMBER) waitForElementPresence("#script-lobby", ()=>addedPartyMember(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.REMOVED_PARTY_MEMBER) waitForElementPresence("#script-lobby", ()=>removedPartyMember(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.DECREMENT_PARTY_MEMBER_INDEX) waitForElementPresence("#script-lobby", ()=>decrementPartyMemberIndex(data))
@@ -52,7 +52,7 @@ waitForElementPresence("#logout-button", (button)=>{
     button.onclick = () => sendCustomMessage({PURPOSE: "LOGOUT"})
 })
 
-function autoCapitaliseWord(string) {
+function firstLetterCapitalised(string) {
     if (!string || string.length === 0) return string
     else if (string.length === 1) return string.toUpperCase()
     else return string[0].toUpperCase() + string.substring(1).toLowerCase()
