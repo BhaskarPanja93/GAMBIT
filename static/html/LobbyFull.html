@@ -52,14 +52,4 @@
     function newLeader(data) {
         console.log("New Leader")
     }
-
-    function receivedPartyCode(data) {
-        waitForElementPresence("#party-code", (button)=>{
-            button.innerText = data["CODE"]
-        })
-    }
-
-    waitForElementPresence("#party-code", (button) => {
-        button.onclick = () => {sendCustomMessage({PURPOSE: CUSTOM_MESSAGE_TASKS.PARTY_CODE})}
-    })
 </script>
