@@ -12,6 +12,8 @@ x Register Page Prompts for each field
 
 [B]
 x Hide start button when not required
+x Hide alerts
+x Hide Party and Friend Requests when not required
 
 KEEP 1080p RESOLUTION
 
