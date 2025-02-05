@@ -69,11 +69,12 @@ class DynamicWebsite:
 
 
     class VIEWER_STATES:
-        CREATED = "CREATED"
-        DEAD = "DEAD"
-        INCOMPLETE = "INCOMPLETE"
-        COMPLETE = "COMPLETE"
-        DYING = "DYING"
+        DEAD = -3
+        DYING = -2
+        INCOMPLETE = -1
+        CREATED = 0
+        COMPLETE = 1
+
 
     class WS_DATA_REASONS:
         class IN:

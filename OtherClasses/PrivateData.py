@@ -8,6 +8,7 @@ class PrivateData:
         self.expectedPostAuthPage = Pages.LOBBY
         self.baseURI = ""
         self.userID = ""
+        self.userName = ""
         self.player = None
         self.party = None
         self.pagesHistory = []

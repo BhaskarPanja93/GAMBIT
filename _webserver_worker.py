@@ -5,7 +5,7 @@ monkey.patch_all()
 from time import time
 from sys import argv
 from typing import Any
-from flask import request, redirect, make_response
+from flask import request, redirect, make_response, Response
 from jinja2 import Template
 from argon2 import PasswordHasher
 
@@ -94,7 +94,6 @@ def renderFriends(viewerObj: DynamicWebsite.Viewer):
         #sleep(1)
         other = Player(None, str(_))
         others.append(other)
-        print(CustomMessages.friendAdded(other.displayUserName(), other.displayPFP(), other.displayState()))
         viewerObj.sendCustomMessage(CustomMessages.friendAdded(other.displayUserName(), other.displayPFP(), other.displayState()))
 
     # for other in others:
@@ -112,13 +111,14 @@ def __renderLobbyStructure(viewerObj: DynamicWebsite.Viewer):
         viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
         viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyFeatures)).render(baseURI=viewerObj.privateData.baseURI), DivID.lobbyFeatures, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.LOBBY)
-        viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.POST_AUTH))
 
 
 def renderLobby(viewerObj: DynamicWebsite.Viewer):
+    if viewerObj.privateData.party is None:
+        print("No party to render, creating one")
+        viewerObj.privateData.party = createParty(viewerObj.privateData.player)
     __renderLobbyStructure(viewerObj)
     viewerObj.privateData.newPage(Pages.LOBBY)
-    viewerObj.sendCustomMessage(CustomMessages.addedPartyMember(0, viewerObj.privateData.player))
 
 
 def renderPartyJoined(viewerObj: DynamicWebsite.Viewer):
@@ -259,10 +259,14 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             return renderAuthForms(viewerObj)
     elif viewerObj.privateData.currentPage() == Pages.LOBBY:
         if purpose == "PARTY_CODE":
-            if viewerObj.privateData.party is None:
-                viewerObj.privateData.party = createParty()
-                viewerObj.privateData.party.addPlayer(viewerObj.privateData.player)
             return viewerObj.privateData.party.generatePartyCode()
+        if purpose == "PARTY_CODE_INPUT":
+            newParty = partyCodes.get(form.get("CODE"))
+            if newParty is not None:
+                oldParty = viewerObj.privateData.party
+                viewerObj.privateData.party = newParty
+                if oldParty: oldParty.removePlayer(viewerObj.privateData.player, True)
+                return newParty.addPlayer(viewerObj.privateData.player)
     return rejectForm(form, "Unknown Purpose")
 
 
@@ -284,7 +288,7 @@ def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Left: ", viewerObj.viewerID)
     print(viewerObj.privateData.party)
     if viewerObj.privateData.party is not None:
-        viewerObj.privateData.party.removePlayer(viewerObj.privateData.player)
+        viewerObj.privateData.party.removePlayer(viewerObj.privateData.player, False)
 
 
 def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
@@ -325,7 +329,7 @@ def loginDevice(viewerObj: DynamicWebsite.Viewer):
 
 def setPrivateDetails(viewerObj: DynamicWebsite.Viewer):
     viewerObj.privateData = PrivateData()
-    viewerObj.privateData.player = Player(viewerObj, "ME")
+    viewerObj.privateData.player = Player(viewerObj, viewerObj.privateData.userName)
     viewerObj.privateData.baseURI = request.path.split("?")[0]
 
 
@@ -378,16 +382,17 @@ def closeParty(party: Party):
 
 def onPartyCodeGenerated(party: Party):
     partyCodes[party.partyCode] = party
-    print(f"GEN PARTY CODE {partyCodes=} {partyIDs=}", sep='\n')
+    print(f"NEW PARTY CODE {party.partyID} {party.partyCode}", sep='\n')
 
 
-def createParty():
+def createParty(player):
     party = Party()
     partyIDs[party.partyID] = party
     party.onPartyCodeCreated = onPartyCodeGenerated
     party.onPartyClosed = closeParty
-    party.onKick = renderLobby
-    print(f"NEW PARTY {partyCodes=} {partyIDs=}", sep='\n')
+    party.onSelfLeave = renderLobby
+    if player: party.addPlayer(player)
+    print(f"NEW PARTY {party.partyID}")
     return party
 
 
@@ -409,6 +414,22 @@ logger = CustomisedLogs()
 SQLconn = connectDB(logger)
 dynamicWebsiteApp = DynamicWebsite(firstPageCreator, newVisitorCallback, visitorLeftCallback, formSubmitCallback, customWSMessageCallback, fernetKey, CoreValues.appName, Routes.webHomePage)
 baseApp, WSSock = dynamicWebsiteApp.start()
+
+
+
+@baseApp.get("/debug")
+def _debug():
+    final = ""
+    final += "<br><br>Parties<br>"
+    for partyID in partyIDs:
+        final += "<br>&emsp;"+partyID
+        final+="<br>&emsp;&emsp;Players"
+        for player in partyIDs[partyID].players:
+            final += "<br>&emsp;&emsp;"+player.userName
+    final += "<br><br>Party Codes<br>"
+    for partyCode in partyCodes:
+        final += "<br>&emsp;"+partyCode+"&emsp;&emsp;"+partyCodes[partyCode].partyID
+    return final
 
 
 @baseApp.before_request

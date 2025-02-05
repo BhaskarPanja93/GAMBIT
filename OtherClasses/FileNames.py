@@ -29,6 +29,5 @@ class FileNames:
         PartyInvitesCount = "PartyInvitesCount.html"
         PartyInvitesElement = "PartyInvitesElement.html"
         LobbyStructure = "LobbyFull.html"
-        LobbyMember = "LobbyMember.html"
         LobbyFeatures = "LobbyFeatures.html"
         NotesFullPage = "NotesFullPage.html"
