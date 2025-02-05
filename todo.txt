@@ -1,14 +1,19 @@
 [R]
 ✓ Display auth pages error
-x Make Invite received and Party Join request placeholders
+✓ Make Invite received and Party Join request placeholders
 ✓ Make Friend request received placeholder
 ✓ Fix friend list scroll and size
-x Adjust pop-up
-x Adjust friend req css in static
+✓ Adjust pop-up
+✓ Adjust friend req css in static
+x Friend Request Box and Party Invite Box
+x Register Page Prompts for each field
+
 
 
 [B]
 x Hide start button when not required
+x Hide alerts
+x Hide Party and Friend Requests when not required
 
 KEEP 1080p RESOLUTION
 
