@@ -1,19 +1,25 @@
 from __future__ import annotations
 
+from time import sleep
+
 from randomisedString import RandomisedString
 
 from OtherClasses.CustomMessages import CustomMessages
+from OtherClasses.DivIDs import DivID
 from OtherClasses.Player import Player
+from internal.dynamicWebsite import DynamicWebsite
 
 
 class Party:
     def __init__(self):
         self.partyID = RandomisedString().AlphaNumeric(30, 30)
-        self.defaultPartyCode = "Generate"
+        self.defaultPartyCode = "-----"
         self.partyCode = self.defaultPartyCode
         self.players:list[Player] = []
         self.leaderIndex = None
         self.maxPlayers = 3
+        self.inQueue = False
+        self.partyTimer = None
         self.onPartyClosed = None
         self.onPartyCodeCreated = None
         self.onSelfLeave = None
@@ -44,11 +50,21 @@ class Party:
     def __notifySelfLeft(self, oldPlayer:Player, notifySelfLeave:bool):
         if oldPlayer.viewer is not None:
             if notifySelfLeave: self.onSelfLeave(oldPlayer.viewer)
+    def startTimer(self):
+        self.inQueue = True
+        self.partyTimer = 0
+        while self.inQueue:
+            for player in self.players:
+                if player.viewer is not None:
+                    player.viewer.updateHTML(int(self.partyTimer), DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
+            sleep(1)
     def addPlayer(self, newPlayer:Player):
+        print("adding player", newPlayer)
         if len(self.players) < self.maxPlayers:
             self.players.append(newPlayer)
             index = len(self.players) - 1
             self.__notifySelfJoined(index)
+            self.sendPartyCode(newPlayer)
             self.__notifyOtherPlayersJoined(index, newPlayer)
             return index
     def removePlayer(self, oldPlayer:Player, notifySelfLeave:bool):
@@ -64,7 +80,9 @@ class Party:
                 return index
     def sendPartyCode(self, player):
         if player.viewer is not None:
-            player.viewer.sendCustomMessage(CustomMessages.partyCode(self.partyCode))
+            pass
+            player.viewer.updateHTML(self.partyCode, DivID.partyCodeShow, DynamicWebsite.UpdateMethods.update)
+            #player.viewer.sendCustomMessage(CustomMessages.partyCode(self.partyCode))
     def generatePartyCode(self):
         if self.partyCode == self.defaultPartyCode:
             self.partyCode = RandomisedString().AlphaNumeric(5, 5).lower()

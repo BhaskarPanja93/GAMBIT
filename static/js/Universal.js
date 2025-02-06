@@ -25,7 +25,6 @@ function WSListener(data) {
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.REMOVED_PARTY_MEMBER) waitForElementPresence("#script-lobby", ()=>removedPartyMember(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.DECREMENT_PARTY_MEMBER_INDEX) waitForElementPresence("#script-lobby", ()=>decrementPartyMemberIndex(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.NEW_LEADER) waitForElementPresence("#script-lobby", ()=>newLeader(data))
-    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.PARTY_CODE) waitForElementPresence("#script-lobby", ()=>receivedPartyCode(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.PAGE_CHANGED) window["currentPage"] = data["PAGE"]
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.CHAT) receiveText(data)
 }

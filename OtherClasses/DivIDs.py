@@ -16,4 +16,5 @@ class DivID:
     partyInvites = "party-invites"
     lobbyPlayerSuffix = "player-"
     lobbyFeatures = "lobby-features"
-    partyCode = "party-code"
+    partyCodeShow = "party-code-show"
+    startStopQueue = "start-stop-button"

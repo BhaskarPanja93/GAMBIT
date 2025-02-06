@@ -12,8 +12,8 @@ class FileNames:
     class HTML:
         FirstPage = "FirstPage.html"
         UniversalContainer = "UniversalContainer.html"
-        LogoutButton = "LogoutButton.html"
-        Navbar = "navbar.html"
+        RegularNavbar = "RegularNavbar.html"
+        LobbyNavbar = "LobbyNavbar.html"
         MusicTray = "MusicTray.html"
         AuthStructure = "AuthStructure.html"
         Ghost3d = "Ghost3d.html"

@@ -1,34 +1,31 @@
-<div class="flex w-full">
-    <div class="absolute h-[550px] md:h-[550] lg:h-[550px]">
+<div class="flex w-full absolute h-[550px] md:h-[550] lg:h-[550px]">
+    <div id="friends-page" class="backdrop-blur-sm absolute top-0 left-0 h-full bg-black/50 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.5)] transition-all duration-300 ease-in-out">
+        <div class="p-4 text-gray-50 h-full">
 
-        <div id="friends-page" class="backdrop-blur-sm absolute top-0 left-0 h-full bg-black/50 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.5)] transition-all duration-300 ease-in-out">
-            <div class="p-4 text-gray-50 h-full">
-
-                <div class="space-y-4" id="party-invites">
-                    <div class="flex flex-col justify-center items-center bg-gray-600 border border-gray-200 p-2 my-2 cursor-pointer transition-all duration-300 group-hover:h-auto group-hover:py-4 group-hover:bg-gray-700 group-hover:rounded-lg">
-                        <span class="group-hover:none text-center transition-opacity duration-300 group-hover:opacity-0">1</span>
-                        <span class="hidden group-hover:block text-center transition-opacity duration-300 opacity-0 group-hover:opacity-100 group-hover:block">Party Invites</span>
-                        <div class="hidden group-hover:block w-full bg-gray-800 text-white p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                            Your first hover tooltip content goes here.
-                        </div>
-                        <div class="hidden group-hover:block w-full bg-gray-800 text-white p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100 mt-2">
-                            Your second hover tooltip content goes here.
-                        </div>
+            <div class="space-y-4" id="party-invites">
+                <div class="flex flex-col justify-center items-center bg-gray-600 border border-gray-200 p-2 my-2 cursor-pointer transition-all duration-300 group-hover:h-auto group-hover:py-4 group-hover:bg-gray-700 group-hover:rounded-lg">
+                    <span class="group-hover:none text-center transition-opacity duration-300 group-hover:opacity-0">1</span>
+                    <span class="hidden group-hover:block text-center transition-opacity duration-300 opacity-0 group-hover:opacity-100 group-hover:block">Party Invites</span>
+                    <div class="hidden group-hover:block w-full bg-gray-800 text-white p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        Your first hover tooltip content goes here.
+                    </div>
+                    <div class="hidden group-hover:block w-full bg-gray-800 text-white p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100 mt-2">
+                        Your second hover tooltip content goes here.
                     </div>
                 </div>
+            </div>
 
-                <div class="space-y-4 h-full overflow-y-auto" id="friend-list"></div>
+            <div class="space-y-4 h-full overflow-y-auto" id="friend-list"></div>
 
-                <div class="space-y-4" id="friend-requests">
-                    <div class="flex flex-col justify-center items-center bg-gray-600 border border-gray-200 p-2 my-2 cursor-pointer transition-all duration-300 group-hover:h-auto group-hover:py-4 group-hover:bg-gray-700 group-hover:rounded-lg">
-                        <span class="group-hover:none text-center transition-opacity duration-300 group-hover:opacity-0">1</span>
-                        <span class="hidden group-hover:block text-center transition-opacity duration-300 opacity-0 group-hover:opacity-100 group-hover:block">Party Invites</span>
-                        <div class="hidden group-hover:block w-full bg-gray-800 text-white p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                            Your first hover tooltip content goes here.
-                        </div>
-                        <div class="hidden group-hover:block w-full bg-gray-800 text-white p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100 mt-2">
-                            Your second hover tooltip content goes here.
-                        </div>
+            <div class="space-y-4" id="friend-requests">
+                <div class="flex flex-col justify-center items-center bg-gray-600 border border-gray-200 p-2 my-2 cursor-pointer transition-all duration-300 group-hover:h-auto group-hover:py-4 group-hover:bg-gray-700 group-hover:rounded-lg">
+                    <span class="group-hover:none text-center transition-opacity duration-300 group-hover:opacity-0">1</span>
+                    <span class="hidden group-hover:block text-center transition-opacity duration-300 opacity-0 group-hover:opacity-100 group-hover:block">Party Invites</span>
+                    <div class="hidden group-hover:block w-full bg-gray-800 text-white p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100">
+                        Your first hover tooltip content goes here.
+                    </div>
+                    <div class="hidden group-hover:block w-full bg-gray-800 text-white p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100 mt-2">
+                        Your second hover tooltip content goes here.
                     </div>
                 </div>
             </div>
@@ -76,6 +73,7 @@
             friendDiv.remove()
         }
     }
+
 
     let lastFriendActionTriggeredHover = null
     let lastFriendActionTriggeredVisible = null
@@ -143,6 +141,7 @@
         if (lastFriendActionTriggeredHover) lastFriendActionTriggeredHover.classList.add("hidden")
         if (lastFriendActionTriggeredVisible) lastFriendActionTriggeredVisible.classList.remove("hidden")
     }
+
 
     function inviteFriend(username) {
 

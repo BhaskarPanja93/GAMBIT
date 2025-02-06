@@ -2,6 +2,7 @@ from gevent import monkey
 
 monkey.patch_all()
 
+from OtherClasses.Matchmaker import Matchmaker
 from time import time
 from sys import argv
 from typing import Any
@@ -114,11 +115,10 @@ def __renderLobbyStructure(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderLobby(viewerObj: DynamicWebsite.Viewer):
-    if viewerObj.privateData.party is None:
-        print("No party to render, creating one")
-        viewerObj.privateData.party = createParty(viewerObj.privateData.player)
     __renderLobbyStructure(viewerObj)
     viewerObj.privateData.newPage(Pages.LOBBY)
+    if viewerObj.privateData.party is None:
+        viewerObj.privateData.party = createParty(viewerObj.privateData.player)
 
 
 def renderPartyJoined(viewerObj: DynamicWebsite.Viewer):
@@ -168,13 +168,12 @@ def renderMusicTray(viewerObj: DynamicWebsite.Viewer):
 # NAVBAR
 
 
-def renderNavbar(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Navbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar, UpdateMethods.update)
+def renderRegularNavbar(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.RegularNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar, UpdateMethods.update)
 
 
-def renderLogoutButton(viewerObj: DynamicWebsite.Viewer):
-    if not viewerObj.privateData.isElementRendered(FileNames.HTML.LogoutButton):
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LogoutButton)).render(baseURI=viewerObj.privateData.baseURI), DivID.logoutContainer, UpdateMethods.update)
+def renderLobbyNavbar(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -202,11 +201,12 @@ def renderPostAuthUniversal(viewerObj: DynamicWebsite.Viewer):
 
 def renderFirstPage(viewerObj: DynamicWebsite.Viewer, isAuthenticated: bool):
     renderPreAuthUniversal(viewerObj)
-    renderNavbar(viewerObj)
+    renderRegularNavbar(viewerObj)
     renderMusicTray(viewerObj)
     if isAuthenticated:
+        if viewerObj.privateData.player is None:
+            viewerObj.privateData.player = Player(viewerObj, viewerObj.privateData.userName)
         renderPostAuthUniversal(viewerObj)
-        renderLogoutButton(viewerObj)
         renderFriends(viewerObj)
         renderChatStructure(viewerObj)
         if viewerObj.privateData.expectedPostAuthPage == Pages.LOBBY: renderLobby(viewerObj)
@@ -234,7 +234,7 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             if not identifier: return rejectForm(form, "Invalid Username/Email")
             if not password: return rejectForm(form, "Invalid Password")
             accepted, reason = manualLogin(viewerObj, identifier, password)
-            if accepted: return renderFirstPage(viewerObj, True)
+            if accepted: return renderFirstPage(viewerObj, accepted)
             else:
                 rejectForm(form, reason)
                 return sendLoginForm(viewerObj)
@@ -264,9 +264,15 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             newParty = partyCodes.get(form.get("CODE"))
             if newParty is not None:
                 oldParty = viewerObj.privateData.party
-                viewerObj.privateData.party = newParty
-                if oldParty: oldParty.removePlayer(viewerObj.privateData.player, True)
-                return newParty.addPlayer(viewerObj.privateData.player)
+                if oldParty.partyID != newParty.partyID:
+                    viewerObj.privateData.party = newParty
+                    if oldParty: oldParty.removePlayer(viewerObj.privateData.player, True)
+                    return newParty.addPlayer(viewerObj.privateData.player)
+        if purpose == "START_QUEUE":
+            #viewerObj.privateData.party.startTimer()
+            return matchmaker.addToQueue(viewerObj.privateData.party)
+        if purpose == "STOP_QUEUE":
+            return matchmaker.removeFromQueue(viewerObj.privateData.party)
     return rejectForm(form, "Unknown Purpose")
 
 
@@ -294,10 +300,7 @@ def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Joined: ", viewerObj.viewerID)
     setPrivateDetails(viewerObj)
     accepted, reason = autoLogin(viewerObj)
-    if accepted:
-        #knownUsername = SQLconn.execute(f"{}")
-        viewerObj.privateData.player = Player(viewerObj, viewerObj.privateData.userName)
-        renderFirstPage(viewerObj, accepted)
+    renderFirstPage(viewerObj, accepted)
 
 
 def firstPageCreator():
@@ -326,7 +329,7 @@ def logoutDevice(viewerObj: DynamicWebsite.Viewer):
 
 def createDevice(viewerObj: DynamicWebsite.Viewer):
     logoutDevice(viewerObj)
-    SQLconn.execute(f"INSERT INTO {Database.USER_DEVICES.TABLE_NAME} VALUES (?, ?, ?)", [viewerObj.viewerID, viewerObj.privateData.userID,  viewerObj.privateData.activeSince])
+    SQLconn.execute(f"INSERT INTO {Database.USER_DEVICES.TABLE_NAME} VALUES (?, ?, ?)", [viewerObj.viewerID, viewerObj.privateData.userName,  viewerObj.privateData.activeSince])
 
 
 def setPrivateDetails(viewerObj: DynamicWebsite.Viewer):
@@ -361,7 +364,7 @@ def autoLogin(viewerObj: DynamicWebsite.Viewer):
     savedDevice = SQLconn.execute(f"SELECT {Database.USER_DEVICES.USERNAME} FROM {Database.USER_DEVICES.TABLE_NAME} WHERE {Database.USER_DEVICES.VIEWER_ID}=? LIMIT 1", [viewerObj.viewerID])
     if savedDevice:
         savedDevice = savedDevice[0]
-        viewerObj.privateData.username = savedDevice[Database.USER_DEVICES.USERNAME]
+        viewerObj.privateData.userName = savedDevice[Database.USER_DEVICES.USERNAME].decode()
         return True, "Auto Logged In"
     return False, "Unknown Device"
 
@@ -388,7 +391,9 @@ def createParty(player):
     party.onPartyCodeCreated = onPartyCodeGenerated
     party.onPartyClosed = closeParty
     party.onSelfLeave = renderLobby
-    if player: party.addPlayer(player)
+    if player:
+        if player.viewer: renderLobbyNavbar(player.viewer)
+        party.addPlayer(player)
     print(f"NEW PARTY {party.partyID}")
     return party
 
@@ -404,9 +409,11 @@ cdPort = int(argv[3])
 partyIDs:dict[str, Party] = {}
 partyCodes:dict[str, Party] = {}
 
+
 passwordHasher = PasswordHasher()
 UpdateMethods = DynamicWebsite.UpdateMethods
 cachedHTMLElements = CachedElements()
+matchmaker = Matchmaker()
 logger = CustomisedLogs()
 SQLconn = connectDB(logger)
 dynamicWebsiteApp = DynamicWebsite(firstPageCreator, newVisitorCallback, visitorLeftCallback, formSubmitCallback, customWSMessageCallback, fernetKey, CoreValues.appName, Routes.webHomePage)
