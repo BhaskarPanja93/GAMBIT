@@ -286,7 +286,6 @@ def customWSMessageCallback(viewerObj: DynamicWebsite.Viewer, message: Any):
 
 def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Left: ", viewerObj.viewerID)
-    print(viewerObj.privateData.party)
     if viewerObj.privateData.party is not None:
         viewerObj.privateData.party.removePlayer(viewerObj.privateData.player, False)
 
