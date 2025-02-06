@@ -221,7 +221,7 @@ def renderFirstPage(viewerObj: DynamicWebsite.Viewer, isAuthenticated: bool):
 
 
 def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSecure:bool):
-    if "PURPOSE" not in form: return rejectForm(form, "Lacks Purpose")
+    if "PURPOSE" not in form: return
     purpose = form.pop("PURPOSE")
     if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
         if purpose == "LOGOUT":
@@ -229,31 +229,51 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             return viewerObj.sendCustomMessage(CustomMessages.refreshBrowser())
     if viewerObj.privateData.currentPage() == Pages.AUTH:
         if purpose == "LOGIN" and isSecure:
-            identifier = form.get("identifier")
-            password = form.get("password")
-            if not identifier: return rejectForm(form, "Invalid Username/Email")
-            if not password: return rejectForm(form, "Invalid Password")
+            resetFormErrors(viewerObj)
+            identifier = form.get("identifier").strip()
+            password = form.get("password").strip()
+            if not identifier:
+                sendLoginCSRF(viewerObj)
+                return rejectForm(viewerObj, DivID.loginIdentifierError, "Invalid Username/Email")
+            if not password:
+                sendLoginCSRF(viewerObj)
+                return rejectForm(viewerObj, DivID.loginIdentifierError, "Invalid Password")
+
             accepted, reason = manualLogin(viewerObj, identifier, password)
-            if accepted: return renderFirstPage(viewerObj, accepted)
+            if accepted:
+                return renderFirstPage(viewerObj, accepted)
             else:
-                rejectForm(form, reason)
-                return sendLoginForm(viewerObj)
+                sendLoginCSRF(viewerObj)
+                return rejectForm(viewerObj, DivID.loginIdentifierError, reason)
         elif purpose == "REGISTER" and isSecure:
-            username = form.get("user-name")
-            password = form.get("password")
-            confirmPassword = form.get("confirm-password")
-            email = form.get("email")
-            name = form.get("person-name")
-            if not username: return rejectForm(form, "Invalid Username")
-            if not password: return rejectForm(form, "Invalid Password")
-            if password != confirmPassword: return rejectForm(form, "Passwords Do Not Match")
-            if not email: return rejectForm(form, "Invalid Email")
-            if not name: return rejectForm(form, "Invalid Name")
+            resetFormErrors(viewerObj)
+            username = form.get("user-name").strip()
+            password = form.get("password").strip()
+            confirmPassword = form.get("confirm-password").strip()
+            email = form.get("email").strip()
+            name = form.get("person-name").strip()
+            if not username:
+                sendRegisterCSRF(viewerObj)
+                return rejectForm(viewerObj, DivID.registerUsernameError, "Invalid Username")
+            if not password:
+                sendRegisterCSRF(viewerObj)
+                return rejectForm(viewerObj, DivID.registerPasswordError, "Invalid Password")
+            if password != confirmPassword:
+                sendRegisterCSRF(viewerObj)
+                return rejectForm(viewerObj, DivID.registerPasswordError, "Passwords Do Not Match")
+            if not email:
+                sendRegisterCSRF(viewerObj)
+                return rejectForm(viewerObj, DivID.registerEmailError, "Invalid Email")
+            if not name:
+                sendRegisterCSRF(viewerObj)
+                return rejectForm(viewerObj, DivID.registerNameError, "Invalid Name")
+
             accepted, reason = createUser(viewerObj, username, password, name, email)
-            if accepted: return renderFirstPage(viewerObj, True)
+            if accepted:
+                return renderFirstPage(viewerObj, accepted)
             else:
-                rejectForm(form, reason)
-                return sendRegisterForm(viewerObj)
+                sendRegisterCSRF(viewerObj)
+                return rejectForm(viewerObj, DivID.registerGeneralError, reason)
     elif viewerObj.privateData.currentPage() == Pages.PRE_AUTH:
         if purpose == "RENDER_AUTH_FORMS":
             return renderAuthForms(viewerObj)
@@ -273,11 +293,12 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             return matchmaker.addToQueue(viewerObj.privateData.party)
         if purpose == "STOP_QUEUE":
             return matchmaker.removeFromQueue(viewerObj.privateData.party)
-    return rejectForm(form, "Unknown Purpose")
+    return rejectForm(viewerObj, form, "Unknown Purpose")
 
 
-def rejectForm(form: dict, reason):
-    print("FORM REJECTED", reason)
+def rejectForm(viewerObj: DynamicWebsite.Viewer, divToTarget, reason):
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FormErrorElement)).render(errorText=reason), divToTarget, UpdateMethods.update)
+    print("FORM REJECTED")
 
 
 def formSubmitCallback(viewerObj: DynamicWebsite.Viewer, form: dict):
@@ -311,12 +332,31 @@ def firstPageCreator():
 # AUTHENTICATION
 
 
+def resetFormErrors(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML("", DivID.loginIdentifierError, UpdateMethods.update)
+    viewerObj.updateHTML("", DivID.registerGeneralError, UpdateMethods.update)
+    viewerObj.updateHTML("", DivID.registerNameError, UpdateMethods.update)
+    viewerObj.updateHTML("", DivID.registerEmailError, UpdateMethods.update)
+    viewerObj.updateHTML("", DivID.registerUsernameError, UpdateMethods.update)
+    viewerObj.updateHTML("", DivID.registerPasswordError, UpdateMethods.update)
+
+
+def sendLoginCSRF(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(viewerObj.purposeManager.createCSRF("LOGIN"), DivID.loginCSRF, UpdateMethods.update)
+
+
+def sendRegisterCSRF(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(viewerObj.purposeManager.createCSRF("REGISTER"), DivID.registerCSRF, UpdateMethods.update)
+
+
 def sendLoginForm(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Login)).render(CSRF=viewerObj.purposeManager.createCSRF("LOGIN"), baseURI=viewerObj.privateData.baseURI), DivID.loginForm, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Login)).render(baseURI=viewerObj.privateData.baseURI), DivID.loginForm, UpdateMethods.update)
+    sendLoginCSRF(viewerObj)
 
 
 def sendRegisterForm(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Register)).render(CSRF=viewerObj.purposeManager.createCSRF("REGISTER"), baseURI=viewerObj.privateData.baseURI), DivID.registerForm, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Register)).render(baseURI=viewerObj.privateData.baseURI), DivID.registerForm, UpdateMethods.update)
+    sendRegisterCSRF(viewerObj)
 
 
 def checkPasswordStrength(password:str):
@@ -353,10 +393,13 @@ def manualLogin(viewerObj: DynamicWebsite.Viewer, identifier:str, password:str):
         savedCredentials = savedCredentials[0]
         username = savedCredentials[Database.USER_AUTH.USERNAME]
         pwHash = savedCredentials[Database.USER_AUTH.PW_HASH]
-        if passwordHasher.verify(pwHash.decode(), password):
-            viewerObj.privateData.userName = username
-            createDevice(viewerObj)
-        return True, "Manual Logged In"
+        try:
+            if passwordHasher.verify(pwHash.decode(), password):
+                viewerObj.privateData.userName = username
+                createDevice(viewerObj)
+                return True, "Manual Logged In"
+        except:
+            pass
     return False, "Invalid Credentials"
 
 

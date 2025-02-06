@@ -1,22 +1,24 @@
+KEEP 1080p RESOLUTION !!
+
 [R]
+x Friend Request Box and Party Invite Box
+
 ✓ Display auth pages error
 ✓ Make Invite received and Party Join request placeholders
 ✓ Make Friend request received placeholder
 ✓ Fix friend list scroll and size
 ✓ Adjust pop-up
 ✓ Adjust friend req css in static
-x Friend Request Box and Party Invite Box
-x Register Page Prompts for each field
 
 
 
 [B]
-x Hide start button when not required
-x Hide alerts
-x Hide Party and Friend Requests when not required
+x Friend and Invites mechanism
 
-KEEP 1080p RESOLUTION
-
+✓ Auth errors added
+✓ Join party using party code
+✓ Auth forms don't reset incase error
+✓ Hide start button when not required
 ✓ LOWER case code generator (Uppercase letters can cause confusions)
 ✓ Send message for friends work
 ✓ Chat colours modified
