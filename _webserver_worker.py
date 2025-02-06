@@ -5,7 +5,7 @@ monkey.patch_all()
 from time import time
 from sys import argv
 from typing import Any
-from flask import request, redirect, make_response, Response
+from flask import request, redirect, make_response
 from jinja2 import Template
 from argon2 import PasswordHasher
 
@@ -295,7 +295,10 @@ def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Joined: ", viewerObj.viewerID)
     setPrivateDetails(viewerObj)
     accepted, reason = autoLogin(viewerObj)
-    renderFirstPage(viewerObj, accepted)
+    if accepted:
+        #knownUsername = SQLconn.execute(f"{}")
+        viewerObj.privateData.player = Player(viewerObj, viewerObj.privateData.userName)
+        renderFirstPage(viewerObj, accepted)
 
 
 def firstPageCreator():
@@ -322,49 +325,44 @@ def logoutDevice(viewerObj: DynamicWebsite.Viewer):
     SQLconn.execute(f"DELETE FROM {Database.USER_DEVICES.TABLE_NAME} WHERE {Database.USER_DEVICES.VIEWER_ID}=? LIMIT 1", [viewerObj.viewerID])
 
 
-def loginDevice(viewerObj: DynamicWebsite.Viewer):
+def createDevice(viewerObj: DynamicWebsite.Viewer):
     logoutDevice(viewerObj)
     SQLconn.execute(f"INSERT INTO {Database.USER_DEVICES.TABLE_NAME} VALUES (?, ?, ?)", [viewerObj.viewerID, viewerObj.privateData.userID,  viewerObj.privateData.activeSince])
 
 
 def setPrivateDetails(viewerObj: DynamicWebsite.Viewer):
     viewerObj.privateData = PrivateData()
-    viewerObj.privateData.player = Player(viewerObj, viewerObj.privateData.userName)
     viewerObj.privateData.baseURI = request.path.split("?")[0]
 
 
 def createUser(viewerObj: DynamicWebsite.Viewer, username:str, password:str, personName:str, email:str):
-    userID = dynamicWebsiteApp.stringGenerator.AlphaNumeric(30, 30)
-    if SQLconn.execute(f"SELECT {Database.USER_AUTH.USER_ID} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.USERNAME}=? LIMIT 1", [username]): return False, "Username already registered"
-    if SQLconn.execute(f"SELECT {Database.USER_AUTH.USER_ID} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.EMAIL}=? LIMIT 1", [email]): return False, "Email already registered"
-    SQLconn.execute(f"INSERT INTO {Database.USER_AUTH.TABLE_NAME} VALUES (?, ?, ?, ?)", [userID, username, email, passwordHasher.hash(password)])
-    SQLconn.execute(f"INSERT INTO {Database.USER_INFO.TABLE_NAME} VALUES (?, ?, ?)", [userID, personName, viewerObj.privateData.activeSince])
-    viewerObj.privateData.userID = userID
-    loginDevice(viewerObj)
-    print("User registered")
+    if SQLconn.execute(f"SELECT {Database.USER_AUTH.USERNAME} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.USERNAME}=? LIMIT 1", [username]): return False, "Username already registered"
+    if SQLconn.execute(f"SELECT {Database.USER_AUTH.EMAIL} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.EMAIL}=? LIMIT 1", [email]): return False, "Email already registered"
+    SQLconn.execute(f"INSERT INTO {Database.USER_AUTH.TABLE_NAME} VALUES (?, ?, ?)", [username, email, passwordHasher.hash(password)])
+    SQLconn.execute(f"INSERT INTO {Database.USER_INFO.TABLE_NAME} VALUES (?, ?, ?)", [username, personName, viewerObj.privateData.activeSince])
+    viewerObj.privateData.userName = username
+    createDevice(viewerObj)
     return True, "User registered"
 
 
 def manualLogin(viewerObj: DynamicWebsite.Viewer, identifier:str, password:str):
-    savedCredentials = SQLconn.execute(f"SELECT {Database.USER_AUTH.USER_ID}, {Database.USER_AUTH.PW_HASH} FROM {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.USERNAME}=? OR {Database.USER_AUTH.EMAIL}=? LIMIT 1", [identifier, identifier])
+    savedCredentials = SQLconn.execute(f"SELECT {Database.USER_AUTH.USERNAME}, {Database.USER_AUTH.PW_HASH} FROM {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.USERNAME}=? OR {Database.USER_AUTH.EMAIL}=? LIMIT 1", [identifier, identifier])
     if savedCredentials:
         savedCredentials = savedCredentials[0]
-        userID = savedCredentials[Database.USER_AUTH.USER_ID]
+        username = savedCredentials[Database.USER_AUTH.USERNAME]
         pwHash = savedCredentials[Database.USER_AUTH.PW_HASH]
         if passwordHasher.verify(pwHash.decode(), password):
-            viewerObj.privateData.userID = userID
-            loginDevice(viewerObj)
-            print("Manual Logged In")
+            viewerObj.privateData.userName = username
+            createDevice(viewerObj)
         return True, "Manual Logged In"
     return False, "Invalid Credentials"
 
 
 def autoLogin(viewerObj: DynamicWebsite.Viewer):
-    savedDevice = SQLconn.execute(f"SELECT {Database.USER_DEVICES.USER_ID} FROM {Database.USER_DEVICES.TABLE_NAME} WHERE {Database.USER_DEVICES.VIEWER_ID}=? LIMIT 1", [viewerObj.viewerID])
+    savedDevice = SQLconn.execute(f"SELECT {Database.USER_DEVICES.USERNAME} FROM {Database.USER_DEVICES.TABLE_NAME} WHERE {Database.USER_DEVICES.VIEWER_ID}=? LIMIT 1", [viewerObj.viewerID])
     if savedDevice:
         savedDevice = savedDevice[0]
-        viewerObj.privateData.userID = savedDevice[Database.USER_DEVICES.USER_ID]
-        print("Auto Logged In")
+        viewerObj.privateData.username = savedDevice[Database.USER_DEVICES.USERNAME]
         return True, "Auto Logged In"
     return False, "Unknown Device"
 

@@ -7,7 +7,6 @@ class PrivateData:
         self.activeSince = datetime.now()
         self.expectedPostAuthPage = Pages.LOBBY
         self.baseURI = ""
-        self.userID = ""
         self.userName = ""
         self.player = None
         self.party = None

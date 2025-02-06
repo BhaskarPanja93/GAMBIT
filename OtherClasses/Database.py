@@ -6,7 +6,7 @@ class Database:
         TABLE_NAME ="career"
 
         QUIZ_ID = "quiz_id"
-        USER_ID = "user_id"
+        USERNAME = "username"
         END_AT = "end_at"
         MMR_OFFSET = "mmr_offset"
 
@@ -31,7 +31,7 @@ class Database:
         TABLE_NAME ="note"
 
         NOTE_ID = "note_id"
-        USER_ID = "user_id"
+        USERNAME = "username"
 
 
     class PURCHASABLE:
@@ -65,7 +65,7 @@ class Database:
     class USER_INFO:
         TABLE_NAME ="user_info"
 
-        USER_ID = "user_id"
+        USERNAME = "username"
         PERSON_NAME = "person_name"
         AGE = "age"
         JOINED = "joined"
@@ -74,7 +74,6 @@ class Database:
     class USER_AUTH:
         TABLE_NAME = "user_auth"
 
-        USER_ID = "user_id"
         USERNAME = "username"
         EMAIL = "email"
         PW_HASH = "pw_hash"
@@ -84,7 +83,7 @@ class Database:
         TABLE_NAME ="user_devices"
 
         VIEWER_ID = "viewer_id"
-        USER_ID = "user_id"
+        USERNAME = "username"
         LAST_SEEN = "last_seen"
 
 
@@ -92,7 +91,7 @@ class Database:
         TABLE_NAME ="purchases"
 
         PURCHASE_ID = "purchase_id"
-        USER_ID = "user_id"
+        USERNAME = "username"
         ITEM_ID = "item_id"
 
 
