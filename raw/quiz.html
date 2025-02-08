@@ -40,74 +40,22 @@
             </div>
         </nav>
 
-        <!-- Quiz Content -->
-            <div id="quizContent" class="relative flex items-center justify-center w-screen h-[600px] mt-32 sm:mt-32 md:mt-0 lg:mt-0" style="z-index: 1;">
+<!-- Quiz Content -->
+<div id="quizContent" class="relative flex items-center justify-center w-screen h-[600px] mt-32 sm:mt-32 md:mt-0 lg:mt-0" style="z-index: 1;">
 
-                <div id="quiz-players" class="absolute left-0 backdrop-blur-sm bg-black/50 h-full w-60 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.5)] transition-all duration-300 ease-in-out" style="z-index: 50;">
-                    <div class="p-4 text-gray-50">
-                        <h2 class="font-bold text-lg mb-4">Scoreboard</h2>
+    <!-- Quiz Section (Center) -->
+    <div class="relative z-50 flex flex-col items-center bg-black/70 p-6 sm:p-8 rounded-2xl shadow-xl w-[85%] sm:w-[75%] md:w-[70%] lg:w-[65%] h-[70%]">
+        <div class="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Quiz Question</div>
+        <div class="text-white text-lg sm:text-xl md:text-2xl text-center mb-6 sm:mb-8">What is the capital of France?</div>
+        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
+            <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Paris</button>
+            <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Berlin</button>
+            <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Madrid</button>
+            <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Rome</button>
+        </div>
+    </div>
 
-                        <!-- Team Info (Left) -->
-                        <div class="flex flex-col items-center space-y-6 gap-6">
-
-                            <div class="space-y-4">
-                                <div class="text-white text-lg font-bold">Your Team</div>
-                                <div class="space-y-2">
-                                    <div class="flex items-center space-x-8">
-                                        <div class="w-10 h-10 bg-gray-600 rounded-full"></div>
-                                        <div class="text-white">Player 1</div>
-                                        <div class="text-white">50</div>
-                                    </div>
-                                    <div class="flex items-center space-x-8">
-                                        <div class="w-10 h-10 bg-gray-600 rounded-full"></div>
-                                        <div class="text-white">Player 2</div>
-                                        <div class="text-white">30</div>
-                                    </div>
-                                    <div class="flex items-center space-x-8">
-                                        <div class="w-10 h-10 bg-gray-600 rounded-full"></div>
-                                        <div class="text-white">Player 3</div>
-                                        <div class="text-white">60</div>
-                                    </div>
-                                </div>
-                            </div>
-
-                            <div class="space-y-4">
-                                <div class="text-white text-lg font-bold">Opponent Team</div>
-                                <div class="space-y-2">
-                                    <div class="flex items-center space-x-8">
-                                        <div class="w-10 h-10 bg-gray-600 rounded-full"></div>
-                                        <div class="text-white">Player 1</div>
-                                        <div class="text-white">50</div>
-                                    </div>
-                                    <div class="flex items-center space-x-8">
-                                        <div class="w-10 h-10 bg-gray-600 rounded-full"></div>
-                                        <div class="text-white">Player 2</div>
-                                        <div class="text-white">30</div>
-                                    </div>
-                                    <div class="flex items-center space-x-8">
-                                        <div class="w-10 h-10 bg-gray-600 rounded-full"></div>
-                                        <div class="text-white">Player 3</div>
-                                        <div class="text-white">60</div>
-                                    </div>
-                                </div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-
-                 <!-- Quiz Section (Center) -->
-                <div class="relative z-50 flex flex-col items-center bg-black/70 p-6 sm:p-8 rounded-2xl shadow-xl w-[85%] sm:w-[75%] md:w-[70%] lg:w-[65%] h-[70%]">
-                    <div class="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Quiz Question</div>
-                    <div class="text-white text-lg sm:text-xl md:text-2xl text-center mb-6 sm:mb-8">What is the capital of France?</div>
-                    <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
-                        <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Paris</button>
-                        <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Berlin</button>
-                        <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Madrid</button>
-                        <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Rome</button>
-                    </div>
-                </div>
-
-            </div>
+</div>
 
 
 <!-- Chat Component -->
