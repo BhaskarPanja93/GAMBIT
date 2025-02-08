@@ -1,4 +1,4 @@
-<div class="flex w-full absolute h-[550px] md:h-[550] lg:h-[550px]">
+<div class="flex absolute h-[450px] md:h-[550px] lg:h-[550px]">
     <div id="friends-page" class="backdrop-blur-sm absolute top-0 left-0 h-full bg-black/50 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.5)] transition-all duration-300 ease-in-out">
         <div class="p-4 text-gray-50 h-full">
 
@@ -17,18 +17,43 @@
 
             <div class="space-y-4 h-full overflow-y-auto" id="friend-list"></div>
 
-            <div class="space-y-4" id="friend-requests">
-                <div class="flex flex-col justify-center items-center bg-gray-600 border border-gray-200 p-2 my-2 cursor-pointer transition-all duration-300 group-hover:h-auto group-hover:py-4 group-hover:bg-gray-700 group-hover:rounded-lg">
-                    <span class="group-hover:none text-center transition-opacity duration-300 group-hover:opacity-0">1</span>
-                    <span class="hidden group-hover:block text-center transition-opacity duration-300 opacity-0 group-hover:opacity-100 group-hover:block">Party Invites</span>
-                    <div class="hidden group-hover:block w-full bg-gray-800 text-white p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100">
-                        Your first hover tooltip content goes here.
+            <div class="space-y-2" id="friend-requests">
+                <div class="flex flex-col justify-center items-start p-2 gap-2 bg-gray-700/30 cursor-pointer transition-all duration-300 group-hover:h-auto group-hover:py-4 group-hover:rounded-lg">
+
+                    <div class="request-count text-xs">
+                        1/4
                     </div>
-                    <div class="hidden group-hover:block w-full bg-gray-800 text-white p-2 rounded shadow-md opacity-0 transition-opacity duration-300 group-hover:opacity-100 mt-2">
-                        Your second hover tooltip content goes here.
+                    <div class="user-details">
+                        <div class="relative group flex items-center space-x-2">
+                          <img src="https://i.pinimg.com/originals/e4/3d/2d/e43d2dea1d8793fcf016d2a634bdf761.png" class="h-10 w-10" alt="user-img">
+                          <div class="flex flex-col text-sm friend-details hidden">
+                            <div class="flex items-center space-x-2">UsernameXYZ</div>
+                            <div class="text-gray-500 text-xs">wants to be friends</div>
+                          </div>
+                          <div class="gap-1 flex flex-col absolute top-1/2 left-full transform -translate-y-1/2 translate-x-2 p-2 rounded shadow-md opacity-100 transition-opacity duration-300 whitespace-nowrap z-10 hidden"></div>
+                        </div>
                     </div>
+                     <div class="flex gap-1 group items-center justify-center">
+                        <button class="bg-green-500 text-white px-6 py-1 rounded hover:bg-green-600">Accept</button>
+                        <button class="bg-red-500 text-white px-6 py-1 rounded hover:bg-red-600">Reject</button>
+                     </div>
+
+                    <div class="flex items-center justify-center">
+                        <button class="px-9 py-1 bg-gray-600 hover:bg-gray-500">
+                          <img src="https://cdn-icons-png.flaticon.com/512/622/622669.png" alt="Search" class="h-6 w-6">
+                        </button>
+                        <button class="px-9 py-1 bg-gray-600 hover:bg-gray-500">
+                          <img src="https://cdn-icons-png.flaticon.com/512/748/748113.png" alt="Add Friend" class="h-6 w-6">
+                        </button>
+                      </div>
+                    </div>
+
+
+
+
                 </div>
             </div>
+
         </div>
     </div>
 </div>
