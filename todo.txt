@@ -1,14 +1,16 @@
 KEEP 1080p RESOLUTION !!
 
 [R]
-x Friend Request Box and Party Invite Box
-
+✓ Friend Request Box and Party Invite Box
 ✓ Display auth pages error
 ✓ Make Invite received and Party Join request placeholders
 ✓ Make Friend request received placeholder
 ✓ Fix friend list scroll and size
 ✓ Adjust pop-up
 ✓ Adjust friend req css in static
+
+x Final adjustments for nav bar
+x UI Changes
 
 
 

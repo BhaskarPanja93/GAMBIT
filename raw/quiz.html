@@ -11,11 +11,22 @@
 </head>
 <body>
 <div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
-    <audio id="music-player" preload="none"> <source src="" type="audio/x-wav;codec=pcm"> </audio>
+    <audio id="music-player" preload="none">
+        <source src="" type="audio/x-wav;codec=pcm">
+    </audio>
 
     <!-- Animation div-->
     <div class="bg-animation-box">
-        <div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div><div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
     </div>
     <div id="particles-animation"></div>
 
@@ -26,55 +37,152 @@
     </div>
 
     <!-- Main Div -->
-    <div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden" >
+    <div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden">
         <!-- Navigation Bar -->
         <nav class="bg-transparent py-4" style="z-index: 2;">
-            <div class="mx-auto px-2 sm:px-4 lg:px-20 mt-[2vw] flex justify-between items-center">
-                <div class="flex items-center">
-                    <a href="favicon.ico" class="mr-2">
-                        <img src="favicon.ico" alt="Logo" class="h-8 w-8">
-                    </a>
-                    <div class="text-white font-bold text-2xl py-3">Gambit</div>
+            <div class="mx-auto w-full px-2 sm:px-4 lg:px-20 mt-[2vw] flex justify-between items-center">
+
+                <!-- Player Team -->
+                <div class="w-[650px] flex flex-col items-center rounded-lg bg-gray-900 p-6">
+                    <div class="text-white text-lg font-bold mb-4">Your Team</div>
+
+                    <!-- Player Score Board -->
+                    <div class="">
+
+                    </div>
+
+                    <div class="flex w-full items-center justify-between">
+                        <div class="relative group">
+                            <img src="https://i.pinimg.com/564x/05/93/c2/0593c22a578bf58e4bf01a4a063a3587.jpg"
+                                 alt="User PFP" class="h-10 w-10 rounded-full">
+                            <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                                Correct Answers: 3
+                            </div>
+                        </div>
+                        <div class="relative group">
+                            <img src="https://i.pinimg.com/564x/05/93/c2/0593c22a578bf58e4bf01a4a063a3587.jpg"
+                                 alt="User PFP" class="h-10 w-10 rounded-full">
+                            <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                                Correct Answers: 7
+                            </div>
+                        </div>
+                        <div class="relative group">
+                            <img src="https://i.pinimg.com/564x/05/93/c2/0593c22a578bf58e4bf01a4a063a3587.jpg"
+                                 alt="User PFP" class="h-10 w-10 rounded-full">
+                            <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                                Correct Answers: 2
+                            </div>
+                        </div>
+
+                        <!-- Score Board -->
+                        <div class="ml-4 text-white text-xl font-bold">30</div>
+                    </div>
+
+                    <!-- Health bar below the images -->
+                    <div class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
+
+                        <!-- Adjust width for different health levels -->
+                        <div class="bg-blue-500 h-full" style="width: 30%;"></div>
+                    </div>
                 </div>
-                <button class="button-glow py-3 px-7 rounded-3xl font-bold ">Log Out</button>
+
+
+
+
+                <!-- Opponent Team -->
+                <div class="w-[650px] flex flex-col items-center rounded-lg bg-gray-700 p-6">
+
+                    <!-- Opponent Score Board -->
+                    <div class="text-white text-lg font-bold mb-4">Opponent Team</div>
+
+
+                    <div class="flex w-full items-center justify-between">
+
+                        <!-- Score Board -->
+                        <div class="ml-4 text-white text-xl font-bold">70</div>
+
+                        <div class="relative group">
+                            <img src="https://i.pinimg.com/564x/18/0e/65/180e6574a9aa0e4c7c23a252db4184dc.jpg"
+                                 alt="User PFP" class="h-10 w-10 rounded-full">
+                            <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                                Correct Answers: 1
+                            </div>
+                        </div>
+                        <div class="relative group">
+                            <img src="https://i.pinimg.com/564x/18/0e/65/180e6574a9aa0e4c7c23a252db4184dc.jpg"
+                                 alt="User PFP" class="h-10 w-10 rounded-full">
+                            <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                                Correct Answers: 1
+                            </div>
+                        </div>
+                        <div class="relative group">
+                            <img src="https://i.pinimg.com/564x/18/0e/65/180e6574a9aa0e4c7c23a252db4184dc.jpg"
+                                 alt="User PFP" class="h-10 w-10 rounded-full">
+                            <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+                                Correct Answers: 3
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Health bar below the images -->
+                    <div class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
+
+                        <!-- Adjust width for different health levels -->
+                        <div class="bg-red-500 h-full" style="width: 80%;"></div>
+                    </div>
+                </div>
             </div>
         </nav>
 
-<!-- Quiz Content -->
-<div id="quizContent" class="relative flex items-center justify-center w-screen h-[600px] mt-32 sm:mt-32 md:mt-0 lg:mt-0" style="z-index: 1;">
+        <!-- Quiz Content -->
+        <div id="quizContent"
+             class="relative flex items-center justify-center w-full h-[600px] mt-32 sm:mt-32 md:mt-0 lg:mt-0"
+             style="z-index: 1;">
 
-    <!-- Quiz Section (Center) -->
-    <div class="relative z-50 flex flex-col items-center bg-black/70 p-6 sm:p-8 rounded-2xl shadow-xl w-[85%] sm:w-[75%] md:w-[70%] lg:w-[65%] h-[70%]">
-        <div class="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Quiz Question</div>
-        <div class="text-white text-lg sm:text-xl md:text-2xl text-center mb-6 sm:mb-8">What is the capital of France?</div>
-        <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
-            <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Paris</button>
-            <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Berlin</button>
-            <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Madrid</button>
-            <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">Rome</button>
+            <!-- Quiz Section (Center) -->
+            <div class="relative z-50 flex flex-col items-center bg-black/70 p-6 sm:p-8 rounded-2xl shadow-xl w-[85%] sm:w-[75%] md:w-[70%] lg:w-[65%] h-[70%]">
+                <div class="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Quiz Question</div>
+                <div class="text-white text-lg sm:text-xl md:text-2xl text-center mb-6 sm:mb-8">What is the capital of
+                    France?
+                </div>
+                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
+                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">
+                        Paris
+                    </button>
+                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">
+                        Berlin
+                    </button>
+                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">
+                        Madrid
+                    </button>
+                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">
+                        Rome
+                    </button>
+                </div>
+            </div>
+
         </div>
-    </div>
-
-</div>
 
 
-<!-- Chat Component -->
-            <style>
-                #chat-container:hover #chatbox {
-                    display: block;
-                }
-            </style>
+        <!-- Chat Component -->
+        <style>
+            #chat-container:hover #chatbox {
+                display: block;
+            }
+        </style>
 
-                <style>
-                    /* Hide the scrollbar */
-                    div::-webkit-scrollbar {
-                        display: none;
-                    }
-                </style>
+        <style>
+            /* Hide the scrollbar */
+            div::-webkit-scrollbar {
+                display: none;
+            }
+        </style>
 
 
-            <div id="chat-container" class="fixed bottom-20 right-14 mb-2 mr-4 bg-gradient-to-t from-transparent to-gray-700/70   text-white z-50 p-2 rounded-lg shadow-lg w-80">
-                <div id="chatbox" class="hidden p-2 h-[14rem] overflow-y-auto backdrop-blur-md space-y-2 rounded-lg shadow-md">
+        <div id="chat-container"
+             class="fixed bottom-20 right-14 mb-2 mr-4 bg-gradient-to-t from-transparent to-gray-700/70   text-white z-50 p-2 rounded-lg shadow-lg w-80">
+            <div id="chatbox"
+                 class="hidden p-2 h-[14rem] overflow-y-auto backdrop-blur-md space-y-2 rounded-lg shadow-md">
 
                 <div class="flex items-start space-x-2 text-gray-700 rounded-lg py-1 px-2">
                     <span class="text-sm font-semibold text-cyan-300">You:</span>
@@ -115,61 +223,70 @@
             </div>
 
 
-        <div class="flex items-center rounded-lg mt-2">
-            <input id="chat-input" type="text" placeholder="Type a message..." class="bg-transparent flex-1 p-1 text-white rounded-md outline-none">
-            <button id="send-btn" class="ml-2">
-                <img src="/static/image/send-button.png" alt="Send" class="w-4 h-4">
-            </button>
+            <div class="flex items-center rounded-lg mt-2">
+                <input id="chat-input" type="text" placeholder="Type a message..."
+                       class="bg-transparent flex-1 p-1 text-white rounded-md outline-none">
+                <button id="send-btn" class="ml-2">
+                    <img src="/static/image/send-button.png" alt="Send" class="w-4 h-4">
+                </button>
+            </div>
+
         </div>
 
-    </div>
-
-    <script>
-    function sendMessage() {
-        let input = document.getElementById("chat-input");
-        let message = input.value.trim();
-        if (message) {
-            let chatbox = document.getElementById("chatbox");
-            let newMessage = document.createElement("div");
-            newMessage.classList.add("flex", "items-start", "space-x-2", "text-black", "rounded-lg", "px-2");
-            newMessage.innerHTML = `<span class='text-sm font-semibold text-white'>You:</span><p class="text-sm font-semibold text-white/50">${message}</p>`;
-            chatbox.appendChild(newMessage);
-            input.value = "";
-            chatbox.scrollTop = chatbox.scrollHeight;
-        }
-    }
-
-    // Send message on button click
-    document.getElementById("send-btn").addEventListener("click", sendMessage);
-
-    // Send message on Enter key press
-    document.getElementById("chat-input").addEventListener("keydown", function(event) {
-        if (event.key === "Enter") {
-            event.preventDefault(); // Prevents form submission behavior
-            sendMessage();
-        }
-    });
-</script>
-
-            <script src="Music.js"></script>
-            <script src="Trail.js"></script>
-            <script>
-                const friendList = document.getElementById("friend-list")
-                friendList.onmouseleave = function() {
-                    friendList.classList.add("w-17")
-                    friendList.classList.remove("w-60")
-                    Object.values(friendList.children[0].children[1].children[1].children).forEach((e)=>{e.children[1].classList.add("hidden")})
-                    Object.values(friendList.children[0].children[2].children[1].children).forEach((e)=>{e.children[1].classList.add("hidden")})
+        <script>
+            function sendMessage() {
+                let input = document.getElementById("chat-input");
+                let message = input.value.trim();
+                if (message) {
+                    let chatbox = document.getElementById("chatbox");
+                    let newMessage = document.createElement("div");
+                    newMessage.classList.add("flex", "items-start", "space-x-2", "text-black", "rounded-lg", "px-2");
+                    newMessage.innerHTML = `<span class='text-sm font-semibold text-white'>You:</span><p class="text-sm font-semibold text-white/50">${message}</p>`;
+                    chatbox.appendChild(newMessage);
+                    input.value = "";
+                    chatbox.scrollTop = chatbox.scrollHeight;
                 }
-                friendList.onmouseenter = function() {
-                    friendList.classList.add("w-60")
-                    friendList.classList.remove("w-17")
-                    Object.values(friendList.children[0].children[1].children[1].children).forEach((e)=>{e.children[1].classList.remove("hidden")})
-                    Object.values(friendList.children[0].children[2].children[1].children).forEach((e)=>{e.children[1].classList.remove("hidden")})
+            }
+
+            // Send message on button click
+            document.getElementById("send-btn").addEventListener("click", sendMessage);
+
+            // Send message on Enter key press
+            document.getElementById("chat-input").addEventListener("keydown", function (event) {
+                if (event.key === "Enter") {
+                    event.preventDefault(); // Prevents form submission behavior
+                    sendMessage();
                 }
-            </script>
-        </div>
+            });
+        </script>
+
+        <script src="Music.js"></script>
+        <script src="Trail.js"></script>
+        <script>
+            const friendList = document.getElementById("friend-list")
+            friendList.onmouseleave = function () {
+                friendList.classList.add("w-17")
+                friendList.classList.remove("w-60")
+                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
+                    e.children[1].classList.add("hidden")
+                })
+                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
+                    e.children[1].classList.add("hidden")
+                })
+            }
+            friendList.onmouseenter = function () {
+                friendList.classList.add("w-60")
+                friendList.classList.remove("w-17")
+                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
+                    e.children[1].classList.remove("hidden")
+                })
+                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
+                    e.children[1].classList.remove("hidden")
+                })
+            }
+        </script>
     </div>
+</div>
 </div>
 </body>
 </html>
