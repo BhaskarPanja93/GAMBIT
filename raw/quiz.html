@@ -31,34 +31,43 @@
     <div id="particles-animation"></div>
 
 
-    <!-- Timer -->
-    <div class="fixed top-28 w-screen text-center text-white text-4xl font-bold" id="queue-timer">
-        00:00
-    </div>
+
+
 
     <!-- Main Div -->
     <div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden">
         <!-- Navigation Bar -->
         <nav class="bg-transparent py-4" style="z-index: 2;">
-            <div class="mx-auto w-full px-2 sm:px-4 lg:px-20 mt-[2vw] flex justify-between items-center">
+
+            <!-- Timer -->
+            <div class="top-28 w-full text-center text-white text-5xl font-bold translate-y-4" id="queue-timer">
+                00:00
+            </div>
+            <div class="mx-auto w-full px-2 sm:px-4 lg:px-20 flex justify-between items-center">
 
                 <!-- Player Team -->
-                <div class="w-[650px] flex flex-col items-center rounded-lg bg-gray-900 p-6">
+                <div class="w-full max-w-[650px] flex flex-col items-center rounded-lg bg-gray-900 p-4 sm:p-6 lg:p-8">
                     <div class="text-white text-lg font-bold mb-4">Your Team</div>
 
-                    <!-- Player Score Board -->
-                    <div class="">
-
-                    </div>
 
                     <div class="flex w-full items-center justify-between">
                         <div class="relative group">
+                            <!-- Crown Icon (hidden by default) -->
+                            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400"
+                                     fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M5 21h14v-2H5v2zm14-4H5l-1-8 5 3 4-6 4 6 5-3-1 8z"/>
+                                </svg>
+                            </div>
+
                             <img src="https://i.pinimg.com/564x/05/93/c2/0593c22a578bf58e4bf01a4a063a3587.jpg"
                                  alt="User PFP" class="h-10 w-10 rounded-full">
+
                             <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
                                 Correct Answers: 3
                             </div>
                         </div>
+
                         <div class="relative group">
                             <img src="https://i.pinimg.com/564x/05/93/c2/0593c22a578bf58e4bf01a4a063a3587.jpg"
                                  alt="User PFP" class="h-10 w-10 rounded-full">
@@ -90,7 +99,7 @@
 
 
                 <!-- Opponent Team -->
-                <div class="w-[650px] flex flex-col items-center rounded-lg bg-gray-700 p-6">
+                <div class="w-full max-w-[650px] flex flex-col items-center rounded-lg bg-gray-700 p-4 sm:p-6 lg:p-8">
 
                     <!-- Opponent Score Board -->
                     <div class="text-white text-lg font-bold mb-4">Opponent Team</div>
@@ -109,6 +118,13 @@
                             </div>
                         </div>
                         <div class="relative group">
+                            <!-- Crown Icon (hidden by default) -->
+                            <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400"
+                                     fill="currentColor" viewBox="0 0 24 24">
+                                    <path d="M5 21h14v-2H5v2zm14-4H5l-1-8 5 3 4-6 4 6 5-3-1 8z"/>
+                                </svg>
+                            </div>
                             <img src="https://i.pinimg.com/564x/18/0e/65/180e6574a9aa0e4c7c23a252db4184dc.jpg"
                                  alt="User PFP" class="h-10 w-10 rounded-full">
                             <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
@@ -126,7 +142,6 @@
 
                     <!-- Health bar below the images -->
                     <div class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
-
                         <!-- Adjust width for different health levels -->
                         <div class="bg-red-500 h-full" style="width: 80%;"></div>
                     </div>
