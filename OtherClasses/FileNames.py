@@ -20,6 +20,7 @@ class FileNames:
         AuthPre = "AuthPre.html"
         AuthPost = "AuthPost.html"
         AuthForms = "AuthForm.html"
+        FormErrorElement = "FormErrorElement.html"
         Register = "Register.html"
         Login = "Login.html"
         ChatFull = "ChatFull.html"

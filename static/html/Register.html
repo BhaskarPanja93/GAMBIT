@@ -1,47 +1,29 @@
 <form>
-    {{ CSRF | safe }}
+    <div id="register-csrf"></div>
     <h4 class="mt-1 mb-1 pb-3">Sign Up</h4>
     <div class="form-group relative">
-        <input type="text" name="person-name" id="personName" class="form-style w-full" placeholder="Enter Your Name"
-               autocomplete="off" required>
-        <i class="input-icon uil uil-user"></i>
-        <div id="required-exclaim" class="exclamation absolute top-1/2 right-2 text-red-500 text-sm translate-y-[-50%] border border-green-100 bg-yellow-50 rounded-lg px-2 py-1"
-             title="Password must be at least 6 characters">!
-        </div>
+        <input type="text" name="person-name" id="personName" class="form-style w-full" placeholder="Enter Your Name" autocomplete="off" required>
+        <div id="register-name-error"></div>
     </div>
     <div class="form-group mt-1 relative">
-        <input type="text" name="user-name" id="username" class="form-style w-full" placeholder="Enter Username"
-               autocomplete="off" required>
-        <i class="input-icon uil uil-user"></i>
-        <div id="required-exclaim" class="exclamation absolute top-1/2 right-2 text-red-500 text-sm translate-y-[-50%] border border-green-100 bg-yellow-50 rounded-lg px-2 py-1"
-             title="This field is required">!
-        </div>
+        <input type="text" name="user-name" id="username" class="form-style w-full" placeholder="Enter Username" autocomplete="off" required>
+        <div id="register-username-error"></div>
     </div>
     <div class="form-group mt-1 relative">
-        <input type="email" name="email" id="email" class="form-style w-full" placeholder="Enter Email"
-               autocomplete="off" required>
-        <i class="input-icon uil uil-at"></i>
-        <div id="required-exclaim" class="exclamation absolute top-1/2 right-2 text-red-500 text-sm translate-y-[-50%] border border-green-100 bg-yellow-50 rounded-lg px-2 py-1"
-             title="Please enter a valid email">!
-        </div>
+        <input type="email" name="email" id="email" class="form-style w-full" placeholder="Enter Email" autocomplete="off" required>
+        <div id="register-email-error"></div>
     </div>
     <div class="form-group mt-1 relative">
-        <input type="password" name="password" id="password" class="form-style w-full" placeholder="Enter Password"
-               autocomplete="off" required minlength="6">
-        <i class="input-icon uil uil-lock-alt"></i>
-        <div id="required-exclaim" class="exclamation absolute top-1/2 right-2 text-red-500 text-sm translate-y-[-50%] border border-green-100 bg-yellow-50 rounded-lg px-2 py-1"
-             title="Password must be at least 6 characters">!
-        </div>
+        <input type="password" name="password" id="password" class="form-style w-full" placeholder="Enter Password" autocomplete="off" required minlength="8">
+        <div id="register-password-error"></div>
     </div>
     <div class="form-group mt-1 relative">
-        <input type="password" name="confirm-password" id="confirmPassword" class="form-style w-full"
-               placeholder="Confirm Password" autocomplete="off" required>
-        <i class="input-icon uil uil-lock-alt"></i>
-        <div id="required-exclaim" class="exclamation absolute top-1/2 right-2 text-red-500 text-sm translate-y-[-50%] border border-green-100 bg-yellow-50 rounded-lg px-2 py-1"
-             title="Passwords must match">!
-        </div>
+        <input type="password" name="confirm-password" id="confirmPassword" class="form-style w-full" placeholder="Confirm Password" autocomplete="off" required>
     </div>
-    <button type="submit" class="btn mt-3">Submit</button>
+    <div class="form-group relative">
+        <button type="submit" class="btn mt-3">Submit</button>
+        <div id="register-general-error"></div>
+    </div>
 </form>
 
 
