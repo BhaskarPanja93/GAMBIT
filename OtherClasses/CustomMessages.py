@@ -13,6 +13,7 @@ class CustomMessageTask:
     KICKED_FROM_PARTY = 'KICKED_FROM_PARTY'
     CHAT = 'CHAT'
     PARTY_CODE = 'PARTY_CODE'
+    TOGGLE_SOCIALS = 'TOGGLE_SOCIALS'
 
 
 class CustomMessages:
@@ -46,3 +47,6 @@ class CustomMessages:
     @staticmethod
     def chatMessage(category, sender, text):
         return {"MESSAGE": CustomMessageTask.CHAT, "CATEGORY":category, "SENDER": sender, "TEXT": text}
+    @staticmethod
+    def toggleSocials(display:bool):
+        return {"MESSAGE": CustomMessageTask.TOGGLE_SOCIALS, "DISPLAY": display}

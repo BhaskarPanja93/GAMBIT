@@ -23,10 +23,20 @@ class PrivateData:
 
     def isElementRendered(self, name):
         if name not in self.renderedElements:
-            self.renderedElements.add(name)
             return False
         else:
             return True
+
+    def renderScript(self, name):
+        self.renderedScripts.add(name)
+
+    def removeScript(self, name):
+        self.renderedScripts.remove(name)
+    def renderElement(self, name):
+        self.renderedElements.add(name)
+
+    def removeElement(self, name):
+        self.renderedElements.remove(name)
 
     def newPage(self, name):
         self.pagesHistory.append(name)

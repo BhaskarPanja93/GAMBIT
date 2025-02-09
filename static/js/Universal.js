@@ -47,9 +47,7 @@ function waitForElementPresence(selector, callback) {
     observer.observe(document.body, { childList: true, subtree: true });
 }
 
-waitForElementPresence("#logout-button", (button)=>{
-    button.onclick = () => sendCustomMessage({PURPOSE: "LOGOUT"})
-})
+
 
 function firstLetterCapitalised(string) {
     if (!string || string.length === 0) return string
