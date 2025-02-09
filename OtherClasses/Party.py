@@ -1,6 +1,6 @@
 from __future__ import annotations
 
-from time import sleep
+from time import sleep, time
 
 from randomisedString import RandomisedString
 
@@ -19,7 +19,7 @@ class Party:
         self.leaderIndex = None
         self.maxPlayers = 3
         self.inQueue = False
-        self.partyTimer = None
+        self.partyTimer = 0
         self.onPartyClosed = None
         self.onPartyCodeCreated = None
         self.onSelfLeave = None
@@ -58,8 +58,13 @@ class Party:
                 if player.viewer is not None:
                     player.viewer.updateHTML(int(self.partyTimer), DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
             sleep(1)
+            self.partyTimer += 1
+    def stopTimer(self):
+        self.inQueue = False
+        for player in self.players:
+            if player.viewer is not None:
+                player.viewer.updateHTML(int(self.partyTimer), DivID.startStopQueue, DynamicWebsite.UpdateMethods.update) #TODO: return the start button
     def addPlayer(self, newPlayer:Player):
-        print("adding player", newPlayer)
         if len(self.players) < self.maxPlayers:
             self.players.append(newPlayer)
             index = len(self.players) - 1
@@ -105,3 +110,5 @@ class Party:
     def sendMessage(self, category:str, sender, text):
         for player in self.players:
             player.viewer.sendCustomMessage(CustomMessages.chatMessage(category, sender, text))
+    def __eq__(self, other):
+        return self.partyID == other.partyID

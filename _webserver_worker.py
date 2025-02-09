@@ -2,15 +2,16 @@ from gevent import monkey
 
 monkey.patch_all()
 
-from OtherClasses.Matchmaker import Matchmaker
-from time import time
+from time import time, sleep
 from sys import argv
 from typing import Any
 from flask import request, redirect, make_response
 from jinja2 import Template
 from argon2 import PasswordHasher
+from threading import Thread
 
 from OtherClasses.PrivateData import PrivateData
+from OtherClasses.Matchmaker import Matchmaker, Match
 from OtherClasses.FileNames import FileNames
 from OtherClasses.Database import Database
 from OtherClasses.CachedElements import CachedElements
@@ -42,8 +43,6 @@ def renderGhost3D(viewerObj: DynamicWebsite.Viewer):
 
 def __renderAuthStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.POST_AUTH]:
-        # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Auth):
-        #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Auth}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Auth)+"</script>", DivID.scripts, UpdateMethods.append)
         viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
         renderGhost3D(viewerObj)
 
@@ -79,8 +78,6 @@ def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderFriends(viewerObj: DynamicWebsite.Viewer):
-    # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Friends):
-    #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Friends}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Friends)+"</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.FriendsStructure):
         viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FriendsStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.friendsStructure, UpdateMethods.update)
 
@@ -152,7 +149,6 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
 
 def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.ChatFull):
-        # viewerObj.updateHTML(f"<script id='{FileNames.JS.Chat}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Chat)+"</script>", DivID.scripts, UpdateMethods.append)
         viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.ChatFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.chatBox, UpdateMethods.update)
 
 
@@ -185,14 +181,10 @@ def renderPreAuthUniversal(viewerObj: DynamicWebsite.Viewer):
         viewerObj.updateHTML(f"<script id='{FileNames.JS.PreAuthUniversal}'>" + cachedHTMLElements.fetchStaticJS(FileNames.JS.PreAuthUniversal) + "</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Trail):
         viewerObj.updateHTML(f"<script id='{FileNames.JS.Trail}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)+"</script>", DivID.scripts, UpdateMethods.append)
-    # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Music):
-    #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Music}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Music)+"</script>", DivID.scripts, UpdateMethods.append)
     viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer)).render(baseURI=viewerObj.privateData.baseURI), DivID.root, UpdateMethods.update)
 
 
 def renderPostAuthUniversal(viewerObj: DynamicWebsite.Viewer):
-    # if not viewerObj.privateData.isScriptRendered(FileNames.JS.Lobby):
-    #     viewerObj.updateHTML(f"<script id='{FileNames.JS.Lobby}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Lobby)+"</script>", DivID.scripts, UpdateMethods.append)
     pass
 
 ##############################################################################################################################
@@ -289,7 +281,6 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
                     if oldParty: oldParty.removePlayer(viewerObj.privateData.player, True)
                     return newParty.addPlayer(viewerObj.privateData.player)
         if purpose == "START_QUEUE":
-            #viewerObj.privateData.party.startTimer()
             return matchmaker.addToQueue(viewerObj.privateData.party)
         if purpose == "STOP_QUEUE":
             return matchmaker.removeFromQueue(viewerObj.privateData.party)
@@ -421,11 +412,11 @@ def closeParty(party: Party):
     print(f"CLOSING PARTY {party.partyID}")
     if party.partyID in partyIDs: del partyIDs[party.partyID]
     if party.partyCode in partyCodes: del partyCodes[party.partyCode]
+    matchmaker.removeFromQueue(party)
 
 
 def onPartyCodeGenerated(party: Party):
     partyCodes[party.partyCode] = party
-    print(f"NEW PARTY CODE {party.partyID} {party.partyCode}", sep='\n')
 
 
 def createParty(player):
@@ -437,8 +428,28 @@ def createParty(player):
     if player:
         if player.viewer: renderLobbyNavbar(player.viewer)
         party.addPlayer(player)
-    print(f"NEW PARTY {party.partyID}")
     return party
+
+
+##############################################################################################################################
+# QUIZ
+
+def onMatchFound(match: Match):
+    print("MATCH FOUND")
+
+
+
+
+##############################################################################################################################
+# TEST
+
+def testMatchmaking():
+    sleep(2)
+    for _ in range(1):
+        party = createParty(Player(None, str(_)))
+        matchmaker.addToQueue(party)
+        #sleep(0.5)
+
 
 
 ##############################################################################################################################
@@ -456,7 +467,7 @@ partyCodes:dict[str, Party] = {}
 passwordHasher = PasswordHasher()
 UpdateMethods = DynamicWebsite.UpdateMethods
 cachedHTMLElements = CachedElements()
-matchmaker = Matchmaker()
+matchmaker = Matchmaker(onMatchFound)
 logger = CustomisedLogs()
 SQLconn = connectDB(logger)
 dynamicWebsiteApp = DynamicWebsite(firstPageCreator, newVisitorCallback, visitorLeftCallback, formSubmitCallback, customWSMessageCallback, fernetKey, CoreValues.appName, Routes.webHomePage)
@@ -502,6 +513,11 @@ def _modHeadersBeforeRequest():
 @baseApp.errorhandler(Exception)
 def handle_404(error):
     return redirect("http://"+request.environ["HTTP_HOST"].replace(str(webPort), str(cdPort))+request.environ["PATH_INFO"]+"?"+request.environ["QUERY_STRING"])
+
+
+
+
+#Thread(target=testMatchmaking).start()
 
 
 WSGIRunner(baseApp, webPort, Routes.webHomePage, logger)

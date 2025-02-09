@@ -1,28 +1,93 @@
+from itertools import combinations
+from math import exp, sqrt
 from threading import Thread
-from time import sleep
+from time import sleep, time
 
 from OtherClasses.Party import Party
+from OtherClasses.Team import Team
 
+
+class Match:
+    def __init__(self, teamA:Team, teamB:Team):
+        self.oldestPartyCreatedAt = None
+        self.MMRDiff = None
+        self.teamA = teamA
+        self.teamB = teamB
+        self.totalPlayers = 0
+        self.generateDetails()
+
+    def generateDetails(self):
+        self.MMRDiff = abs(self.teamA.averageMMR-self.teamB.averageMMR)
+        self.oldestPartyCreatedAt = min(self.teamA.oldestPartyCreatedAt, self.teamB.oldestPartyCreatedAt)
+        for party in self.teamA.parties+self.teamB.parties:
+            self.totalPlayers += len(party.players)
+
+    def isValid(self):
+        return self.MMRDiff <= exp(sqrt(time()-self.oldestPartyCreatedAt))**2 and (self.MMRDiff < 300 if self.teamB.parties else True)
 
 class Matchmaker:
-    def __init__(self):
-        self.inQueue = {}
-        self.active = False
+    def __init__(self, onMatch):
+        self.inQueue:list[Party] = []
+        self.onMatch = onMatch
+        Thread(target=self.__startLooking).start()
 
     def addToQueue(self, party: Party):
-        self.inQueue[party.partyID] = party
-        if not self.active:
-            Thread(target=self.__startLooking).start()
-    def removeFromQueue(self, party: Party):
-        self.inQueue.pop(party.partyID)
-    def __startLooking(self):
-        self.active = True
-        while len(self.inQueue) > 0:
-            sleep(2)
-            partiesToLookFor = list(self.inQueue)
-            partiesToLookAgainst = list(self.inQueue)
-            for partyID_SearchingFor in partiesToLookFor:
-                for partyID_SearchingAgainst in partiesToLookAgainst:
-                    if partyID_SearchingAgainst == partyID_SearchingFor or partyID_SearchingAgainst not in self.inQueue or partiesToLookFor not in self.inQueue: continue
+        Thread(target=party.startTimer).start()
+        if party not in self.inQueue: self.inQueue.append(party)
 
-        self.active = False
+    def removeFromQueue(self, party: Party):
+        if party in self.inQueue:
+            self.inQueue.remove(party)
+            Thread(target=party.stopTimer).start()
+
+    def __startLooking(self):
+        playersPerTeam = 3
+        while True:
+            if not self.inQueue:
+                sleep(1)
+                continue
+            print("\nFinding from parties:", len(self.inQueue))
+            for party in self.inQueue:
+                for player in party.players:
+                    print("--- ", player.userName, player.MMR)
+            smallestDiffMatch = None
+            partiesInQueue = self.inQueue
+            for team1Size in range(min(3, len(partiesInQueue)), 0, -1):
+                for team1parties in combinations(partiesInQueue, team1Size):
+                    remainingParties = [x for x in partiesInQueue if x not in team1parties]
+                    for team2Size in range(min(3, len(remainingParties)), 0-1, -1):
+                        for team2parties in combinations(remainingParties, team2Size):
+                            team1 = Team(team1parties)
+                            team2 = Team(team2parties)
+                            if len(self.inQueue)==1: print(team1.isValid(False) , team2.isValid(True))
+                            if team1.isValid(False) and team2.isValid(True):
+                                dummyMatch = Match(team1, team2)
+                                if dummyMatch.isValid():
+                                    if smallestDiffMatch is None or ((2*playersPerTeam) - dummyMatch.totalPlayers)*dummyMatch.MMRDiff<((2 * playersPerTeam) - smallestDiffMatch.totalPlayers)*smallestDiffMatch.MMRDiff:
+                                        smallestDiffMatch = dummyMatch
+
+            if smallestDiffMatch is None: sleep(1)
+            else:
+                teamA = smallestDiffMatch.teamA
+                teamB = smallestDiffMatch.teamB
+                teamB.fillBots(teamA.averageMMR, playersPerTeam)
+                teamA.fillBots(teamB.averageMMR, playersPerTeam)
+                match = Match(teamA, teamB)
+                for party in teamA.parties: self.removeFromQueue(party)
+                for party in teamB.parties: self.removeFromQueue(party)
+                print("Matched")
+                print(f"\tMMRDiff={match.MMRDiff}")
+                print("\t\tTeamA")
+                for party in match.teamA.parties:
+                    print(f"\t\t\tParty waited for {party.partyTimer}")
+                    for player in party.players:
+                        print("\t\t\t\t", player.userName, player.MMR)
+                print("\t\tTeamB")
+                for party in match.teamB.parties:
+                    print(f"\t\t\tParty waited for {party.partyTimer}")
+                    for player in party.players:
+                        print("\t\t\t\t", player.userName, player.MMR)
+                self.onMatch(match)
+
+
+

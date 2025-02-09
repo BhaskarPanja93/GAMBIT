@@ -1,2 +1,7 @@
+from OtherClasses.Matchmaker import Match
+
+
 class Quiz:
-    pass
+    def __init__(self, match: Match):
+        self.match = match
+

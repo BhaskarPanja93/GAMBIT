@@ -1,3 +1,5 @@
+from random import randrange
+
 from randomisedString import RandomisedString
 
 class Player:
@@ -8,7 +10,7 @@ class Player:
         self.state = "status-" + RandomisedString().AlphaNumeric(5, 5)
         self.level = 5
         self.rank = "https://static.wixstatic.com/media/cb04e9_db781b062c6d4d02b1d5dbaf314ad2ef~mv2.png/v1/fill/w_256,h_256,al_c,q_85,enc_auto/cb04e9_db781b062c6d4d02b1d5dbaf314ad2ef~mv2.png"
-
+        self.MMR = randrange(1, 1000)
 
     def displayPFP(self):
         return self.PFP
