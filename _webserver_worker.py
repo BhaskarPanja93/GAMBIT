@@ -37,7 +37,7 @@ from internal.dynamicWebsite import DynamicWebsite
 def renderBaseNavbar(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.BaseNavbar):
         viewerObj.privateData.renderElement(FileNames.HTML.BaseNavbar)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.BaseNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar1, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.BaseNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar1, UpdateMethods.update)
 
 
 def removeBaseNavbar(viewerObj: DynamicWebsite.Viewer):
@@ -49,7 +49,7 @@ def removeBaseNavbar(viewerObj: DynamicWebsite.Viewer):
 def renderLobbyNavbar(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.LobbyNavbar):
         viewerObj.privateData.renderElement(FileNames.HTML.LobbyNavbar)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar2, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.LobbyNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar2, UpdateMethods.update)
 
 
 def removeLobbyNavbar(viewerObj: DynamicWebsite.Viewer):
@@ -62,7 +62,7 @@ def removeLobbyNavbar(viewerObj: DynamicWebsite.Viewer):
 def renderQuizNavbar(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.QuizNavbar):
         viewerObj.privateData.renderElement(FileNames.HTML.QuizNavbar)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.QuizNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar2, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar2, UpdateMethods.update)
 
 
 def removeQuizNavbar(viewerObj: DynamicWebsite.Viewer):
@@ -78,7 +78,7 @@ def removeQuizNavbar(viewerObj: DynamicWebsite.Viewer):
 def renderGhost3D(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.Ghost3d):
         viewerObj.privateData.renderElement(FileNames.HTML.Ghost3d)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Ghost3d)).render(baseURI=viewerObj.privateData.baseURI), DivID.ghost3d, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Ghost3d)).render(baseURI=viewerObj.privateData.baseURI), DivID.ghost3d, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -87,7 +87,7 @@ def renderGhost3D(viewerObj: DynamicWebsite.Viewer):
 
 def __renderAuthStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.POST_AUTH]:
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.AuthStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
         renderGhost3D(viewerObj)
 
 
@@ -96,9 +96,9 @@ def renderAuthPre(viewerObj: DynamicWebsite.Viewer):
     renderBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
-    hideSocials(viewerObj)
+    #hideSocials(viewerObj)
     if viewerObj.privateData.currentPage() != Pages.PRE_AUTH:
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPre)).render(baseURI=viewerObj.privateData.baseURI), DivID.auth, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.AuthPre)).render(baseURI=viewerObj.privateData.baseURI), DivID.auth, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.PRE_AUTH)
         viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.PRE_AUTH))
 
@@ -110,7 +110,7 @@ def renderAuthForms(viewerObj: DynamicWebsite.Viewer):
     removeQuizNavbar(viewerObj)
     hideSocials(viewerObj)
     if viewerObj.privateData.currentPage() != Pages.AUTH:
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthForms)).render(baseURI=viewerObj.privateData.baseURI), DivID.auth, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.AuthForms)).render(baseURI=viewerObj.privateData.baseURI), DivID.auth, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.AUTH)
         viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.AUTH))
         sendLoginForm(viewerObj)
@@ -124,7 +124,7 @@ def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
     removeQuizNavbar(viewerObj)
     showSocials(viewerObj)
     if viewerObj.privateData.currentPage() != Pages.POST_AUTH:
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.AuthPost)).render(baseURI=viewerObj.privateData.baseURI), DivID.auth, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.AuthPost)).render(baseURI=viewerObj.privateData.baseURI), DivID.auth, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.POST_AUTH)
         viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.POST_AUTH))
 
@@ -134,9 +134,11 @@ def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
+    print("Chat try")
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.ChatFull):
+        print("Chat yes")
         viewerObj.privateData.renderElement(FileNames.HTML.ChatFull)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.ChatFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.chatBox, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.ChatFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.chatBox, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -144,7 +146,7 @@ def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderMusicTray(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.MusicTray)).render(baseURI=viewerObj.privateData.baseURI), DivID.musicTrayHolder, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.MusicTray)).render(baseURI=viewerObj.privateData.baseURI), DivID.musicTrayHolder, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -154,7 +156,7 @@ def renderMusicTray(viewerObj: DynamicWebsite.Viewer):
 def showSocials(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.SocialsStructure):
         viewerObj.privateData.renderElement(FileNames.HTML.SocialsStructure)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.SocialsStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.socialStructure, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.SocialsStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.friendsStructure, UpdateMethods.update)
     viewerObj.sendCustomMessage(CustomMessages.toggleSocials(True))
     # friendList = SQLconn.execute(f"""SELECT
     # CASE
@@ -183,15 +185,15 @@ def hideSocials(viewerObj: DynamicWebsite.Viewer):
 
 def __renderLobbyStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() != Pages.LOBBY:
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyFeatures)).render(baseURI=viewerObj.privateData.baseURI), DivID.lobbyFeatures, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.LobbyStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.LobbyFeatures)).render(baseURI=viewerObj.privateData.baseURI), DivID.lobbyFeatures, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.LOBBY)
 
 
 def renderLobby(viewerObj: DynamicWebsite.Viewer):
     __renderLobbyStructure(viewerObj)
     renderBaseNavbar(viewerObj)
-    renderLobbyNavbar(viewerObj)
+    removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     showSocials(viewerObj)
     viewerObj.privateData.newPage(Pages.LOBBY)
@@ -206,7 +208,7 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
 
 def __renderQuizStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() != Pages.QUIZ:
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.QuizFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.LOBBY)
 
 
@@ -216,7 +218,6 @@ def renderQuiz(viewerObj: DynamicWebsite.Viewer):
     removeLobbyNavbar(viewerObj)
     renderQuizNavbar(viewerObj)
     hideSocials(viewerObj)
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.QuizQuestion)).render(baseURI=viewerObj.privateData.baseURI), DivID.quizContent, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -224,53 +225,11 @@ def renderQuiz(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.NotesFullPage)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.NotesFullPage)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
 
 
 def renderNotes(viewerObj: DynamicWebsite.Viewer):
     viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.POST_AUTH))
-
-
-##############################################################################################################################
-# NAVBAR
-
-
-def renderBaseNavbar(viewerObj: DynamicWebsite.Viewer):
-    if not viewerObj.privateData.isElementRendered(FileNames.HTML.BaseNavbar):
-        viewerObj.privateData.renderElement(FileNames.HTML.BaseNavbar)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.BaseNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar1, UpdateMethods.update)
-
-
-def removeBaseNavbar(viewerObj: DynamicWebsite.Viewer):
-    if viewerObj.privateData.isElementRendered(FileNames.HTML.BaseNavbar):
-        viewerObj.privateData.removeElement(FileNames.HTML.BaseNavbar)
-        viewerObj.updateHTML("", DivID.navbar1, UpdateMethods.update)
-
-
-def renderLobbyNavbar(viewerObj: DynamicWebsite.Viewer):
-    if not viewerObj.privateData.isElementRendered(FileNames.HTML.LobbyNavbar):
-        viewerObj.privateData.renderElement(FileNames.HTML.LobbyNavbar)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.LobbyNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar2, UpdateMethods.update)
-
-
-def removeLobbyNavbar(viewerObj: DynamicWebsite.Viewer):
-    if viewerObj.privateData.isElementRendered(FileNames.HTML.LobbyNavbar):
-        viewerObj.privateData.removeElement(FileNames.HTML.LobbyNavbar)
-        viewerObj.updateHTML("", DivID.navbar2, UpdateMethods.update)
-
-
-
-def renderQuizNavbar(viewerObj: DynamicWebsite.Viewer):
-    if not viewerObj.privateData.isElementRendered(FileNames.HTML.QuizNavbar):
-        viewerObj.privateData.renderElement(FileNames.HTML.QuizNavbar)
-        viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.QuizNavbar)).render(baseURI=viewerObj.privateData.baseURI), DivID.navbar2, UpdateMethods.update)
-
-
-def removeQuizNavbar(viewerObj: DynamicWebsite.Viewer):
-    if viewerObj.privateData.isElementRendered(FileNames.HTML.QuizNavbar):
-        viewerObj.privateData.removeElement(FileNames.HTML.QuizNavbar)
-        viewerObj.updateHTML("", DivID.navbar2, UpdateMethods.update)
-
 
 
 ##############################################################################################################################
@@ -280,11 +239,11 @@ def removeQuizNavbar(viewerObj: DynamicWebsite.Viewer):
 def renderPreAuthUniversal(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.PreAuthUniversal):
         viewerObj.privateData.renderScript(FileNames.JS.PreAuthUniversal)
-        viewerObj.updateHTML(f"<script id='{FileNames.JS.PreAuthUniversal}'>" + cachedHTMLElements.fetchStaticJS(FileNames.JS.PreAuthUniversal) + "</script>", DivID.scripts, UpdateMethods.append)
+        viewerObj.updateHTML(f"<script id='{FileNames.JS.PreAuthUniversal}'>" + cachedElements.fetchStaticJS(FileNames.JS.PreAuthUniversal) + "</script>", DivID.scripts, UpdateMethods.append)
     if not viewerObj.privateData.isScriptRendered(FileNames.JS.Trail):
         viewerObj.privateData.renderScript(FileNames.JS.Trail)
-        viewerObj.updateHTML(f"<script id='{FileNames.JS.Trail}'>"+cachedHTMLElements.fetchStaticJS(FileNames.JS.Trail)+"</script>", DivID.scripts, UpdateMethods.append)
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.UniversalContainer)).render(baseURI=viewerObj.privateData.baseURI), DivID.root, UpdateMethods.update)
+        viewerObj.updateHTML(f"<script id='{FileNames.JS.Trail}'>" + cachedElements.fetchStaticJS(FileNames.JS.Trail) + "</script>", DivID.scripts, UpdateMethods.append)
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.UniversalContainer)).render(baseURI=viewerObj.privateData.baseURI), DivID.root, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -297,11 +256,11 @@ def renderFirstPage(viewerObj: DynamicWebsite.Viewer, isAuthenticated: bool):
     if isAuthenticated:
         if viewerObj.privateData.player is None:
             viewerObj.privateData.player = Player(viewerObj, viewerObj.privateData.userName)
-        renderChatStructure(viewerObj)
         if viewerObj.privateData.expectedPostAuthPage == Pages.LOBBY: renderLobby(viewerObj)
         elif viewerObj.privateData.expectedPostAuthPage == Pages.QUIZ: renderQuiz(viewerObj)
         #elif viewerObj.privateData.expectedPostAuthPage == Pages.marketPlace: renderMarketPlace(viewerObj)
         else: renderAuthPost(viewerObj)
+        renderChatStructure(viewerObj)
     else:
         renderAuthPre(viewerObj)
 
@@ -388,7 +347,7 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
 
 
 def rejectForm(viewerObj: DynamicWebsite.Viewer, divToTarget, reason):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FormErrorElement)).render(errorText=reason), divToTarget, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.FormErrorElement)).render(errorText=reason), divToTarget, UpdateMethods.update)
     print("FORM REJECTED")
 
 
@@ -416,7 +375,7 @@ def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
 
 
 def firstPageCreator():
-    return make_response(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.FirstPage)).render(title="GAMBIT", baseURI=request.path))
+    return make_response(Template(cachedElements.fetchStaticHTML(FileNames.HTML.FirstPage)).render(title="GAMBIT", baseURI=request.path))
 
 
 ##############################################################################################################################
@@ -441,12 +400,12 @@ def sendRegisterCSRF(viewerObj: DynamicWebsite.Viewer):
 
 
 def sendLoginForm(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Login)).render(baseURI=viewerObj.privateData.baseURI), DivID.loginForm, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Login)).render(baseURI=viewerObj.privateData.baseURI), DivID.loginForm, UpdateMethods.update)
     sendLoginCSRF(viewerObj)
 
 
 def sendRegisterForm(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedHTMLElements.fetchStaticHTML(FileNames.HTML.Register)).render(baseURI=viewerObj.privateData.baseURI), DivID.registerForm, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Register)).render(baseURI=viewerObj.privateData.baseURI), DivID.registerForm, UpdateMethods.update)
     sendRegisterCSRF(viewerObj)
 
 
@@ -520,11 +479,8 @@ def onPartyCodeGenerated(party: Party):
 
 
 def createParty(player):
-    party = Party()
+    party = Party(onPartyCodeGenerated, closeParty, renderLobby, cachedElements)
     partyIDs[party.partyID] = party
-    party.onPartyCodeCreated = onPartyCodeGenerated
-    party.onPartyClosed = closeParty
-    party.onSelfLeave = renderLobby
     if player:
         if player.viewer: renderLobbyNavbar(player.viewer)
         party.addPlayer(player)
@@ -534,8 +490,18 @@ def createParty(player):
 ##############################################################################################################################
 # QUIZ
 
+
+def onQuizEnd(quiz:Quiz):
+    pass
+
+
 def onMatchFound(match: Match):
-    quiz = Quiz(match)
+    quiz = Quiz(match, onQuizEnd, cachedElements)
+    for party in match.teamB.parties+match.teamA.parties:
+        for player in party.players:
+            if player.viewer is not None:
+                renderQuiz(player.viewer)
+    quiz.start()
 
 
 
@@ -566,7 +532,7 @@ partyCodes:dict[str, Party] = {}
 
 passwordHasher = PasswordHasher()
 UpdateMethods = DynamicWebsite.UpdateMethods
-cachedHTMLElements = CachedElements()
+cachedElements = CachedElements()
 matchmaker = Matchmaker(onMatchFound)
 logger = CustomisedLogs()
 SQLconn = connectDB(logger)

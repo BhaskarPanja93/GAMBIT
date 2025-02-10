@@ -1,9 +1,9 @@
 from __future__ import annotations
 
 from time import sleep, time
-
 from randomisedString import RandomisedString
 
+from OtherClasses.CachedElements import CachedElements
 from OtherClasses.CustomMessages import CustomMessages
 from OtherClasses.DivIDs import DivID
 from OtherClasses.Player import Player
@@ -11,8 +11,9 @@ from internal.dynamicWebsite import DynamicWebsite
 
 
 class Party:
-    def __init__(self):
+    def __init__(self, onPartyCodeCreated, onPartyClosed, onSelfLeave, cachedElements:CachedElements):
         self.partyID = RandomisedString().AlphaNumeric(30, 30)
+        self.cachedElements = cachedElements
         self.defaultPartyCode = "-----"
         self.partyCode = self.defaultPartyCode
         self.players:list[Player] = []
@@ -20,9 +21,9 @@ class Party:
         self.maxPlayers = 3
         self.inQueue = False
         self.partyTimer = 0
-        self.onPartyClosed = None
-        self.onPartyCodeCreated = None
-        self.onSelfLeave = None
+        self.onPartyClosed =  onPartyClosed
+        self.onPartyCodeCreated = onPartyCodeCreated
+        self.onSelfLeave = onSelfLeave
     def __notifyOtherPlayersIndexDecrement(self, hollowIndex:int):
         for player in self.players:
             if player.viewer is None: continue
@@ -85,9 +86,7 @@ class Party:
                 return index
     def sendPartyCode(self, player):
         if player.viewer is not None:
-            pass
             player.viewer.updateHTML(self.partyCode, DivID.partyCodeShow, DynamicWebsite.UpdateMethods.update)
-            #player.viewer.sendCustomMessage(CustomMessages.partyCode(self.partyCode))
     def generatePartyCode(self):
         if self.partyCode == self.defaultPartyCode:
             self.partyCode = RandomisedString().AlphaNumeric(5, 5).lower()

@@ -1,5 +1,5 @@
 <div class="flex absolute h-[450px] md:h-[550px] lg:h-[550px]">
-    <div id="socials-page" class="backdrop-blur-sm absolute top-0 left-0 h-full bg-black/50 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.5)] transition-all duration-300 ease-in-out">
+    <div id="friends-page" class="backdrop-blur-sm absolute top-0 left-0 h-full bg-black/50 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.5)] transition-all duration-300 ease-in-out">
         <div class="p-4 text-gray-50 h-full">
 
             <div class="space-y-4" id="party-invites">
@@ -170,10 +170,10 @@
     }
     
     function hideFriendPage() {
-        waitForElementPresence("#socials-page", (div)=>div.classList.add("hidden"))
+        waitForElementPresence("#friends-page", (div)=>div.classList.add("hidden"))
     }
     function showFriendPage() {
-        waitForElementPresence("#socials-page", (div)=>div.classList.remove("hidden"))
+        waitForElementPresence("#friends-page", (div)=>div.classList.remove("hidden"))
     }
 
 
@@ -255,7 +255,7 @@
     }
 
 
-    waitForElementPresence("#socials-page", (friendsPage)=> {
+    waitForElementPresence("#friends-page", (friendsPage)=> {
         friendsPage.onmouseleave = function() {
             hideLastOpenedFriendAction()
             Array.prototype.filter.call(
