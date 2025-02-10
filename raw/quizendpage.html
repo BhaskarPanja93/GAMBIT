@@ -1,0 +1,210 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lobby</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="Overall.css">
+
+</head>
+<body>
+<div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
+    <audio id="music-player" preload="none">
+        <source src="" type="audio/x-wav;codec=pcm">
+    </audio>
+
+    <!-- Animation div-->
+    <div class="bg-animation-box">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div id="particles-animation"></div>
+
+
+    <!-- Main Div -->
+    <div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden relative">
+        <nav class="bg-transparent py-4 flex justify-between">
+            <!-- Temporary id names -->
+            <div class="top-28 w-full text-center text-white text-5xl font-bold translate-y-4" id="team-score">70</div>
+            <div class="top-28 w-full text-center text-white text-5xl font-bold translate-y-4" id="victory-lose">
+                VICTORY/LOSE
+            </div>
+            <div class="top-28 w-full text-center text-white text-5xl font-bold translate-y-4" id="opponent-score">40
+            </div>
+        </nav>
+
+        <!-- Leaderboard Table-->
+
+        <div class="px-6 py-6 w-1/2 mx-auto translate-y-24">
+            <!-- Table Header -->
+            <div class="grid grid-cols-4 text-white text-center font-bold bg-gray-700 rounded-t-lg text-lg">
+                <div class="p-4">Player</div>
+                <div class="p-4">Score</div>
+                <div class="p-4">Correct</div>
+                <div class="p-4">Incorrect</div>
+            </div>
+
+            <!-- Table Rows -->
+            <div class="divide-y divide-gray-600">
+                <!-- Winner Row - Green Background -->
+                <div class="grid grid-cols-4 text-white text-center bg-green-700 hover:bg-green-600 transition-all duration-200 text-lg">
+                    <div class="p-4">John Doe</div>
+                    <div class="p-4">100</div>
+                    <div class="p-4">10</div>
+                    <div class="p-4">2</div>
+                </div>
+
+                <!-- Winner Row - Green Background -->
+                <div class="grid grid-cols-4 text-white text-center bg-green-700 hover:bg-green-600 transition-all duration-200 text-lg">
+                    <div class="p-4">Jane Smith</div>
+                    <div class="p-4">90</div>
+                    <div class="p-4">9</div>
+                    <div class="p-4">1</div>
+                </div>
+
+                <!-- Regular Row -->
+                <div class="grid grid-cols-4 text-white text-center bg-gray-800 hover:bg-gray-700 transition-all duration-200 text-lg">
+                    <div class="p-4">Mark Lee</div>
+                    <div class="p-4">75</div>
+                    <div class="p-4">7</div>
+                    <div class="p-4">3</div>
+                </div>
+
+                <!-- Winner Row - Green Background -->
+                <div class="grid grid-cols-4 text-white text-center bg-green-700 hover:bg-green-600 transition-all duration-200 text-lg">
+                    <div class="p-4">Emily Davis</div>
+                    <div class="p-4">85</div>
+                    <div class="p-4">8</div>
+                    <div class="p-4">2</div>
+                </div>
+
+                <!-- Regular Row -->
+                <div class="grid grid-cols-4 text-white text-center bg-gray-800 hover:bg-gray-700 transition-all duration-200 text-lg">
+                    <div class="p-4">Chris Johnson</div>
+                    <div class="p-4">60</div>
+                    <div class="p-4">6</div>
+                    <div class="p-4">4</div>
+                </div>
+
+                <!-- Winner Row - Green Background -->
+                <div class="grid grid-cols-4 text-white text-center bg-green-700 hover:bg-green-600 transition-all duration-200 text-lg rounded-b-lg">
+                    <div class="p-4">Sophia Brown</div>
+                    <div class="p-4">95</div>
+                    <div class="p-4">9</div>
+                    <div class="p-4">1</div>
+                </div>
+            </div>
+        </div>
+
+
+        <!-- Bottom Navigation Buttons -->
+        <div class="absolute bottom-0 w-full flex justify-between p-4">
+
+            <!-- No left button for this page -->
+            <!-- Left Button -->
+            <div class="left-0">
+                <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                         class="w-12 h-12 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
+                    </svg>
+                </button>
+            </div>
+
+            <!-- Right Button -->
+            <div class="right-0">
+                <button>
+                    <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
+                         class="w-12 h-12 text-white">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M9 5l7 7-7 7"/>
+                    </svg>
+                </button>
+            </div>
+        </div>
+
+
+        <!-- Quiz Content -->
+        <!--        <div id="quizContent"-->
+        <!--             class="relative flex items-center justify-center w-full h-[600px] mt-32 sm:mt-32 md:mt-0 lg:mt-0"-->
+        <!--             style="z-index: 1;">-->
+
+        <!--            &lt;!&ndash; Quiz Section (Center) &ndash;&gt;-->
+        <!--            <div class="relative z-50 flex flex-col items-center bg-black/70 p-6 sm:p-8 rounded-2xl shadow-xl w-[65%] sm:w-[65%] md:w-[70%] lg:w-[65%] h-[65%]">-->
+        <!--                <div class="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Quiz Question</div>-->
+        <!--                <div class="text-white text-lg sm:text-xl md:text-2xl text-center mb-6 sm:mb-8">What is the capital of-->
+        <!--                    France?-->
+        <!--                </div>-->
+        <!--                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">-->
+        <!--                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">-->
+        <!--                        Paris-->
+        <!--                    </button>-->
+
+        <!--                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">-->
+        <!--                        Berlin-->
+        <!--                    </button>-->
+        <!--                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">-->
+        <!--                        Madrid-->
+        <!--                    </button>-->
+        <!--                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">-->
+        <!--                        Rome-->
+        <!--                    </button>-->
+        <!--                </div>-->
+        <!--            </div>-->
+        <!--        </div>-->
+
+
+        <!-- Chat Component -->
+        <style>
+            #chat-container:hover #chatbox {
+                display: block;
+            }
+        </style>
+
+        <style>
+            /* Hide the scrollbar */
+            div::-webkit-scrollbar {
+                display: none;
+            }
+        </style>
+
+
+        <script src="Music.js"></script>
+        <script src="Trail.js"></script>
+        <script>
+            const friendList = document.getElementById("friend-list")
+            friendList.onmouseleave = function () {
+                friendList.classList.add("w-17")
+                friendList.classList.remove("w-60")
+                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
+                    e.children[1].classList.add("hidden")
+                })
+                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
+                    e.children[1].classList.add("hidden")
+                })
+            }
+            friendList.onmouseenter = function () {
+                friendList.classList.add("w-60")
+                friendList.classList.remove("w-17")
+                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
+                    e.children[1].classList.remove("hidden")
+                })
+                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
+                    e.children[1].classList.remove("hidden")
+                })
+            }
+        </script>
+    </div>
+</div>
+</div>
+</body>
+</html>
