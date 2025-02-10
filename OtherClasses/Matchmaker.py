@@ -3,6 +3,7 @@ from math import exp, sqrt
 from threading import Thread
 from time import sleep, time
 
+from OtherClasses.CachedElements import CachedElements
 from OtherClasses.Party import Party
 from OtherClasses.Team import Team
 
@@ -14,9 +15,12 @@ class Match:
         self.teamA = teamA
         self.teamB = teamB
         self.totalPlayers = 0
+        self.quiz = None
         self.generateDetails()
 
     def generateDetails(self):
+        self.teamA.match = self
+        self.teamB.match = self
         self.MMRDiff = abs(self.teamA.averageMMR-self.teamB.averageMMR)
         self.oldestPartyCreatedAt = min(self.teamA.oldestPartyCreatedAt, self.teamB.oldestPartyCreatedAt)
         for party in self.teamA.parties+self.teamB.parties:
@@ -26,19 +30,18 @@ class Match:
         return self.MMRDiff <= exp(sqrt(time()-self.oldestPartyCreatedAt))**2 and (self.MMRDiff < 300 if self.teamB.parties else True)
 
 class Matchmaker:
-    def __init__(self, onMatch):
+    def __init__(self, onMatch, cachedElements:CachedElements):
         self.inQueue:list[Party] = []
         self.onMatch = onMatch
+        self.cachedElements = cachedElements
         Thread(target=self.__startLooking).start()
 
     def addToQueue(self, party: Party):
-        Thread(target=party.startTimer).start()
         if party not in self.inQueue: self.inQueue.append(party)
 
     def removeFromQueue(self, party: Party):
         if party in self.inQueue:
             self.inQueue.remove(party)
-            Thread(target=party.stopTimer).start()
 
     def __startLooking(self):
         playersPerTeam = 3
@@ -46,7 +49,7 @@ class Matchmaker:
             if not self.inQueue:
                 sleep(1)
                 continue
-            print("\nFinding from parties:", len(self.inQueue))
+            print("\nIn Queue:", len(self.inQueue))
             for party in self.inQueue:
                 for player in party.players:
                     print("--- ", player.userName, player.MMR)
@@ -57,8 +60,8 @@ class Matchmaker:
                     remainingParties = [x for x in partiesInQueue if x not in team1parties]
                     for team2Size in range(min(3, len(remainingParties)), 0-1, -1):
                         for team2parties in combinations(remainingParties, team2Size):
-                            team1 = Team(team1parties)
-                            team2 = Team(team2parties)
+                            team1 = Team(team1parties, self.cachedElements)
+                            team2 = Team(team2parties, self.cachedElements)
                             if len(self.inQueue)==1: print(team1.isValid(False) , team2.isValid(True))
                             if team1.isValid(False) and team2.isValid(True):
                                 dummyMatch = Match(team1, team2)
@@ -73,8 +76,14 @@ class Matchmaker:
                 teamB.fillBots(teamA.averageMMR, playersPerTeam)
                 teamA.fillBots(teamB.averageMMR, playersPerTeam)
                 match = Match(teamA, teamB)
-                for party in teamA.parties: self.removeFromQueue(party)
-                for party in teamB.parties: self.removeFromQueue(party)
+                for party in teamA.parties:
+                    party.matchStarted = True
+                    party.readyPlayers = []
+                    self.removeFromQueue(party)
+                for party in teamB.parties:
+                    party.matchStarted = True
+                    party.readyPlayers = []
+                    self.removeFromQueue(party)
                 print("Matched")
                 print(f"\tMMRDiff={match.MMRDiff}")
                 print("\t\tTeamA")

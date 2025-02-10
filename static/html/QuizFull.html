@@ -1,3 +1,15 @@
 <div class="relative flex items-center justify-center w-full h-[600px] mt-32 sm:mt-32 md:mt-0 lg:mt-0" style="z-index: 1;">
     <div id="quiz-content" class="relative z-50 flex flex-col items-center bg-black/70 p-6 sm:p-8 rounded-2xl shadow-xl w-[85%] sm:w-[75%] md:w-[70%] lg:w-[65%] h-[70%]"></div>
 </div>
+<script>
+    const selectedColour = "bg-gray-900"
+    const unSelectedColour = "bg-gray-600"
+    let selectedOption = null
+    function changeSelectedOption(button) {
+        if (selectedOption) selectedOption.classList.remove(selectedColour)
+        if (selectedOption) selectedOption.classList.add(unSelectedColour)
+        button.classList.remove(unSelectedColour)
+        button.classList.add(selectedColour)
+        selectedOption = button
+    }
+</script>

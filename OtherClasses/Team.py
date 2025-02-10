@@ -2,12 +2,16 @@ from math import sqrt, exp
 from threading import Thread
 from time import time
 
+from randomisedString import RandomisedString
+
+from OtherClasses.CachedElements import CachedElements
 from OtherClasses.Party import Party
 from OtherClasses.Player import Player
 
 
 class Team:
-    def __init__(self, parties) -> None:
+    def __init__(self, parties, cachedElements:CachedElements) -> None:
+        self.teamID = RandomisedString().AlphaNumeric(10, 10)
         self.parties:list[Party] = list(parties)
         self.count = 0
         self.sumMMR = 0
@@ -15,10 +19,14 @@ class Team:
         self.maxMMR = 0
         self.oldestPartyCreatedAt = None
         self.averageMMR = 0
+        self.health = 100
+        self.cachedElements = cachedElements
+        self.match = None
         self.generateDetails()
 
     def generateDetails(self):
         for party in self.parties:
+            party.team = self
             self.count += len(party.players)
             self.oldestPartyCreatedAt = time()-party.partyTimer if self.oldestPartyCreatedAt is None or self.oldestPartyCreatedAt>time()-party.partyTimer else self.oldestPartyCreatedAt
             for player in party.players:
@@ -41,8 +49,16 @@ class Team:
         botMMR = totalMMRNeeded / botsNeeded
         botParty = Party()
         for _ in range(botsNeeded):
-            botPlayer = Player(None, f"Bot")
+            botPlayer = Player(None, f"Mr Bot", self.cachedElements)
             botPlayer.MMR = botMMR
             botParty.addPlayer(botPlayer)
         self.parties.append(botParty)
         self.generateDetails()
+
+    def allPlayers(self):
+        for party in self.parties:
+            for player in party.players:
+                yield player
+
+    def __eq__(self, other):
+        return self.teamID == other.teamID

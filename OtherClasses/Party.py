@@ -4,7 +4,6 @@ from time import sleep
 
 from randomisedString import RandomisedString
 
-from OtherClasses.CachedElements import CachedElements
 from OtherClasses.CustomMessages import CustomMessages
 from OtherClasses.DivIDs import DivID
 from OtherClasses.Player import Player
@@ -12,19 +11,22 @@ from internal.dynamicWebsite import DynamicWebsite
 
 
 class Party:
-    def __init__(self, onPartyCodeCreated=None, onPartyClosed=None, onSelfLeave=None, cachedElements:CachedElements=None):
-        self.partyID = RandomisedString().AlphaNumeric(30, 30)
+    def __init__(self, onPartyCodeCreated=None, onPartyClosed=None, onSelfLeave=None, cachedElements=None, matchmaker=None):
+        self.partyID = RandomisedString().AlphaNumeric(10, 10)
         self.cachedElements = cachedElements
+        self.matchMaker = matchmaker
         self.defaultPartyCode = "-----"
         self.partyCode = self.defaultPartyCode
-        self.players:list[Player] = []
         self.leaderIndex = None
+        self.players:list[Player] = []
         self.maxPlayers = 3
-        self.inQueue = False
+        self.readyPlayers:list[Player] = []
         self.partyTimer = 0
         self.onPartyClosed =  onPartyClosed
         self.onPartyCodeCreated = onPartyCodeCreated
         self.onSelfLeave = onSelfLeave
+        self.matchStarted = False
+        self.team = None
     def __notifyOtherPlayersIndexDecrement(self, hollowIndex:int):
         for player in self.players:
             if player.viewer is None: continue
@@ -52,27 +54,41 @@ class Party:
     def __notifySelfLeft(self, oldPlayer:Player, notifySelfLeave:bool):
         if oldPlayer.viewer is not None and self.onSelfLeave is not None:
             if notifySelfLeave: self.onSelfLeave(oldPlayer.viewer)
-    def startTimer(self):
-        self.inQueue = True
+    def ready(self, player:Player):
+        if player not in self.readyPlayers: self.readyPlayers.append(player)
+        player.viewer.updateHTML(f"UnReady {len(self.readyPlayers)}/{len(self.players)}", DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
+        self.checkAllPlayersReady()
+    def unready(self, player:Player):
+        if player in self.readyPlayers: self.readyPlayers.remove(player)
+        player.viewer.updateHTML(f"Ready {len(self.readyPlayers)}/{len(self.players)}", DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
+    def checkAllPlayersReady(self):
         self.partyTimer = 0
-        while self.inQueue:
-            for player in self.players:
-                if player.viewer is not None:
-                    player.viewer.updateHTML(int(self.partyTimer), DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
-            sleep(1)
-            self.partyTimer += 1
+        if len(self.readyPlayers)==len(self.players):
+            self.matchMaker.addToQueue(self)
+            while len(self.readyPlayers)==len(self.players):
+                for player in self.players:
+                    if player.viewer is not None:
+                        player.viewer.updateHTML(int(self.partyTimer), DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
+                sleep(1)
+                self.partyTimer += 1
+            if not self.matchStarted:
+                self.matchMaker.removeFromQueue(self)
+                self.stopTimer()
+            else:
+                print("MATCHSTARTEDDDDDDDDDDDDD")
     def stopTimer(self):
-        self.inQueue = False
         for player in self.players:
             if player.viewer is not None:
-                player.viewer.updateHTML(int(self.partyTimer), DivID.startStopQueue, DynamicWebsite.UpdateMethods.update) #TODO: return the start button
+                player.viewer.updateHTML(f"{'Ready' if player not in self.readyPlayers else 'UnReady'} {len(self.readyPlayers)}/{len(self.players)}", DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
     def addPlayer(self, newPlayer:Player):
         if len(self.players) < self.maxPlayers:
+            newPlayer.party = self
             self.players.append(newPlayer)
             index = len(self.players) - 1
             self.__notifySelfJoined(index)
             self.sendPartyCode(newPlayer)
             self.__notifyOtherPlayersJoined(index, newPlayer)
+            self.stopTimer()
             return index
     def removePlayer(self, oldPlayer:Player, notifySelfLeave:bool):
         for index in range(len(self.players)):
@@ -84,6 +100,8 @@ class Party:
                 self.players.pop(index)
                 if len(self.players) == 0 and self.onPartyClosed is not None:
                     self.onPartyClosed(self)
+                else:
+                    self.checkAllPlayersReady()
                 return index
     def sendPartyCode(self, player):
         if player.viewer is not None:

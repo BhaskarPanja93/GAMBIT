@@ -167,7 +167,7 @@ def showSocials(viewerObj: DynamicWebsite.Viewer):
     others = []
     for _ in range(15):
         #sleep(1)
-        other = Player(None, str(_))
+        other = Player(None, str(_), cachedElements)
         others.append(other)
         viewerObj.sendCustomMessage(CustomMessages.friendAdded(other.displayUserName(), other.displayPFP(), other.displayState()))
 
@@ -197,8 +197,8 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
     removeQuizNavbar(viewerObj)
     showSocials(viewerObj)
     viewerObj.privateData.newPage(Pages.LOBBY)
-    if viewerObj.privateData.party is None:
-        viewerObj.privateData.party = createParty(viewerObj.privateData.player)
+    if viewerObj.privateData.player.party is None:
+        createParty(viewerObj.privateData.player)
 
 
 
@@ -209,7 +209,8 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
 def __renderQuizStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() != Pages.QUIZ:
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
-        viewerObj.privateData.newPage(Pages.LOBBY)
+        viewerObj.privateData.newPage(Pages.QUIZ)
+        viewerObj.privateData.player.viewer.sendCustomMessage(CustomMessages.pageChanged(Pages.QUIZ))
 
 
 def renderQuiz(viewerObj: DynamicWebsite.Viewer):
@@ -255,7 +256,7 @@ def renderFirstPage(viewerObj: DynamicWebsite.Viewer, isAuthenticated: bool):
     renderMusicTray(viewerObj)
     if isAuthenticated:
         if viewerObj.privateData.player is None:
-            viewerObj.privateData.player = Player(viewerObj, viewerObj.privateData.userName)
+            viewerObj.privateData.player = Player(viewerObj, viewerObj.privateData.userName, cachedElements)
         if viewerObj.privateData.expectedPostAuthPage == Pages.LOBBY: renderLobby(viewerObj)
         elif viewerObj.privateData.expectedPostAuthPage == Pages.QUIZ: renderQuiz(viewerObj)
         #elif viewerObj.privateData.expectedPostAuthPage == Pages.marketPlace: renderMarketPlace(viewerObj)
@@ -328,19 +329,23 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             return renderAuthForms(viewerObj)
     elif viewerObj.privateData.currentPage() == Pages.LOBBY:
         if purpose == "PARTY_CODE":
-            return viewerObj.privateData.party.generatePartyCode()
+            return viewerObj.privateData.player.party.generatePartyCode()
         if purpose == "PARTY_CODE_INPUT":
             newParty = partyCodes.get(form.get("CODE"))
             if newParty is not None:
-                oldParty = viewerObj.privateData.party
+                oldParty = viewerObj.privateData.player.party
                 if oldParty.partyID != newParty.partyID:
-                    viewerObj.privateData.party = newParty
+                    viewerObj.privateData.player.party = newParty
                     if oldParty: oldParty.removePlayer(viewerObj.privateData.player, True)
                     return newParty.addPlayer(viewerObj.privateData.player)
-        if purpose == "START_QUEUE":
-            return matchmaker.addToQueue(viewerObj.privateData.party)
-        if purpose == "STOP_QUEUE":
-            return matchmaker.removeFromQueue(viewerObj.privateData.party)
+        if purpose == "READY":
+            return viewerObj.privateData.player.party.ready(viewerObj.privateData.player)
+        if purpose == "UN_READY":
+            return viewerObj.privateData.player.party.unready(viewerObj.privateData.player)
+    elif viewerObj.privateData.currentPage() == Pages.QUIZ:
+        if purpose == "OPTION_SELECTED":
+            viewerObj.privateData.player.optionsSelected[form.get("QUESTION")] = {"OPTION_ID":form.get("OPTION"), "TIME":time()}
+            return
     elif viewerObj.privateData.currentPage() in [Pages.LOBBY, Pages.NOTES]:
         return renderAuthPost(viewerObj)
     return rejectForm(viewerObj, form, "Unknown Purpose")
@@ -363,8 +368,8 @@ def customWSMessageCallback(viewerObj: DynamicWebsite.Viewer, message: Any):
 
 def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Left: ", viewerObj.viewerID)
-    if viewerObj.privateData.party is not None:
-        viewerObj.privateData.party.removePlayer(viewerObj.privateData.player, False)
+    if viewerObj.privateData.player.party is not None:
+        viewerObj.privateData.player.party.removePlayer(viewerObj.privateData.player, False)
 
 
 def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
@@ -479,10 +484,9 @@ def onPartyCodeGenerated(party: Party):
 
 
 def createParty(player):
-    party = Party(onPartyCodeGenerated, closeParty, renderLobby, cachedElements)
+    party = Party(onPartyCodeGenerated, closeParty, renderLobby, cachedElements, matchmaker)
     partyIDs[party.partyID] = party
-    if player:
-        party.addPlayer(player)
+    if player: party.addPlayer(player)
     return party
 
 
@@ -495,10 +499,11 @@ def onQuizEnd(quiz:Quiz):
 
 
 def onMatchFound(match: Match):
-    quiz = Quiz(match, onQuizEnd, cachedElements)
+    quiz = Quiz(match, onQuizEnd, cachedElements, SQLconn)
     for party in match.teamB.parties+match.teamA.parties:
         for player in party.players:
             if player.viewer is not None:
+                player.optionsSelected = {}
                 renderQuiz(player.viewer)
     quiz.start()
 
@@ -511,7 +516,7 @@ def onMatchFound(match: Match):
 def testMatchmaking():
     sleep(2)
     for _ in range(1):
-        party = createParty(Player(None, str(_)))
+        party = createParty(Player(None, str(_), cachedElements))
         matchmaker.addToQueue(party)
         #sleep(0.5)
 
@@ -532,7 +537,7 @@ partyCodes:dict[str, Party] = {}
 passwordHasher = PasswordHasher()
 UpdateMethods = DynamicWebsite.UpdateMethods
 cachedElements = CachedElements()
-matchmaker = Matchmaker(onMatchFound)
+matchmaker = Matchmaker(onMatchFound, cachedElements)
 logger = CustomisedLogs()
 SQLconn = connectDB(logger)
 dynamicWebsiteApp = DynamicWebsite(firstPageCreator, newVisitorCallback, visitorLeftCallback, formSubmitCallback, customWSMessageCallback, fernetKey, CoreValues.appName, Routes.webHomePage)
@@ -582,7 +587,7 @@ def handle_404(error):
 
 
 
-Thread(target=testMatchmaking).start()
+#Thread(target=testMatchmaking).start()
 
 
 WSGIRunner(baseApp, webPort, Routes.webHomePage, logger)

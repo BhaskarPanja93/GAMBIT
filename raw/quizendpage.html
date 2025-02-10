@@ -113,7 +113,7 @@
             <!-- No left button for this page -->
             <!-- Left Button -->
             <div class="left-0">
-                <button>
+                <button disabled>
                     <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke="currentColor"
                          class="w-12 h-12 text-white">
                         <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M15 19l-7-7 7-7"/>
@@ -132,37 +132,6 @@
             </div>
         </div>
 
-
-        <!-- Quiz Content -->
-        <!--        <div id="quizContent"-->
-        <!--             class="relative flex items-center justify-center w-full h-[600px] mt-32 sm:mt-32 md:mt-0 lg:mt-0"-->
-        <!--             style="z-index: 1;">-->
-
-        <!--            &lt;!&ndash; Quiz Section (Center) &ndash;&gt;-->
-        <!--            <div class="relative z-50 flex flex-col items-center bg-black/70 p-6 sm:p-8 rounded-2xl shadow-xl w-[65%] sm:w-[65%] md:w-[70%] lg:w-[65%] h-[65%]">-->
-        <!--                <div class="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Quiz Question</div>-->
-        <!--                <div class="text-white text-lg sm:text-xl md:text-2xl text-center mb-6 sm:mb-8">What is the capital of-->
-        <!--                    France?-->
-        <!--                </div>-->
-        <!--                <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">-->
-        <!--                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">-->
-        <!--                        Paris-->
-        <!--                    </button>-->
-
-        <!--                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">-->
-        <!--                        Berlin-->
-        <!--                    </button>-->
-        <!--                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">-->
-        <!--                        Madrid-->
-        <!--                    </button>-->
-        <!--                    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">-->
-        <!--                        Rome-->
-        <!--                    </button>-->
-        <!--                </div>-->
-        <!--            </div>-->
-        <!--        </div>-->
-
-
         <!-- Chat Component -->
         <style>
             #chat-container:hover #chatbox {
@@ -177,32 +146,6 @@
             }
         </style>
 
-
-        <script src="Music.js"></script>
-        <script src="Trail.js"></script>
-        <script>
-            const friendList = document.getElementById("friend-list")
-            friendList.onmouseleave = function () {
-                friendList.classList.add("w-17")
-                friendList.classList.remove("w-60")
-                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
-                    e.children[1].classList.add("hidden")
-                })
-                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
-                    e.children[1].classList.add("hidden")
-                })
-            }
-            friendList.onmouseenter = function () {
-                friendList.classList.add("w-60")
-                friendList.classList.remove("w-17")
-                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
-                    e.children[1].classList.remove("hidden")
-                })
-                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
-                    e.children[1].classList.remove("hidden")
-                })
-            }
-        </script>
     </div>
 </div>
 </div>

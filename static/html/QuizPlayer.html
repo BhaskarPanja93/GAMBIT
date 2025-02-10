@@ -1,0 +1,11 @@
+<div class="{{ crownHide }} absolute -top-4 left-1/2 transform -translate-x-1/2 opacity-100">
+    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400"
+         fill="currentColor" viewBox="0 0 24 24">
+        <path d="M5 21h14v-2H5v2zm14-4H5l-1-8 5 3 4-6 4 6 5-3-1 8z"/>
+    </svg>
+</div>
+<img src="{{ PFP }}" alt="PFP" class="h-10 w-10 rounded-full">
+<div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
+    <div>Username: {{ username }}</div>
+    <div>Score: {{ score }}</div>
+</div>
