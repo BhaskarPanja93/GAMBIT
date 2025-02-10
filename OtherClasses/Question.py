@@ -13,5 +13,5 @@ class Question:
         self.text = text
         self.rawOptions = rawOptions
         self.correct = correct
-        self.modifiedOptions = []
+        self.modifiedOptions:list[Option] = []
         for optionIndex in range(len(self.rawOptions)): self.modifiedOptions.append(Option(optionIndex, self.rawOptions[optionIndex]))

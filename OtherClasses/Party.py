@@ -1,6 +1,7 @@
 from __future__ import annotations
 
-from time import sleep, time
+from time import sleep
+
 from randomisedString import RandomisedString
 
 from OtherClasses.CachedElements import CachedElements
@@ -11,7 +12,7 @@ from internal.dynamicWebsite import DynamicWebsite
 
 
 class Party:
-    def __init__(self, onPartyCodeCreated, onPartyClosed, onSelfLeave, cachedElements:CachedElements):
+    def __init__(self, onPartyCodeCreated=None, onPartyClosed=None, onSelfLeave=None, cachedElements:CachedElements=None):
         self.partyID = RandomisedString().AlphaNumeric(30, 30)
         self.cachedElements = cachedElements
         self.defaultPartyCode = "-----"
@@ -49,7 +50,7 @@ class Party:
                 player = self.players[playerIndex]
                 newPlayer.viewer.sendCustomMessage(CustomMessages.addedPartyMember(playerIndex, player))
     def __notifySelfLeft(self, oldPlayer:Player, notifySelfLeave:bool):
-        if oldPlayer.viewer is not None:
+        if oldPlayer.viewer is not None and self.onSelfLeave is not None:
             if notifySelfLeave: self.onSelfLeave(oldPlayer.viewer)
     def startTimer(self):
         self.inQueue = True
@@ -81,7 +82,7 @@ class Party:
                 self.__notifyOtherPlayersLeft(index)
                 self.__notifyOtherPlayersIndexDecrement(index)
                 self.players.pop(index)
-                if len(self.players) == 0:
+                if len(self.players) == 0 and self.onPartyClosed is not None:
                     self.onPartyClosed(self)
                 return index
     def sendPartyCode(self, player):

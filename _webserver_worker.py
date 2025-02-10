@@ -482,7 +482,6 @@ def createParty(player):
     party = Party(onPartyCodeGenerated, closeParty, renderLobby, cachedElements)
     partyIDs[party.partyID] = party
     if player:
-        if player.viewer: renderLobby(player.viewer)
         party.addPlayer(player)
     return party
 
@@ -583,7 +582,7 @@ def handle_404(error):
 
 
 
-#Thread(target=testMatchmaking).start()
+Thread(target=testMatchmaking).start()
 
 
 WSGIRunner(baseApp, webPort, Routes.webHomePage, logger)
