@@ -204,7 +204,7 @@ div::-webkit-scrollbar { display: none; }
 
 @keyframes changeColor {
     0% {
-        color: #6B21A8;
+        color: #8d00ff;
     }
     10% {
         color: #5d00ff;
