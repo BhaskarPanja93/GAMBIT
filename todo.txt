@@ -12,6 +12,8 @@ KEEP 1080p RESOLUTION !!
 x Final adjustments for nav bar
 x UI Changes
 x Make usernames standout
+x Ready in lobby page
+x Start -> Ready 1/3
 
 
 
