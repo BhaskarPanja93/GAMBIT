@@ -93,7 +93,7 @@ def __renderAuthStructure(viewerObj: DynamicWebsite.Viewer):
 
 def renderAuthPre(viewerObj: DynamicWebsite.Viewer):
     __renderAuthStructure(viewerObj)
-    renderBaseNavbar(viewerObj)
+    removeBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     #hideSocials(viewerObj)
@@ -105,7 +105,7 @@ def renderAuthPre(viewerObj: DynamicWebsite.Viewer):
 
 def renderAuthForms(viewerObj: DynamicWebsite.Viewer):
     __renderAuthStructure(viewerObj)
-    renderBaseNavbar(viewerObj)
+    removeBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     hideSocials(viewerObj)
@@ -193,7 +193,7 @@ def __renderLobbyStructure(viewerObj: DynamicWebsite.Viewer):
 def renderLobby(viewerObj: DynamicWebsite.Viewer):
     __renderLobbyStructure(viewerObj)
     renderBaseNavbar(viewerObj)
-    removeLobbyNavbar(viewerObj)
+    renderLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     showSocials(viewerObj)
     viewerObj.privateData.newPage(Pages.LOBBY)
@@ -482,7 +482,7 @@ def createParty(player):
     party = Party(onPartyCodeGenerated, closeParty, renderLobby, cachedElements)
     partyIDs[party.partyID] = party
     if player:
-        if player.viewer: renderLobbyNavbar(player.viewer)
+        if player.viewer: renderLobby(player.viewer)
         party.addPlayer(player)
     return party
 
