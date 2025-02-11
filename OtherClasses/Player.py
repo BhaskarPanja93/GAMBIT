@@ -41,7 +41,7 @@ class Player:
         self.state = "ONLINE"
         self.level = 0
         self.rank = "https://static.wixstatic.com/media/cb04e9_db781b062c6d4d02b1d5dbaf314ad2ef~mv2.png/v1/fill/w_256,h_256,al_c,q_85,enc_auto/cb04e9_db781b062c6d4d02b1d5dbaf314ad2ef~mv2.png"
-        self.MMR = randrange(1, 1000)
+        self.MMR = randrange(400, 500)
         self.optionsSelected = {}
         self.score = 0
         self.correct = 0

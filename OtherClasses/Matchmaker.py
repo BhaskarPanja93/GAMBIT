@@ -97,7 +97,7 @@ class Matchmaker:
                     print(f"\t\t\tParty waited for {party.partyTimer}")
                     for player in party.players:
                         print("\t\t\t\t", player.userName, player.MMR)
-                self.onMatch(match)
+                Thread(target=self.onMatch, args=(match,)).start()
 
 
 

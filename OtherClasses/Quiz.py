@@ -35,9 +35,10 @@ class Quiz:
         for player in list(self.match.teamA.allPlayers())+list(self.match.teamB.allPlayers()):
             if player in lastAllowed or len(lastAllowed)==0:
                 self.allowAnswersFrom.append(player)
-        self.sortPlayersByScore()
-        self.updateNavbar()
-        self.prepareQuestion()
+        if self.allowAnswersFrom:
+            self.sortPlayersByScore()
+            self.updateNavbar()
+            self.prepareQuestion()
 
     def prepareQuestion(self):
         q = self.SQLconn.execute(f"SELECT * FROM {Database.QUESTION.TABLE_NAME} ORDER BY RAND() LIMIT 1")[0]
@@ -67,12 +68,12 @@ class Quiz:
                     toSend.viewer.updateHTML(f"""{teamAHealth}%""", f"team-health", DynamicWebsite.UpdateMethods.update)
                     toSend.viewer.updateHTML(f"""<div class="bg-green-500 h-full" style="width: {teamAHealth}%;"></div>""", f"team-health-bar", DynamicWebsite.UpdateMethods.update)
                 for index in range(3):
-                    if len(list(self.match.teamA.allPlayers()))>=index:
-                        player = list(self.match.teamA.allPlayers())[index]
-                        renderPlayer(player, toSend)
-                    if len(list(self.match.teamB.allPlayers()))>=index:
-                        player = list(self.match.teamB.allPlayers())[index]
-                        renderPlayer(player, toSend)
+                    toSend.viewer.updateHTML("", f"team-player-{index}", DynamicWebsite.UpdateMethods.update)
+                    toSend.viewer.updateHTML("", f"opponent-player-{index}", DynamicWebsite.UpdateMethods.update)
+                    try: renderPlayer(list(self.match.teamA.allPlayers())[index], toSend)
+                    except: pass
+                    try: renderPlayer(list(self.match.teamB.allPlayers())[index], toSend)
+                    except: pass
 
     def showPreQuestion(self):
         self.showQuestion()
@@ -95,7 +96,6 @@ class Quiz:
         self.endQuestion()
 
     def endQuestion(self):
-        print("PRE", self.match.teamA.health, self.match.teamB.health)
         question = self.questionHistory[-1]
         for player in self.allowAnswersFrom:
             if player.viewer is None:
@@ -130,7 +130,6 @@ class Quiz:
                 player.healthImpact += healthImpact
                 player.party.team.health += healthImpact
 
-        print("POST", self.match.teamA.health, self.match.teamB.health)
         if 100<=self.match.teamA.health or self.match.teamA.health<=0 or 100<=self.match.teamB.health or self.match.teamB.health<=0: self.end()
         else: self.start()
 
@@ -145,7 +144,7 @@ class Quiz:
 
     def end(self):
         if self.match.teamB.health > self.match.teamA.health: self.match.teamB.winner = True
-        else: self.match.teamA.winner = False
+        else: self.match.teamA.winner = True
         self.endAt = time()
         self.onQuizEnd(self)
 
