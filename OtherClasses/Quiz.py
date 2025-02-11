@@ -56,14 +56,14 @@ class Quiz:
             if toSend.viewer is not None:
                 if self.match.teamB == toSend.party.team:
                     toSend.viewer.updateHTML(f"""{teamBHealth}""", f"team-health", DynamicWebsite.UpdateMethods.update)
-                    toSend.viewer.updateHTML(f"""<div class="bg-red-500 h-full" style="width: {teamBHealth}%;"></div>""", f"team-health-bar", DynamicWebsite.UpdateMethods.update)
+                    toSend.viewer.updateHTML(f"""<div class="bg-green-500 h-full" style="width: {teamBHealth}%;"></div>""", f"team-health-bar", DynamicWebsite.UpdateMethods.update)
                     toSend.viewer.updateHTML(f"""{teamAHealth}""", f"opponent-health", DynamicWebsite.UpdateMethods.update)
                     toSend.viewer.updateHTML(f"""<div class="bg-red-500 h-full" style="width: {teamAHealth}%;"></div>""", f"opponent-health-bar", DynamicWebsite.UpdateMethods.update)
                 else:
                     toSend.viewer.updateHTML(f"""{teamBHealth}""", f"opponent-health", DynamicWebsite.UpdateMethods.update)
                     toSend.viewer.updateHTML(f"""<div class="bg-red-500 h-full" style="width: {teamBHealth}%;"></div>""", f"opponent-health-bar", DynamicWebsite.UpdateMethods.update)
                     toSend.viewer.updateHTML(f"""{teamAHealth}""", f"team-health", DynamicWebsite.UpdateMethods.update)
-                    toSend.viewer.updateHTML(f"""<div class="bg-red-500 h-full" style="width: {teamAHealth}%;"></div>""", f"team-health-bar", DynamicWebsite.UpdateMethods.update)
+                    toSend.viewer.updateHTML(f"""<div class="bg-green-500 h-full" style="width: {teamAHealth}%;"></div>""", f"team-health-bar", DynamicWebsite.UpdateMethods.update)
                 for index in range(3):
                     if len(list(self.match.teamA.allPlayers()))>=index:
                         player = list(self.match.teamA.allPlayers())[index]

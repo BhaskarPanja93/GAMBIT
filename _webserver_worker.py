@@ -164,7 +164,7 @@ def showSocials(viewerObj: DynamicWebsite.Viewer):
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.SocialsStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.friendsStructure, UpdateMethods.update)
         others = []
         for _ in range(15):
-            other = Player(None, str(_), cachedElements)
+            other = Player(None, "FRIEND-"+str(_), cachedElements)
             others.append(other)
             viewerObj.sendCustomMessage(CustomMessages.friendAdded(other.displayUserName(), other.displayPFP(), other.displayState()))
         #TODO: send pending friend requests
@@ -354,11 +354,22 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
     if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
         if purpose == "CHAT":
             form["TEXT"] = Template(form["TEXT"][:50]).render()
-            if form["TO"] == ChatMessageNodes.PARTY and viewerObj.privateData.player.party is not None: return viewerObj.privateData.player.party.receiveMessage(viewerObj.privateData.userName, form["TEXT"])
-            elif form["TO"] == ChatMessageNodes.TEAM and viewerObj.privateData.player.party is not None and viewerObj.privateData.player.party.team is not None: return viewerObj.privateData.player.party.team.receiveMessage(viewerObj.privateData.userName, form["TEXT"])
+            if form["TO"] == ChatMessageNodes.PARTY:
+                if viewerObj.privateData.player.party is not None:
+                    return viewerObj.privateData.player.party.receiveMessage(viewerObj.privateData.userName, form["TEXT"])
+                else:
+                    viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "You need to be in a party to send this message."))
+            elif form["TO"] == ChatMessageNodes.TEAM:
+                if viewerObj.privateData.player.party is not None:
+                    if viewerObj.privateData.player.party.team is not None:
+                        return viewerObj.privateData.player.party.team.receiveMessage(viewerObj.privateData.userName, form["TEXT"])
+                    else:
+                        viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "You need to be in a team to send this message."))
             elif form["TO"] in viewerObj.privateData.friends:
                 if form["TO"] in activeUsernames: return activeUsernames[form["TO"]].sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, form["FROM"], form["TEXT"]))
                 else: return SQLconn.execute(f"INSERT INTO {Database.PENDING_CHATS.TABLE_NAME} VALUES (?, ?, ?)", [form['TO'], form['FROM'], form['TEXT']])
+            else:
+                viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "Unable to send. Recipient unknown"))
     if viewerObj.privateData.currentPage() in [Pages.LOBBY, Pages.POST_AUTH, Pages.NOTES, Pages.MARKETPLACE]:
         if purpose == "LOGOUT":
             freeActiveUsername(viewerObj.privateData.userName)
