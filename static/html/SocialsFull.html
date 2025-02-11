@@ -1,7 +1,7 @@
 <div class="flex absolute h-[450px] md:h-[550px] lg:h-[550px] -translate-y-24 z-10">
     <div id="friends-page" class="backdrop-blur-sm absolute top-0 left-0 h-full bg-black/50 shadow-[4px_4px_10px_0px_rgba(0,0,0,0.5)] transition-all duration-300 ease-in-out">
         <div class="p-4 text-gray-50 h-full">
-            <div class="space-y-4 h-full overflow-y-auto" id="friend-list"></div>
+            <div class="space-y-4 h-full overflow-y-auto" id="friend-list"> </div>
             <div class="space-y-2 -translate-y-full rounded-lg" id="friend-requests">
                 <div class="flex flex-col rounded-lg justify-center items-start p-2 gap-2 bg-gray-900 cursor-pointer transition-all duration-300 group-hover:h-auto group-hover:py-4 group-hover:rounded-lg">
                     <div class="flex justify-between w-full">
@@ -11,7 +11,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"/>
                             </svg>
                         </button>
-                        <div class="request-count text-xs">1/4</div>
+                        <div id="social-interaction-count" class="request-count text-xs">1/4</div>
                         <button class="text-xs text-white px-3 py-1 rounded flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24"
                                  stroke="currentColor" stroke-width="2">
@@ -19,193 +19,216 @@
                             </svg>
                         </button>
                     </div>
-                    <div class="user-details">
-                        <div class="relative group flex items-center space-x-2">
-                            <img src="https://i.pinimg.com/originals/e4/3d/2d/e43d2dea1d8793fcf016d2a634bdf761.png"
-                                 class="h-10 w-10" alt="user-img">
-                            <div class="flex flex-col text-sm friend-details hidden">
-                                <div class="flex items-center space-x-2">UsernameXYZ</div>
-                                <div class="text-gray-500 text-xs">wants to be friends</div>
+
+
+                    <div>
+                        <div class="social-interactions">
+                            <div class="relative group flex items-center space-x-2">
+                                <img src="https://i.pinimg.com/originals/e4/3d/2d/e43d2dea1d8793fcf016d2a634bdf761.png"
+                                     class="h-10 w-10" alt="user-img"/>
+                                <div class="flex flex-col text-sm friend-details hidden">
+                                    <div id="social-interaction-username" class="flex items-center space-x-2"> </div>
+                                    <div id="social-interaction-action-text" class="text-gray-500 text-xs"> </div>
+                                </div>
                             </div>
                         </div>
-                    </div>
-                    <div class="flex gap-1 group items-center justify-center">
-                        <button class="bg-green-500 text-white px-6 py-1 rounded hover:bg-green-600">Accept</button>
-                        <button class="bg-red-500 text-white px-6 py-1 rounded hover:bg-red-600">Reject</button>
+                        <div class="flex gap-1 group items-center justify-center">
+                            <button id="accept" class="bg-green-500 text-white px-6 py-1 rounded hover:bg-green-600"> </button>
+                            <button id="reject" class="bg-red-500 text-white px-6 py-1 rounded hover:bg-red-600"> </button>
+                        </div>
                     </div>
 
-                    <div class="flex items-center justify-center">
+
+                    <div id="hidden friend-adder-tools" class="flex items-center justify-center gap-3">
+                        <input class="px-2 py-1 bg-gray-600 hover:bg-gray-500 w-20"/>
                         <button class="px-9 py-1 bg-gray-600 hover:bg-gray-500">
-                            <img src="https://cdn-icons-png.flaticon.com/512/622/622669.png" alt="Search" class="h-6 w-6">
-                        </button>
-                        <button class="px-9 py-1 bg-gray-600 hover:bg-gray-500">
-                            <img src="https://cdn-icons-png.flaticon.com/512/748/748113.png" alt="Add Friend" class="h-6 w-6">
+                            <img src="https://cdn-icons-png.flaticon.com/512/748/748113.png" alt="Add Friend" class="h-6 w-6"/>
                         </button>
                     </div>
                 </div>
-
-                <!-- Expanded version of Friend Invite -->
             </div>
         </div>
-
-
     </div>
-</div>
-<script id="script-friends">
-const friendElements = document.getElementsByClassName("friend-element")
-const friendDetails = document.getElementsByClassName("friend-details")
-const allFriendUsernames = new Set()
+    <script id="script-friends">
+        const friendElements = document.getElementsByClassName("friend-element")
+        const friendDetails = document.getElementsByClassName("friend-details")
+        const allFriendUsernames = new Set()
 
-const FRIEND_STATES = {
-    AVAILABLE: "Available",
-    IN_GAME: "In Game",
-    OFFLINE: "Offline",
-}
-
-function toggleSocials(display) {
-    if (display) waitForElementPresence("#friends-page", (div)=>div.classList.remove("hidden"))
-    else waitForElementPresence("#friends-page", (div)=>div.classList.add("hidden"))
-}
-
-function createInviteButton(username) {
-    deleteInviteButton(username)
-    let button = document.createElement("button")
-    button.className = "px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded friend-action-invite"
-    document.getElementById(`connection-${username}`).getElementsByClassName("friend-action-invite")[0].innerHTML = state
-}
-
-function deleteInviteButton(username) {
-    let inviteButton = document.getElementById(`connection-${username}`).getElementsByClassName("friend-action-invite")
-    if (inviteButton.length === 0) document.getElementById(`connection-${username}`).getElementsByClassName("friend-action-invite")[0].remove()
-}
-
-function friendStateChanged(username, state) {
-    let friendDiv = document.getElementById(`connection-${username}`)
-    if (state === FRIEND_STATES.AVAILABLE) createInviteButton()
-    else deleteInviteButton({username})
-    friendDiv.getElementsByClassName("friend-state")[0].innerHTML = state
-}
-
-function friendRemoved(username) {
-    allFriendUsernames.delete(`connection-${username}`)
-    let friendDiv = document.getElementById(`connection-${username}`)
-    if (friendDiv !== null) {
-        friendDiv.remove()
-    }
-}
-
-let lastFriendActionTriggeredHover = null
-let lastFriendActionTriggeredVisible = null
-function friendAdded(friendData) {
-    allFriendUsernames.add(friendData["USERNAME"])
-    let friendElement = document.createElement("div")
-    friendElement.id = `connection-${friendData["USERNAME"]}`
-    friendElement.className = "flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg w-16 relative overflow-visible friend-element"
-    let group = document.createElement("div")
-    group.className = "relative group flex items-center space-x-2"
-    let PFP = document.createElement("img")
-    PFP.src = friendData["PFP"]
-    PFP.className = "h-10 w-10"
-    group.appendChild(PFP)
-    let visiblePart = document.createElement("div")
-    visiblePart.className = "flex flex-col text-sm friend-details"
-    let usernameDIV = document.createElement("div")
-    usernameDIV.className = "flex items-center space-x-2"
-    usernameDIV.innerText = friendData["USERNAME"]
-    let stateDiv = document.createElement("div")
-    stateDiv.className = "text-green-400 friend-state"
-    stateDiv.innerText = friendData["STATE"]
-    visiblePart.append(usernameDIV)
-    visiblePart.append(stateDiv)
-    group.appendChild(visiblePart)
-    let hoverPart = document.createElement("div")
-    hoverPart.className = "gap-1 flex flex-col absolute top-1/2 left-full transform -translate-y-1/2 translate-x-2 p-2 rounded shadow-md opacity-100 transition-opacity duration-300 whitespace-nowrap z-10"
-    let inviteButton = document.createElement("button")
-    inviteButton.className = "bg-gray-800 text-white border border-white/30 text-sm rounded px-2 py-1 friend-action-invite friend-sub-category-button"
-    inviteButton.innerText = "INVITE"
-    let joinButton = document.createElement("button")
-    joinButton.className = "bg-gray-800 text-white border border-white/30 text-sm rounded px-2 py-1 friend-action-request friend-sub-category-button"
-    joinButton.innerText = "JOIN"
-    let messageButton = document.createElement("button")
-    messageButton.className = "bg-gray-800 text-white border border-white/30 text-sm rounded px-2 py-1 friend-action-request friend-sub-category-button"
-    messageButton.innerText = "MESSAGE"
-    messageButton.onclick = function () { changeChatReceiver(friendData["USERNAME"]) }
-    hoverPart.append(inviteButton)
-    hoverPart.append(joinButton)
-    hoverPart.append(messageButton)
-    group.appendChild(hoverPart)
-    friendElement.appendChild(group)
-    friendElement.onclick = function() {
-        hideLastOpenedFriendAction()
-        lastFriendActionTriggeredHover = hoverPart
-        lastFriendActionTriggeredVisible = visiblePart
-        lastFriendActionTriggeredHover.classList.remove("hidden")
-        lastFriendActionTriggeredVisible.classList.add("hidden")
-    }
-    waitForElementPresence("#friend-list", (div)=> {
-        if (div.classList.contains("expanded") === true) {
-            friendElement.classList.add("w-48")
-            friendElement.classList.remove("w-16")
-        } else {
-            visiblePart.classList.add("hidden")
-            friendElement.classList.add("w-16")
-            friendElement.classList.remove("w-48")
-            hoverPart.classList.add("hidden")
+        const FRIEND_STATES = {
+            AVAILABLE: "Available",
+            IN_GAME: "In Game",
+            OFFLINE: "Offline",
         }
-        div.append(friendElement)
-    })
-}
 
-function hideLastOpenedFriendAction() {
-    if (lastFriendActionTriggeredHover) lastFriendActionTriggeredHover.classList.add("hidden")
-    if (lastFriendActionTriggeredVisible) lastFriendActionTriggeredVisible.classList.remove("hidden")
-}
+        function toggleSocials(display) {
+            if (display) waitForElementPresence("#friends-page", (div)=>div.classList.remove("hidden"))
+            else waitForElementPresence("#friends-page", (div)=>div.classList.add("hidden"))
+        }
 
-function friendRequestReceived(username) {
+        function createInviteButton(username) {
+            deleteInviteButton(username)
+            let button = document.createElement("button")
+            button.className = "px-2 py-1 text-xs bg-blue-500 hover:bg-blue-600 text-white rounded friend-action-invite"
+            document.getElementById(`connection-${username}`).getElementsByClassName("friend-action-invite")[0].innerHTML = state
+        }
 
-}
+        function deleteInviteButton(username) {
+            let inviteButton = document.getElementById(`connection-${username}`).getElementsByClassName("friend-action-invite")
+            if (inviteButton.length === 0) document.getElementById(`connection-${username}`).getElementsByClassName("friend-action-invite")[0].remove()
+        }
 
-function partyInviteReceived(username) {
+        function friendStateChanged(username, state) {
+            let friendDiv = document.getElementById(`connection-${username}`)
+            if (state === FRIEND_STATES.AVAILABLE) createInviteButton()
+            else deleteInviteButton({username})
+            friendDiv.getElementsByClassName("friend-state")[0].innerHTML = state
+        }
 
-}
+        function friendRemoved(username) {
+            allFriendUsernames.delete(`connection-${username}`)
+            let friendDiv = document.getElementById(`connection-${username}`)
+            if (friendDiv !== null) {
+                friendDiv.remove()
+            }
+        }
 
-function partyJoinRequestReceived(username) {
+        let lastFriendActionTriggeredHover = null
+        let lastFriendActionTriggeredVisible = null
+        function friendAdded(friendData) {
+            allFriendUsernames.add(friendData["USERNAME"])
+            let friendElement = document.createElement("div")
+            friendElement.id = `connection-${friendData["USERNAME"]}`
+            friendElement.className = "flex items-center space-x-2 hover:bg-gray-600 p-2 rounded-lg w-16 relative overflow-visible friend-element"
+            let group = document.createElement("div")
+            group.className = "relative group flex items-center space-x-2"
+            let PFP = document.createElement("img")
+            PFP.src = friendData["PFP"]
+            PFP.className = "h-10 w-10"
+            group.appendChild(PFP)
+            let visiblePart = document.createElement("div")
+            visiblePart.className = "flex flex-col text-sm friend-details"
+            let usernameDIV = document.createElement("div")
+            usernameDIV.className = "flex items-center space-x-2"
+            usernameDIV.innerText = friendData["USERNAME"]
+            let stateDiv = document.createElement("div")
+            stateDiv.className = "text-green-400 friend-state"
+            stateDiv.innerText = friendData["STATE"]
+            visiblePart.append(usernameDIV)
+            visiblePart.append(stateDiv)
+            group.appendChild(visiblePart)
+            let hoverPart = document.createElement("div")
+            hoverPart.className = "gap-1 flex flex-col absolute top-1/2 left-full transform -translate-y-1/2 translate-x-2 p-2 rounded shadow-md opacity-100 transition-opacity duration-300 whitespace-nowrap z-10"
+            let inviteButton = document.createElement("button")
+            inviteButton.className = "bg-gray-800 text-white border border-white/30 text-sm rounded px-2 py-1 friend-action-invite friend-sub-category-button"
+            inviteButton.innerText = "INVITE"
+            let joinButton = document.createElement("button")
+            joinButton.className = "bg-gray-800 text-white border border-white/30 text-sm rounded px-2 py-1 friend-action-request friend-sub-category-button"
+            joinButton.innerText = "JOIN"
+            let messageButton = document.createElement("button")
+            messageButton.className = "bg-gray-800 text-white border border-white/30 text-sm rounded px-2 py-1 friend-action-request friend-sub-category-button"
+            messageButton.innerText = "MESSAGE"
+            messageButton.onclick = function () { changeChatReceiver(friendData["USERNAME"]) }
+            hoverPart.append(inviteButton)
+            hoverPart.append(joinButton)
+            hoverPart.append(messageButton)
+            group.appendChild(hoverPart)
+            friendElement.appendChild(group)
+            friendElement.onclick = function() {
+                hideLastOpenedFriendAction()
+                lastFriendActionTriggeredHover = hoverPart
+                lastFriendActionTriggeredVisible = visiblePart
+                lastFriendActionTriggeredHover.classList.remove("hidden")
+                lastFriendActionTriggeredVisible.classList.add("hidden")
+            }
+            waitForElementPresence("#friend-list", (div)=> {
+                if (div.classList.contains("expanded") === true) {
+                    friendElement.classList.add("w-48")
+                    friendElement.classList.remove("w-16")
+                } else {
+                    visiblePart.classList.add("hidden")
+                    friendElement.classList.add("w-16")
+                    friendElement.classList.remove("w-48")
+                    hoverPart.classList.add("hidden")
+                }
+                div.append(friendElement)
+            })
+        }
 
-}
+        function hideLastOpenedFriendAction() {
+            if (lastFriendActionTriggeredHover) lastFriendActionTriggeredHover.classList.add("hidden")
+            if (lastFriendActionTriggeredVisible) lastFriendActionTriggeredVisible.classList.remove("hidden")
+        }
 
-waitForElementPresence("#friends-page", (friendsPage)=> {
-    friendsPage.onmouseleave = function() {
-        hideLastOpenedFriendAction()
-        Array.prototype.filter.call(
-            friendElements,
-            (friendElement) => {
-                friendElement.classList.remove("w-48")
-                friendElement.parentElement.classList.remove("expanded")
-                friendElement.classList.add("w-16")
-            },
-        );
-        Array.prototype.filter.call(
-            friendDetails,
-            (friendDetail) => {
-                friendDetail.classList.add("hidden")
-            },
-        );
-    }
-    friendsPage.onmouseenter = function () {
-        Array.prototype.filter.call(
-            friendElements,
-            (friendElement) => {
-                friendElement.classList.add("w-48")
-                friendElement.parentElement.classList.add("expanded")
-                friendElement.classList.remove("w-16")
-            },
-        );
-        Array.prototype.filter.call(
-            friendDetails,
-            (friendDetail) => {
-                friendDetail.classList.remove("hidden")
-            },
-        );
-    }
-})
-</script>
+        function newSocialInteraction(data) {
+            let username = data["USERNAME"]
+            let interactionText="", acceptText="", divID=""
+            if (data["TYPE"]==="FRIEND_REQUEST") {
+                interactionText = "wants to be friends"
+                acceptText = "Accept"
+                divID = `friend-request-${username}`
+            } else if (data["TYPE"]==="PARTY_INVITE") {
+                interactionText = "invited you"
+                acceptText = "Join"
+                divID = `party-invite-${username}`
+            } else if (data["TYPE"]==="PARTY_JOIN_REQUEST") {
+                interactionText = "wants to join you"
+                acceptText = "Invite"
+                divID = `party-join-request-${username}`
+            } else return
+            const mainDiv = document.createElement("div")
+            mainDiv.id = divID
+            mainDiv.className = "social-interactions"
+
+        }
+
+        function friendRequestReceived(username) {
+
+        }
+
+        function partyInviteReceived(username) {
+
+        }
+
+        function partyJoinRequestReceived(username) {
+
+        }
+
+        waitForElementPresence("#friends-page", (friendsPage)=> {
+            friendsPage.onmouseleave = function() {
+                hideLastOpenedFriendAction()
+                waitForElementPresence("#friend-adder-tools", (div)=>{div.classList.add("hidden")})
+                Array.prototype.filter.call(
+                    friendElements,
+                    (friendElement) => {
+                        friendElement.classList.remove("w-48")
+                        friendElement.parentElement.classList.remove("expanded")
+                        friendElement.classList.add("w-16")
+                    },
+                );
+                Array.prototype.filter.call(
+                    friendDetails,
+                    (friendDetail) => {
+                        friendDetail.classList.add("hidden")
+                    },
+                );
+            }
+            friendsPage.onmouseenter = function () {
+                waitForElementPresence("#friend-adder-tools", (div)=>{div.classList.remove("hidden")})
+                Array.prototype.filter.call(
+                    friendElements,
+                    (friendElement) => {
+                        friendElement.classList.add("w-48")
+                        friendElement.parentElement.classList.add("expanded")
+                        friendElement.classList.remove("w-16")
+                    },
+                );
+                Array.prototype.filter.call(
+                    friendDetails,
+                    (friendDetail) => {
+                        friendDetail.classList.remove("hidden")
+                    },
+                );
+            }
+        })
+    </script>
+</div>

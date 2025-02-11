@@ -10,6 +10,7 @@ class PrivateData:
         self.baseURI = ""
         self.userName = ""
         self.player = None
+        self.friends = []
         self.pagesHistory = []
         self.renderedElements = set()
         self.renderedScripts = set()
@@ -32,6 +33,7 @@ class PrivateData:
 
     def removeScript(self, name):
         self.renderedScripts.remove(name)
+
     def renderElement(self, name):
         self.renderedElements.add(name)
 

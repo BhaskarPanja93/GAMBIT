@@ -20,6 +20,9 @@ class Player:
         self.MMR = randrange(1, 1000)
         self.optionsSelected = {}
         self.score = 0
+        self.correct = 0
+        self.incorrect = 0
+        self.healthImpact = 0
 
     def displayPFP(self):
         return self.PFP
@@ -35,3 +38,7 @@ class Player:
         return Template(self.cachedElements.fetchStaticHTML(FileNames.HTML.QuizPlayer)).render(crownHide="hidden" if not hasCrown else "", username=self.displayUserName(), score=self.score, PFP=self.displayPFP())
     def displayAsOpponent(self, hasCrown:bool=False):
         return Template(self.cachedElements.fetchStaticHTML(FileNames.HTML.QuizPlayer)).render(crownHide="hidden" if not hasCrown else "", username=self.displayUserName(), score=self.score, PFP=self.displayPFP())
+    def __gt__(self, other):
+        return self.score > other.score
+    def __lt__(self, other):
+        return self.score < other.score

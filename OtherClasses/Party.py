@@ -4,6 +4,7 @@ from time import sleep
 
 from randomisedString import RandomisedString
 
+from OtherClasses.ChatMessageNodes import ChatMessageNodes
 from OtherClasses.CustomMessages import CustomMessages
 from OtherClasses.DivIDs import DivID
 from OtherClasses.Player import Player
@@ -54,13 +55,18 @@ class Party:
     def __notifySelfLeft(self, oldPlayer:Player, notifySelfLeave:bool):
         if oldPlayer.viewer is not None and self.onSelfLeave is not None:
             if notifySelfLeave: self.onSelfLeave(oldPlayer.viewer)
-    def ready(self, player:Player):
-        if player not in self.readyPlayers: self.readyPlayers.append(player)
-        player.viewer.updateHTML(f"UnReady {len(self.readyPlayers)}/{len(self.players)}", DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
+    def playerReady(self, player:Player):
+        if player not in self.readyPlayers:
+            self.readyPlayers.append(player)
+            self.updateReadyStat()
         self.checkAllPlayersReady()
-    def unready(self, player:Player):
-        if player in self.readyPlayers: self.readyPlayers.remove(player)
-        player.viewer.updateHTML(f"Ready {len(self.readyPlayers)}/{len(self.players)}", DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
+    def playerUnready(self, player:Player):
+        if player in self.readyPlayers:
+            self.readyPlayers.remove(player)
+            self.updateReadyStat()
+    def updateReadyStat(self):
+        for player in self.players:
+            if player.viewer: player.viewer.updateHTML(f"{'CANCEL' if player in self.readyPlayers else 'START'} <span class='text-sm ml-2'>[{len(self.readyPlayers)}/{len(self.players)}]</span>", DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
     def checkAllPlayersReady(self):
         self.partyTimer = 0
         if len(self.readyPlayers)==len(self.players):
@@ -73,13 +79,6 @@ class Party:
                 self.partyTimer += 1
             if not self.matchStarted:
                 self.matchMaker.removeFromQueue(self)
-                self.stopTimer()
-            else:
-                print("MATCHSTARTEDDDDDDDDDDDDD")
-    def stopTimer(self):
-        for player in self.players:
-            if player.viewer is not None:
-                player.viewer.updateHTML(f"{'Ready' if player not in self.readyPlayers else 'UnReady'} {len(self.readyPlayers)}/{len(self.players)}", DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
     def addPlayer(self, newPlayer:Player):
         if len(self.players) < self.maxPlayers:
             newPlayer.party = self
@@ -88,7 +87,7 @@ class Party:
             self.__notifySelfJoined(index)
             self.sendPartyCode(newPlayer)
             self.__notifyOtherPlayersJoined(index, newPlayer)
-            self.stopTimer()
+            self.updateReadyStat()
             return index
     def removePlayer(self, oldPlayer:Player, notifySelfLeave:bool):
         for index in range(len(self.players)):
@@ -101,6 +100,7 @@ class Party:
                 if len(self.players) == 0 and self.onPartyClosed is not None:
                     self.onPartyClosed(self)
                 else:
+                    self.updateReadyStat()
                     self.checkAllPlayersReady()
                 return index
     def sendPartyCode(self, player):
@@ -125,8 +125,8 @@ class Party:
             toKick = self.players[playerIndex]
             if toKick is not None:
                 self.removePlayer(toKick, True)
-    def sendMessage(self, category:str, sender, text):
+    def receiveMessage(self, sender, text):
         for player in self.players:
-            player.viewer.sendCustomMessage(CustomMessages.chatMessage(category, sender, text))
+            player.viewer.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.PARTY, sender if sender!=player.userName else ChatMessageNodes.YOU, text))
     def __eq__(self, other):
         return self.partyID == other.partyID

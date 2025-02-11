@@ -738,7 +738,7 @@ class DynamicWebsite:
                                 self.makeViewerInComplete(viewerObj)
                                 break
                         else: # No active WS
-                            self.makeViewerDying(viewerObj, 2) ## Viewer left callback is called 2 seconds after he actually leaves (giving them a scope to reconnect in cases of network disconnections)
+                            self.makeViewerDying(viewerObj, 1) ## Viewer left callback is called 1 seconds after he actually leaves (giving them a scope to reconnect in cases of network disconnections)
                         break
                     if receivedBytes is None and not CSRFVerified: break # WS couldn't prove authenticity in specified time
                     if receivedBytes:

@@ -17,18 +17,6 @@
         SYSTEM: firstLetterCapitalised("SYSTEM"),
     }
 
-    function openChatHistory() {
-        waitForElementPresence("#chat-history", (chatHistory)=>{
-            chatHistory.style.display = "block"
-        })
-        if (typeof closeMusicTray !== "undefined") closeMusicTray()
-    }
-
-    function closeChatHistory() {
-        waitForElementPresence("#chat-history", (chatHistory)=>{
-            chatHistory.style.display = ""
-        })
-    }
 
     function receiveText(data) {
         let isValid = false
@@ -96,6 +84,8 @@
             waitForElementPresence("#chat-history", (historyDiv) => {
                 historyDiv.append(backgroundDiv)
                 historyDiv.scrollTop = historyDiv.scrollHeight
+                modifyChatHistoryFocusCount(+1)
+                setTimeout(()=>modifyChatHistoryFocusCount(-1), 2000)
             })
         }
     }
@@ -104,9 +94,9 @@
         waitForElementPresence("#chat-input-text", (input)=>{
             input.value = input.value.trim()
             if (input.value !== "") {
-                console.log("SENDING", {PURPOSE: "CHAT", "TO": selectedReceiver, "TEXT": input.value})
-                sendCustomMessage({PURPOSE: "CHAT", "TO": selectedReceiver, "TEXT": input.value})
-                receiveText({"FROM": MESSAGE_NODES.YOU, "TO": selectedReceiver, "TEXT": input.value})
+                console.log("SENDING", {PURPOSE: "CHAT", TO: selectedReceiver, TEXT: input.value})
+                sendCustomMessage({PURPOSE: "CHAT", TO: selectedReceiver, TEXT: input.value})
+                //receiveText({"FROM": MESSAGE_NODES.YOU, "TO": selectedReceiver, "TEXT": input.value})
                 input.value = ""
             }
         })
@@ -141,6 +131,22 @@
     }
 
 
+    function modifyChatHistoryFocusCount(offset){
+        chatFocusCount += offset
+        if (chatFocusCount===0) {
+            waitForElementPresence("#chat-history", (chatHistory)=>{
+                chatHistory.style.display = ""
+            })
+        }
+        else {
+            waitForElementPresence("#chat-history", (chatHistory)=>{
+                chatHistory.style.display = "block"
+            })
+            if (typeof closeMusicTray !== "undefined") closeMusicTray()
+        }
+    }
+
+
     waitForElementPresence("#chat-input-text", (input)=>{
         input.addEventListener("input", function() {
             let content = input.value
@@ -151,12 +157,10 @@
             }
         })
         input.addEventListener("focusin", function() {
-            chatFocusCount++
-            openChatHistory()
+            modifyChatHistoryFocusCount(+1)
         })
         input.addEventListener("focusout", function() {
-            chatFocusCount--
-            if (chatFocusCount===0) closeChatHistory()
+            modifyChatHistoryFocusCount(-1)
         })
         input.addEventListener("keydown", function(e) {
             if (e.key === "Enter") {
@@ -174,12 +178,10 @@
 
     waitForElementPresence("#chat-holder", (chatHolder)=>{
         chatHolder.addEventListener("mouseenter", function() {
-            openChatHistory()
-            chatFocusCount++
+            modifyChatHistoryFocusCount(+1)
         })
         chatHolder.addEventListener("mouseleave", function() {
-            chatFocusCount--
-            if (chatFocusCount===0) closeChatHistory()
+            modifyChatHistoryFocusCount(-1)
         })
     })
 

@@ -1,10 +1,11 @@
 from math import sqrt, exp
-from threading import Thread
 from time import time
 
 from randomisedString import RandomisedString
 
 from OtherClasses.CachedElements import CachedElements
+from OtherClasses.ChatMessageNodes import ChatMessageNodes
+from OtherClasses.CustomMessages import CustomMessages
 from OtherClasses.Party import Party
 from OtherClasses.Player import Player
 
@@ -22,6 +23,8 @@ class Team:
         self.health = 100
         self.cachedElements = cachedElements
         self.match = None
+        self.winner = False
+        self.opponentTeam:Team|None = None
         self.generateDetails()
 
     def generateDetails(self):
@@ -59,6 +62,10 @@ class Team:
         for party in self.parties:
             for player in party.players:
                 yield player
+
+    def receiveMessage(self, sender, text):
+        for player in self.allPlayers():
+            player.viewer.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.TEAM, sender if sender!=player.userName else ChatMessageNodes.YOU, text))
 
     def __eq__(self, other):
         return self.teamID == other.teamID

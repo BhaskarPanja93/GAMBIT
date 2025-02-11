@@ -29,3 +29,4 @@ class DivID:
     startStopQueue = "start-stop-button"
     quizContent = "quiz-content"
     quizTimer = "quiz-timer"
+    quizScoreBoard = "quiz-score-board"

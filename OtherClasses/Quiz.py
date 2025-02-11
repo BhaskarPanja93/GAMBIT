@@ -1,4 +1,4 @@
-from random import shuffle
+from random import shuffle, choice, randrange
 from time import time, sleep
 
 from jinja2 import Template
@@ -93,20 +93,37 @@ class Quiz:
     def endQuestion(self):
         question = self.questionHistory[-1]
         for player in self.allowAnswersFrom:
-            optionData = player.optionsSelected.get(question.questionID)
-            if optionData:
-                optionSelected = question.fetchOption(optionData.get("OPTION_ID"))
-                timeTaken = optionData.get("TIME", question.generatedAt+5) - question.generatedAt
-                player.optionsSelected[question.questionID] = optionSelected
-                if optionSelected.isCorrect:
-                    player.score += 10 * (self.timePerQuestion - timeTaken)
-                    player.party.team.health += 1.5 * (self.timePerQuestion - timeTaken)
-                else:
-                    player.score -= 5 * timeTaken
-                    player.party.team.health -= len(self.questionHistory) * 1.5 * timeTaken
+            if player.viewer is None:
+                optionSelected = choice(question.options)
+                timeTaken = randrange(self.timePerQuestion)
             else:
-                player.score -= 5
-                player.party.team.health -= len(self.questionHistory) * 1.5
+                optionData = player.optionsSelected.get(question.questionID)
+                if optionData:
+                    optionSelected = question.fetchOption(optionData.get("OPTION_ID"))
+                    timeTaken = optionData.get("TIME", question.generatedAt+5) - question.generatedAt
+                    player.optionsSelected[question.questionID] = optionSelected
+                else:
+                    scoreChange = -5
+                    healthImpact = -len(self.questionHistory) * 1.5
+                    player.healthImpact += healthImpact
+                    player.score += scoreChange
+                    player.party.team.health += healthImpact
+                    continue
+            if optionSelected.isCorrect:
+                scoreChange = 10 * (self.timePerQuestion - timeTaken)
+                healthImpact = 1.5 * (self.timePerQuestion - timeTaken)
+                player.correct += 1
+                player.healthImpact += healthImpact
+                player.score += scoreChange
+                player.party.team.health += healthImpact
+            else:
+                scoreChange = -5 * timeTaken
+                healthImpact = -len(self.questionHistory) * 1.5 * timeTaken
+                player.incorrect += 1
+                player.healthImpact += healthImpact
+                player.score += scoreChange
+                player.party.team.health += healthImpact
+
         if self.match.teamA.health<=0 or self.match.teamB.health<=0: self.end()
         else: self.start()
 
@@ -119,12 +136,10 @@ class Quiz:
             elif player.score == highestScore:
                 self.crowns.append(player)
 
-    def showEndPage(self):
-        pass
-
     def end(self):
+        if self.match.teamB.health> self.match.teamA.health:self.match.teamB.winner = True
         self.endAt = time()
-        self.showEndPage()
+        self.onQuizEnd(self)
 
     def saveToDB(self):
         pass
