@@ -425,16 +425,17 @@ window.MAX_BUFFER_SIZE = 1024*1024*5;
 window.DELAY_TIME = 500
 window.ConnmanagerWS = new WSConnectionManager()
 
-fetch(baseURI+"?RECEIVE_NEW_L2_COOKIE", {
+fetch(baseURI + "?RECEIVE_NEW_L2_COOKIE", {
     method: 'POST',
     headers: { 'Content-Type': 'application/json' },
     body: getDeviceFingerprint(),
     credentials: "include",
-}).then((response)=>{
-    response.json().then((parsed)=>{
-        window.ConnmanagerWS.initiate(parsed[WS_PURPOSES.RESPONSIVE], parsed[WS_PURPOSES.LARGE])
-    })
-});
+}).then((response) => response.json()).then((parsed) => {
+        window.ConnmanagerWS.initiate(parsed[WS_PURPOSES.RESPONSIVE], parsed[WS_PURPOSES.LARGE]);
+    }).catch((error) => {
+        console.error("Error:", error);
+        location.reload();
+    });
 
 
 function sendCustomMessage(data, isLargeData) {

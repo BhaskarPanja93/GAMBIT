@@ -45,8 +45,8 @@ class CustomMessages:
     def partyCode(code):
         return {"MESSAGE": CustomMessageTask.PARTY_CODE, "CODE": code}
     @staticmethod
-    def chatMessage(category, sender, text):
-        return {"MESSAGE": CustomMessageTask.CHAT, "CATEGORY":category, "SENDER": sender, "TEXT": text}
+    def chatMessage(receiver, sender, text):
+        return {"MESSAGE": CustomMessageTask.CHAT, "TO":receiver, "FROM": sender, "TEXT": text}
     @staticmethod
     def toggleSocials(display:bool):
         return {"MESSAGE": CustomMessageTask.TOGGLE_SOCIALS, "DISPLAY": display}

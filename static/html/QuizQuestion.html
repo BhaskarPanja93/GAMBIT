@@ -1,17 +1,27 @@
-<div class="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Quiz Question</div>
-<div class="text-white text-lg sm:text-xl md:text-2xl text-center mb-6 sm:mb-8">What is the capital of France?
+<div class="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Question {{ count }}</div>
+<div class="text-white text-lg sm:text-xl md:text-2xl text-center mb-6 sm:mb-8">{{ question.text }}
 </div>
-<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full">
-    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">
-        Paris
+<div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full" data-questionid="{{ question.questionID }}">
+    <button id="option-0" class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg" data-optionid="{{ option[0].optionID }}">
+        {{ option[0].text }}
     </button>
-    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">
-        Berlin
+    <button id="option-1" class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg" data-optionid="{{ option[1].optionID }}">
+        {{ option[1].text }}
     </button>
-    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">
-        Madrid
+    <button id="option-2" class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg" data-optionid="{{ option[2].optionID }}">
+        {{ option[2].text }}
     </button>
-    <button class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg hover:bg-gray-700">
-        Rome
+    <button id="option-3" class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg" data-optionid="{{ option[3].optionID }}">
+        {{ option[3].text }}
     </button>
 </div>
+<script>
+    [0,1,2,3].forEach((optionNumber)=>{
+        selectedOption = null
+        waitForElementPresence(`#option-${optionNumber}`, (button)=>{
+            button.onclick = () => {
+                changeSelectedOption(button)
+                sendCustomMessage({PURPOSE: "OPTION_SELECTED", QUESTION:button.parentElement.dataset.questionid, OPTION:button.dataset.optionid})}
+        })
+    })
+</script>

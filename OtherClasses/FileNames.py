@@ -33,4 +33,8 @@ class FileNames:
         LobbyFeatures = "LobbyFeatures.html"
         QuizFull = "QuizFull.html"
         QuizQuestion = "QuizQuestion.html"
+        QuizPlayer = "QuizPlayer.html"
+        QuizScoreBoard = "QuizScoreBoard.html"
+        QuizScoreBoardLoserElement = "QuizScoreBoardLoserElement.html"
+        QuizScoreBoardWinnerElement = "QuizScoreBoardWinnerElement.html"
         NotesFullPage = "NotesFullPage.html"

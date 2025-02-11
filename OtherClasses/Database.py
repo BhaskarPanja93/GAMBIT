@@ -48,8 +48,8 @@ class Database:
         QUESTION_ID = "question_id"
         TEXT = "text"
         QUIZ_ELIGIBLE = "quiz_eligible"
+        OPTIONS = "options"
         CORRECT = "correct"
-        INCORRECT = "incorrect"
         ATTACHMENTS = "attachments"
 
 
@@ -100,3 +100,17 @@ class Database:
 
         P1 = "p1"
         P2 = "p2"
+
+    class PENDING_CHATS:
+        TABLE_NAME ="pending_chats"
+
+        RECEIVER = "receiver"
+        SENDER = "sender"
+        TEXT = "text"
+
+
+    class PENDING_FRIEND_REQUESTS:
+        TABLE_NAME ="pending_friend_requests"
+
+        RECEIVER = "receiver"
+        SENDER = "sender"

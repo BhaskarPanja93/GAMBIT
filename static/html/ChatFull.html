@@ -17,18 +17,6 @@
         SYSTEM: firstLetterCapitalised("SYSTEM"),
     }
 
-    function openChatHistory() {
-        waitForElementPresence("#chat-history", (chatHistory)=>{
-            chatHistory.style.display = "block"
-        })
-        if (typeof closeMusicTray !== "undefined") closeMusicTray()
-    }
-
-    function closeChatHistory() {
-        waitForElementPresence("#chat-history", (chatHistory)=>{
-            chatHistory.style.display = ""
-        })
-    }
 
     function receiveText(data) {
         let isValid = false
@@ -38,26 +26,27 @@
         textPara.className = "text-sm text-gray-300 break-all"
         backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2"
 
-        // party: text-purple-400   you: text-yellow-500    other: text-purple-400
+        // party: text-cyan-300   you: text-yellow-500    other: text-cyan-300
         // team: text-blue-500      you: text-yellow-500    other: text-blue-500
         // to: text-[#ffa4ff]       person: text-[#ffa4ff]
-        // from: text-cyan-300      person: text-cyan-300
+        // from: text-purple-400      person: text-purple-400
         if (data["FROM"] === MESSAGE_NODES.SYSTEM) { // From system
             isValid = true
             categoryText = "System"
             backgroundDiv.className = "flex items-start space-x-1 text-gray-700 rounded-lg py-1 px-2 bg-white/10"
+            categorySpan.className = "text-sm font-bold color-change"
             senderSpan.className = "text-sm font-bold color-change"
             textPara.className = "text-sm font-semibold italic color-change"
         } else if (data["TO"] === MESSAGE_NODES.PARTY) { // To Party
             isValid = true
             categoryText = "Party"
-            categorySpan.className = "text-sm font-semibold text-purple-400"
+            categorySpan.className = "text-sm font-semibold text-cyan-300"
             if (data["FROM"] === MESSAGE_NODES.YOU) {
                 personText = "You"
                 senderSpan.className = "text-sm font-semibold text-yellow-500"
             } else {
                 personText = data["FROM"]
-                senderSpan.className = "text-sm font-semibold text-purple-400"
+                senderSpan.className = "text-sm font-semibold text-cyan-300"
             }
         } else if (data["TO"] === MESSAGE_NODES.TEAM) { // To Team
             isValid = true
@@ -74,8 +63,8 @@
             isValid = true
             categoryText = "From"
             personText = data["FROM"]
-            categorySpan.className = "text-sm font-semibold text-cyan-300"
-            senderSpan.className = "text-sm font-semibold text-cyan-300"
+            categorySpan.className = "text-sm font-semibold text-purple-400"
+            senderSpan.className = "text-sm font-semibold text-purple-400"
         } else if (data["FROM"] === MESSAGE_NODES.YOU && allFriendUsernames.has(data["TO"])) { // To Friend
             isValid = true
             categoryText = "To"
@@ -95,6 +84,8 @@
             waitForElementPresence("#chat-history", (historyDiv) => {
                 historyDiv.append(backgroundDiv)
                 historyDiv.scrollTop = historyDiv.scrollHeight
+                modifyChatHistoryFocusCount(+1)
+                setTimeout(()=>modifyChatHistoryFocusCount(-1), 2000)
             })
         }
     }
@@ -103,9 +94,9 @@
         waitForElementPresence("#chat-input-text", (input)=>{
             input.value = input.value.trim()
             if (input.value !== "") {
-                console.log("SENDING", {PURPOSE: "CHAT", "TO": selectedReceiver, "TEXT": input.value})
-                sendCustomMessage({PURPOSE: "CHAT", "TO": selectedReceiver, "TEXT": input.value})
-                receiveText({"FROM": MESSAGE_NODES.YOU, "TO": selectedReceiver, "TEXT": input.value})
+                console.log("SENDING", {PURPOSE: "CHAT", TO: selectedReceiver, TEXT: input.value})
+                sendCustomMessage({PURPOSE: "CHAT", TO: selectedReceiver, TEXT: input.value})
+                //receiveText({"FROM": MESSAGE_NODES.YOU, "TO": selectedReceiver, "TEXT": input.value})
                 input.value = ""
             }
         })
@@ -140,6 +131,22 @@
     }
 
 
+    function modifyChatHistoryFocusCount(offset){
+        chatFocusCount += offset
+        if (chatFocusCount===0) {
+            waitForElementPresence("#chat-history", (chatHistory)=>{
+                chatHistory.style.display = ""
+            })
+        }
+        else {
+            waitForElementPresence("#chat-history", (chatHistory)=>{
+                chatHistory.style.display = "block"
+            })
+            if (typeof closeMusicTray !== "undefined") closeMusicTray()
+        }
+    }
+
+
     waitForElementPresence("#chat-input-text", (input)=>{
         input.addEventListener("input", function() {
             let content = input.value
@@ -150,12 +157,10 @@
             }
         })
         input.addEventListener("focusin", function() {
-            chatFocusCount++
-            openChatHistory()
+            modifyChatHistoryFocusCount(+1)
         })
         input.addEventListener("focusout", function() {
-            chatFocusCount--
-            if (chatFocusCount===0) closeChatHistory()
+            modifyChatHistoryFocusCount(-1)
         })
         input.addEventListener("keydown", function(e) {
             if (e.key === "Enter") {
@@ -173,12 +178,10 @@
 
     waitForElementPresence("#chat-holder", (chatHolder)=>{
         chatHolder.addEventListener("mouseenter", function() {
-            openChatHistory()
-            chatFocusCount++
+            modifyChatHistoryFocusCount(+1)
         })
         chatHolder.addEventListener("mouseleave", function() {
-            chatFocusCount--
-            if (chatFocusCount===0) closeChatHistory()
+            modifyChatHistoryFocusCount(-1)
         })
     })
 

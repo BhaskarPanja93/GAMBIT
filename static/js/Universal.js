@@ -13,6 +13,7 @@ const CUSTOM_MESSAGE_TASKS = {
     KICKED_FROM_PARTY: 'KICKED_FROM_PARTY',
     CHAT: 'CHAT',
     PARTY_CODE: 'PARTY_CODE',
+    TOGGLE_SOCIALS: 'TOGGLE_SOCIALS'
 }
 
 
@@ -26,7 +27,8 @@ function WSListener(data) {
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.DECREMENT_PARTY_MEMBER_INDEX) waitForElementPresence("#script-lobby", ()=>decrementPartyMemberIndex(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.NEW_LEADER) waitForElementPresence("#script-lobby", ()=>newLeader(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.PAGE_CHANGED) window["currentPage"] = data["PAGE"]
-    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.CHAT) receiveText(data)
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.CHAT) waitForElementPresence("#script-chat", ()=>receiveText(data))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.TOGGLE_SOCIALS) waitForElementPresence("#script-friends", ()=>toggleSocials(data["DISPLAY"]))
 }
 
 

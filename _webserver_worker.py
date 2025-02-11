@@ -10,6 +10,7 @@ from jinja2 import Template
 from argon2 import PasswordHasher
 from threading import Thread
 
+from OtherClasses.ChatMessageNodes import ChatMessageNodes
 from OtherClasses.Quiz import Quiz
 from OtherClasses.PrivateData import PrivateData
 from OtherClasses.Matchmaker import Matchmaker, Match
@@ -134,11 +135,15 @@ def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
-    print("Chat try")
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.ChatFull):
-        print("Chat yes")
         viewerObj.privateData.renderElement(FileNames.HTML.ChatFull)
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.ChatFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.chatBox, UpdateMethods.update)
+        sendPendingChats(viewerObj)
+
+
+def sendPendingChats(viewerObj: DynamicWebsite.Viewer):
+    pendingChats = SQLconn.execute(f"SELECT * FROM {Database.PENDING_CHATS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=?", [viewerObj.privateData.userName])
+    for chat in pendingChats: viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, chat[Database.PENDING_CHATS.SENDER], chat[Database.PENDING_CHATS.TEXT]))
 
 
 ##############################################################################################################################
@@ -157,24 +162,23 @@ def showSocials(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.SocialsStructure):
         viewerObj.privateData.renderElement(FileNames.HTML.SocialsStructure)
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.SocialsStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.friendsStructure, UpdateMethods.update)
-    viewerObj.sendCustomMessage(CustomMessages.toggleSocials(True))
-    # friendList = SQLconn.execute(f"""SELECT
-    # CASE
-    #     WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
-    #     WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
-    # END AS result
-    # FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userID, viewerObj.privateData.userID])
-    others = []
-    for _ in range(15):
-        #sleep(1)
-        other = Player(None, str(_))
-        others.append(other)
-        viewerObj.sendCustomMessage(CustomMessages.friendAdded(other.displayUserName(), other.displayPFP(), other.displayState()))
+        others = []
+        for _ in range(15):
+            other = Player(None, "FRIEND-"+str(_), cachedElements)
+            others.append(other)
+            viewerObj.sendCustomMessage(CustomMessages.friendAdded(other.displayUserName(), other.displayPFP(), other.displayState()))
+        #TODO: send pending friend requests
 
-    # for other in others:
-    #     sleep(1)
-    #     viewerObj.updateHTML("", other.connectionID, UpdateMethods.remove)
-    #     viewerObj.sendCustomMessage()
+        # friendList = SQLconn.execute(f"""SELECT
+        # CASE
+        #     WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
+        #     WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
+        # END AS result
+        # FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userID, viewerObj.privateData.userID])
+
+    viewerObj.sendCustomMessage(CustomMessages.toggleSocials(True))
+
+
 def hideSocials(viewerObj: DynamicWebsite.Viewer):
     viewerObj.sendCustomMessage(CustomMessages.toggleSocials(False))
 
@@ -197,9 +201,8 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
     removeQuizNavbar(viewerObj)
     showSocials(viewerObj)
     viewerObj.privateData.newPage(Pages.LOBBY)
-    if viewerObj.privateData.party is None:
-        viewerObj.privateData.party = createParty(viewerObj.privateData.player)
-
+    if viewerObj.privateData.player.party is None:
+        createParty(viewerObj.privateData.player)
 
 
 ##############################################################################################################################
@@ -209,7 +212,8 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
 def __renderQuizStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() != Pages.QUIZ:
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
-        viewerObj.privateData.newPage(Pages.LOBBY)
+        viewerObj.privateData.newPage(Pages.QUIZ)
+        viewerObj.privateData.player.viewer.sendCustomMessage(CustomMessages.pageChanged(Pages.QUIZ))
 
 
 def renderQuiz(viewerObj: DynamicWebsite.Viewer):
@@ -255,7 +259,7 @@ def renderFirstPage(viewerObj: DynamicWebsite.Viewer, isAuthenticated: bool):
     renderMusicTray(viewerObj)
     if isAuthenticated:
         if viewerObj.privateData.player is None:
-            viewerObj.privateData.player = Player(viewerObj, viewerObj.privateData.userName)
+            viewerObj.privateData.player = Player(viewerObj, viewerObj.privateData.userName, cachedElements)
         if viewerObj.privateData.expectedPostAuthPage == Pages.LOBBY: renderLobby(viewerObj)
         elif viewerObj.privateData.expectedPostAuthPage == Pages.QUIZ: renderQuiz(viewerObj)
         #elif viewerObj.privateData.expectedPostAuthPage == Pages.marketPlace: renderMarketPlace(viewerObj)
@@ -272,10 +276,6 @@ def renderFirstPage(viewerObj: DynamicWebsite.Viewer, isAuthenticated: bool):
 def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSecure:bool):
     if "PURPOSE" not in form: return
     purpose = form.pop("PURPOSE")
-    if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
-        if purpose == "LOGOUT":
-            logoutDevice(viewerObj)
-            return viewerObj.sendCustomMessage(CustomMessages.refreshBrowser())
     if viewerObj.privateData.currentPage() == Pages.AUTH:
         if purpose == "LOGIN" and isSecure:
             resetFormErrors(viewerObj)
@@ -323,26 +323,59 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             else:
                 sendRegisterCSRF(viewerObj)
                 return rejectForm(viewerObj, DivID.registerGeneralError, reason)
-    elif viewerObj.privateData.currentPage() == Pages.PRE_AUTH:
+    if viewerObj.privateData.currentPage() == Pages.PRE_AUTH:
         if purpose == "RENDER_AUTH_FORMS":
             return renderAuthForms(viewerObj)
-    elif viewerObj.privateData.currentPage() == Pages.LOBBY:
+    if viewerObj.privateData.currentPage() == Pages.LOBBY:
         if purpose == "PARTY_CODE":
-            return viewerObj.privateData.party.generatePartyCode()
+            return viewerObj.privateData.player.party.generatePartyCode()
         if purpose == "PARTY_CODE_INPUT":
             newParty = partyCodes.get(form.get("CODE"))
             if newParty is not None:
-                oldParty = viewerObj.privateData.party
+                oldParty = viewerObj.privateData.player.party
                 if oldParty.partyID != newParty.partyID:
-                    viewerObj.privateData.party = newParty
+                    viewerObj.privateData.player.party = newParty
                     if oldParty: oldParty.removePlayer(viewerObj.privateData.player, True)
                     return newParty.addPlayer(viewerObj.privateData.player)
-        if purpose == "START_QUEUE":
-            return matchmaker.addToQueue(viewerObj.privateData.party)
-        if purpose == "STOP_QUEUE":
-            return matchmaker.removeFromQueue(viewerObj.privateData.party)
-    elif viewerObj.privateData.currentPage() in [Pages.LOBBY, Pages.NOTES]:
-        return renderAuthPost(viewerObj)
+        if purpose == "READY":
+            return viewerObj.privateData.player.party.playerReady(viewerObj.privateData.player)
+        if purpose == "UN_READY":
+            return viewerObj.privateData.player.party.playerUnready(viewerObj.privateData.player)
+    if viewerObj.privateData.currentPage() == Pages.QUIZ:
+        if purpose == "OPTION_SELECTED":
+            viewerObj.privateData.player.optionsSelected[form.get("QUESTION")] = {"OPTION_ID":form.get("OPTION"), "TIME":time()}
+            return
+    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.POST_AUTH]:
+        if purpose == "RENDER_HOMEPAGE":
+            return renderAuthPost(viewerObj)
+    if viewerObj.privateData.currentPage() == Pages.POST_AUTH:
+        if purpose == "RENDER_LOBBY":
+            return renderLobby(viewerObj)
+    if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
+        if purpose == "CHAT":
+            form["TEXT"] = Template(form["TEXT"][:50]).render()
+            if form["TO"] == ChatMessageNodes.PARTY:
+                if viewerObj.privateData.player.party is not None:
+                    return viewerObj.privateData.player.party.receiveMessage(viewerObj.privateData.userName, form["TEXT"])
+                else:
+                    viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "You need to be in a party to send this message."))
+            elif form["TO"] == ChatMessageNodes.TEAM:
+                if viewerObj.privateData.player.party is not None:
+                    if viewerObj.privateData.player.party.team is not None:
+                        return viewerObj.privateData.player.party.team.receiveMessage(viewerObj.privateData.userName, form["TEXT"])
+                    else:
+                        viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "You need to be in a team to send this message."))
+            elif form["TO"] in viewerObj.privateData.friends:
+                if form["TO"] in activeUsernames: return activeUsernames[form["TO"]].sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, form["FROM"], form["TEXT"]))
+                else: return SQLconn.execute(f"INSERT INTO {Database.PENDING_CHATS.TABLE_NAME} VALUES (?, ?, ?)", [form['TO'], form['FROM'], form['TEXT']])
+            else:
+                viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "Unable to send. Recipient unknown"))
+    if viewerObj.privateData.currentPage() in [Pages.LOBBY, Pages.POST_AUTH, Pages.NOTES, Pages.MARKETPLACE]:
+        if purpose == "LOGOUT":
+            freeActiveUsername(viewerObj.privateData.userName)
+            logoutDevice(viewerObj)
+            return viewerObj.sendCustomMessage(CustomMessages.refreshBrowser())
+
     return rejectForm(viewerObj, form, "Unknown Purpose")
 
 
@@ -363,8 +396,9 @@ def customWSMessageCallback(viewerObj: DynamicWebsite.Viewer, message: Any):
 
 def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Left: ", viewerObj.viewerID)
-    if viewerObj.privateData.party is not None:
-        viewerObj.privateData.party.removePlayer(viewerObj.privateData.player, False)
+    if viewerObj.privateData.player is not None and viewerObj.privateData.player.party is not None:
+        viewerObj.privateData.player.party.removePlayer(viewerObj.privateData.player, False)
+    freeActiveUsername(viewerObj.privateData.userName)
 
 
 def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
@@ -376,6 +410,11 @@ def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
 
 def firstPageCreator():
     return make_response(Template(cachedElements.fetchStaticHTML(FileNames.HTML.FirstPage)).render(title="GAMBIT", baseURI=request.path))
+
+
+def freeActiveUsername(userName):
+    if userName in activeUsernames:
+        del activeUsernames[userName]
 
 
 ##############################################################################################################################
@@ -428,13 +467,17 @@ def setPrivateDetails(viewerObj: DynamicWebsite.Viewer):
 
 
 def createUser(viewerObj: DynamicWebsite.Viewer, username:str, password:str, personName:str, email:str):
-    if SQLconn.execute(f"SELECT {Database.USER_AUTH.USERNAME} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.USERNAME}=? LIMIT 1", [username]): return False, "Username already registered"
-    if SQLconn.execute(f"SELECT {Database.USER_AUTH.EMAIL} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.EMAIL}=? LIMIT 1", [email]): return False, "Email already registered"
-    SQLconn.execute(f"INSERT INTO {Database.USER_AUTH.TABLE_NAME} VALUES (?, ?, ?)", [username, email, passwordHasher.hash(password)])
-    SQLconn.execute(f"INSERT INTO {Database.USER_INFO.TABLE_NAME} VALUES (?, ?, ?)", [username, personName, viewerObj.privateData.activeSince])
-    viewerObj.privateData.userName = username
-    createDevice(viewerObj)
-    return True, "User registered"
+    username = Template(username).render()
+    if len(username) <= 9:
+        if SQLconn.execute(f"SELECT {Database.USER_AUTH.USERNAME} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.USERNAME}=? LIMIT 1", [username]): return False, "Username already registered"
+        if SQLconn.execute(f"SELECT {Database.USER_AUTH.EMAIL} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.EMAIL}=? LIMIT 1", [email]): return False, "Email already registered"
+        SQLconn.execute(f"INSERT INTO {Database.USER_AUTH.TABLE_NAME} VALUES (?, ?, ?)", [username, email, passwordHasher.hash(password)])
+        SQLconn.execute(f"INSERT INTO {Database.USER_INFO.TABLE_NAME} VALUES (?, ?, ?)", [username, personName, viewerObj.privateData.activeSince])
+        freezeViewerTillUsernameRelease(viewerObj, username)
+        createDevice(viewerObj)
+        return True, "User registered"
+    else:
+        return False, "Username too long (max 9)"
 
 
 def manualLogin(viewerObj: DynamicWebsite.Viewer, identifier:str, password:str):
@@ -445,7 +488,7 @@ def manualLogin(viewerObj: DynamicWebsite.Viewer, identifier:str, password:str):
         pwHash = savedCredentials[Database.USER_AUTH.PW_HASH]
         try:
             if passwordHasher.verify(pwHash.decode(), password):
-                viewerObj.privateData.userName = username
+                freezeViewerTillUsernameRelease(viewerObj, username)
                 createDevice(viewerObj)
                 return True, "Manual Logged In"
         except:
@@ -457,11 +500,22 @@ def autoLogin(viewerObj: DynamicWebsite.Viewer):
     savedDevice = SQLconn.execute(f"SELECT {Database.USER_DEVICES.USERNAME} FROM {Database.USER_DEVICES.TABLE_NAME} WHERE {Database.USER_DEVICES.VIEWER_ID}=? LIMIT 1", [viewerObj.viewerID])
     if savedDevice:
         savedDevice = savedDevice[0]
-        viewerObj.privateData.userName = savedDevice[Database.USER_DEVICES.USERNAME].decode()
+        username = savedDevice[Database.USER_DEVICES.USERNAME].decode()
+        freezeViewerTillUsernameRelease(viewerObj, username)
         return True, "Auto Logged In"
     return False, "Unknown Device"
 
 
+def freezeViewerTillUsernameRelease(viewerObj:DynamicWebsite.Viewer, username):
+    if username in activeUsernames:
+        viewerObj.updateHTML("Please close any other instances/tabs to use GAMBIT on this tab.", DivID.root, DynamicWebsite.UpdateMethods.update)
+        while viewerObj.currentState != DynamicWebsite.VIEWER_STATES.DEAD and username in activeUsernames:
+            print(username, "FROZEN LOGIN")
+            sleep(1)
+        if viewerObj.currentState == DynamicWebsite.VIEWER_STATES.DEAD: return False, "Disconnected"
+    activeUsernames[username] = viewerObj
+    viewerObj.privateData.userName = username
+    print(username, "ALLOWED LOGIN")
 
 ##############################################################################################################################
 # PARTY
@@ -479,10 +533,9 @@ def onPartyCodeGenerated(party: Party):
 
 
 def createParty(player):
-    party = Party(onPartyCodeGenerated, closeParty, renderLobby, cachedElements)
+    party = Party(onPartyCodeGenerated, closeParty, renderLobby, cachedElements, matchmaker)
     partyIDs[party.partyID] = party
-    if player:
-        party.addPlayer(player)
+    if player: party.addPlayer(player)
     return party
 
 
@@ -491,18 +544,34 @@ def createParty(player):
 
 
 def onQuizEnd(quiz:Quiz):
-    pass
+    sortedPlayers = sorted(list(quiz.match.teamA.allPlayers())+list(quiz.match.teamB.allPlayers()), reverse=True)
+    for toSend in sortedPlayers:
+        if toSend.viewer:
+            renderBaseNavbar(toSend.viewer)
+            renderBaseNavbar(toSend.viewer)
+            removeQuizNavbar(toSend.viewer)
+            toSend.viewer.updateHTML(quiz.cachedElements.fetchStaticHTML(FileNames.HTML.QuizScoreBoard), DivID.changingPage, DynamicWebsite.UpdateMethods.update)
+            for player in sortedPlayers:
+                player.healthImpact = int(player.healthImpact)
+                player.score = int(player.score)
+                if player.party.team.winner:
+                    toSend.viewer.updateHTML(Template(quiz.cachedElements.fetchStaticHTML(FileNames.HTML.QuizScoreBoardWinnerElement)).render(player=player), DivID.quizScoreBoard, DynamicWebsite.UpdateMethods.append)
+                else:
+                    toSend.viewer.updateHTML(Template(quiz.cachedElements.fetchStaticHTML(FileNames.HTML.QuizScoreBoardLoserElement)).render(player=player), DivID.quizScoreBoard, DynamicWebsite.UpdateMethods.append)
 
 
 def onMatchFound(match: Match):
-    quiz = Quiz(match, onQuizEnd, cachedElements)
+    quiz = Quiz(match, onQuizEnd, cachedElements, SQLconn)
     for party in match.teamB.parties+match.teamA.parties:
         for player in party.players:
             if player.viewer is not None:
+                player.score = 0
+                player.correct = 0
+                player.incorrect = 0
+                player.healthImpact = 0
+                player.optionsSelected = {}
                 renderQuiz(player.viewer)
     quiz.start()
-
-
 
 
 ##############################################################################################################################
@@ -511,7 +580,7 @@ def onMatchFound(match: Match):
 def testMatchmaking():
     sleep(2)
     for _ in range(1):
-        party = createParty(Player(None, str(_)))
+        party = createParty(Player(None, str(_), cachedElements))
         matchmaker.addToQueue(party)
         #sleep(0.5)
 
@@ -532,9 +601,10 @@ partyCodes:dict[str, Party] = {}
 passwordHasher = PasswordHasher()
 UpdateMethods = DynamicWebsite.UpdateMethods
 cachedElements = CachedElements()
-matchmaker = Matchmaker(onMatchFound)
+matchmaker = Matchmaker(onMatchFound, cachedElements)
 logger = CustomisedLogs()
 SQLconn = connectDB(logger)
+activeUsernames:dict[str, DynamicWebsite.Viewer] = {}
 dynamicWebsiteApp = DynamicWebsite(firstPageCreator, newVisitorCallback, visitorLeftCallback, formSubmitCallback, customWSMessageCallback, fernetKey, CoreValues.appName, Routes.webHomePage)
 baseApp, WSSock = dynamicWebsiteApp.start()
 
@@ -580,9 +650,7 @@ def handle_404(error):
     return redirect("http://"+request.environ["HTTP_HOST"].replace(str(webPort), str(cdPort))+request.environ["PATH_INFO"]+"?"+request.environ["QUERY_STRING"])
 
 
-
-
-Thread(target=testMatchmaking).start()
+#Thread(target=testMatchmaking).start()
 
 
 WSGIRunner(baseApp, webPort, Routes.webHomePage, logger)

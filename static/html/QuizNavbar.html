@@ -1,5 +1,5 @@
-<div class="top-28 w-full text-center text-white text-5xl font-bold translate-y-4" id="queue-timer">
-    00:00
+<div class="top-28 w-full text-center text-white text-5xl font-bold translate-y-4" id="quiz-timer">
+    SOON
 </div>
 <div class="mx-auto w-full px-2 sm:px-4 lg:px-20 flex justify-between items-center">
 
@@ -9,50 +9,19 @@
 
 
         <div class="flex w-full items-center justify-between">
-            <div class="relative group">
-                <!-- Crown Icon (hidden by default) -->
-                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400"
-                         fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M5 21h14v-2H5v2zm14-4H5l-1-8 5 3 4-6 4 6 5-3-1 8z"/>
-                    </svg>
-                </div>
 
-                <img src="https://i.pinimg.com/564x/05/93/c2/0593c22a578bf58e4bf01a4a063a3587.jpg"
-                     alt="User PFP" class="h-10 w-10 rounded-full">
-
-                <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    <div>Username: ABCD</div>
-                    <div>Correct Answers: 9</div>
-                </div>
-            </div>
-
-            <div class="relative group">
-                <img src="https://i.pinimg.com/564x/05/93/c2/0593c22a578bf58e4bf01a4a063a3587.jpg"
-                     alt="User PFP" class="h-10 w-10 rounded-full">
-                <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    <div>Username: ABCD</div>
-                    <div>Correct Answers: 8</div>
-                </div>
-            </div>
-            <div class="relative group">
-                <img src="https://i.pinimg.com/564x/05/93/c2/0593c22a578bf58e4bf01a4a063a3587.jpg"
-                     alt="User PFP" class="h-10 w-10 rounded-full">
-                <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    <div>Username: ABCD</div>
-                    <div>Correct Answers: 2</div>
-                </div>
-            </div>
+            <div id="team-player-0" class="relative group"></div>
+            <div id="team-player-1" class="relative group"></div>
+            <div id="team-player-2" class="relative group"></div>
 
             <!-- Score Board -->
-            <div class="ml-4 text-white text-xl font-bold">30</div>
+            <div id="team-health" class="ml-4 text-white text-xl font-bold">30</div>
         </div>
 
         <!-- Health bar below the images -->
-        <div class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
+        <div id="team-health-bar" class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
 
             <!-- Adjust width for different health levels -->
-            <div class="bg-blue-500 h-full" style="width: 30%;"></div>
         </div>
     </div>
 
@@ -69,48 +38,17 @@
         <div class="flex w-full items-center justify-between">
 
             <!-- Score Board -->
-            <div class="ml-4 text-white text-xl font-bold">70</div>
+            <div id="opponent-health" class="ml-4 text-white text-xl font-bold"></div>
 
-            <div class="relative group">
-                <img src="https://i.pinimg.com/564x/18/0e/65/180e6574a9aa0e4c7c23a252db4184dc.jpg"
-                     alt="User PFP" class="h-10 w-10 rounded-full">
-                <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    <div>Username: ABCD</div>
-                    <div>Correct Answers: 1</div>
-                </div>
-
-            </div>
-            <div class="relative group">
-                <!-- Crown Icon (hidden by default) -->
-                <div class="absolute -top-4 left-1/2 transform -translate-x-1/2 opacity-0 group-hover:opacity-100 transition-opacity duration-300">
-                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6 text-yellow-400"
-                         fill="currentColor" viewBox="0 0 24 24">
-                        <path d="M5 21h14v-2H5v2zm14-4H5l-1-8 5 3 4-6 4 6 5-3-1 8z"/>
-                    </svg>
-                </div>
-
-                <img src="https://i.pinimg.com/564x/18/0e/65/180e6574a9aa0e4c7c23a252db4184dc.jpg"
-                     alt="User PFP" class="h-10 w-10 rounded-full">
-
-                <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    <div>Username: ABCD</div>
-                    <div>Correct Answers: 1</div>
-                </div>
-            </div>
-            <div class="relative group">
-                <img src="https://i.pinimg.com/564x/18/0e/65/180e6574a9aa0e4c7c23a252db4184dc.jpg"
-                     alt="User PFP" class="h-10 w-10 rounded-full">
-                <div class="absolute top-12 left-1/2 transform -translate-x-1/2 bg-gray-700 text-white text-xs px-4 py-2 rounded shadow-md opacity-0 group-hover:opacity-100 transition-opacity duration-300 whitespace-nowrap">
-                    <div>Username: ABCD</div>
-                    <div>Correct Answers: 3</div>
-                </div>
-            </div>
+            <div id="opponent-player-0" class="relative group"></div>
+            <div id="opponent-player-1" class="relative group"></div>
+            <div id="opponent-player-2" class="relative group"></div>
         </div>
 
         <!-- Health bar below the images -->
-        <div class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
+        <div id="opponent-health-bar" class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
             <!-- Adjust width for different health levels -->
-            <div class="bg-red-500 h-full" style="width: 80%;"></div>
+
         </div>
     </div>
 </div>
