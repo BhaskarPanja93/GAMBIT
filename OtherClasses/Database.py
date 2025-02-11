@@ -48,8 +48,8 @@ class Database:
         QUESTION_ID = "question_id"
         TEXT = "text"
         QUIZ_ELIGIBLE = "quiz_eligible"
+        OPTIONS = "options"
         CORRECT = "correct"
-        INCORRECT = "incorrect"
         ATTACHMENTS = "attachments"
 
 

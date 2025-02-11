@@ -542,6 +542,7 @@ def onQuizEnd(quiz:Quiz):
             toSend.viewer.updateHTML(quiz.cachedElements.fetchStaticHTML(FileNames.HTML.QuizScoreBoard), DivID.changingPage, DynamicWebsite.UpdateMethods.update)
             for player in sortedPlayers:
                 player.healthImpact = int(player.healthImpact)
+                player.score = int(player.score)
                 if player.party.team.winner:
                     toSend.viewer.updateHTML(Template(quiz.cachedElements.fetchStaticHTML(FileNames.HTML.QuizScoreBoardWinnerElement)).render(player=player), DivID.quizScoreBoard, DynamicWebsite.UpdateMethods.append)
                 else:

@@ -1,11 +1,12 @@
 from random import shuffle, choice, randrange
 from time import time, sleep
-
+from json import loads
 from jinja2 import Template
 from pooledMySQL import PooledMySQL
 from randomisedString import RandomisedString
 
 from OtherClasses.CachedElements import CachedElements
+from OtherClasses.Database import Database
 from OtherClasses.DivIDs import DivID
 from OtherClasses.FileNames import FileNames
 from OtherClasses.Matchmaker import Match
@@ -39,7 +40,8 @@ class Quiz:
         self.prepareQuestion()
 
     def prepareQuestion(self):
-        question = Question(RandomisedString().AlphaNumeric(10,10), "1+1=",[1,2,3,4,5,6,7,8], [1])
+        q = self.SQLconn.execute(f"SELECT * FROM {Database.QUESTION.TABLE_NAME} ORDER BY RAND() LIMIT 1")[0]
+        question = Question(q[Database.QUESTION.QUESTION_ID].decode(), q[Database.QUESTION.TEXT], loads(q[Database.QUESTION.OPTIONS]), loads(q[Database.QUESTION.CORRECT]))
         self.questionHistory.append(question)
         self.showPreQuestion()
 
@@ -80,7 +82,7 @@ class Quiz:
                     question = self.questionHistory[-1]
                     shuffle(question.options)
                     temp = Template(self.cachedElements.fetchStaticHTML(FileNames.HTML.QuizQuestion))
-                    player.viewer.updateHTML(temp.render(baseURI=player.viewer.privateData.baseURI, question=question, option=question.options), DivID.quizContent, DynamicWebsite.UpdateMethods.update)
+                    player.viewer.updateHTML(temp.render(baseURI=player.viewer.privateData.baseURI, count=len(self.questionHistory), question=question, option=question.options), DivID.quizContent, DynamicWebsite.UpdateMethods.update)
         self.countDown()
 
     def countDown(self):
