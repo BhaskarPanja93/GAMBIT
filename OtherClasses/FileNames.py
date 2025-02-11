@@ -35,6 +35,7 @@ class FileNames:
         QuizQuestion = "QuizQuestion.html"
         QuizPlayer = "QuizPlayer.html"
         QuizScoreBoard = "QuizScoreBoard.html"
+        MatchFound = "MatchFound.html"
         QuizScoreBoardLoserElement = "QuizScoreBoardLoserElement.html"
         QuizScoreBoardWinnerElement = "QuizScoreBoardWinnerElement.html"
         NotesFullPage = "NotesFullPage.html"

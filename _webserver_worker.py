@@ -211,17 +211,22 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
 
 def __renderQuizStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() != Pages.QUIZ:
-        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.QUIZ)
         viewerObj.privateData.player.viewer.sendCustomMessage(CustomMessages.pageChanged(Pages.QUIZ))
 
 
 def renderQuiz(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+    renderQuizNavbar(viewerObj)
+
+
+def renderMatchFound(viewerObj: DynamicWebsite.Viewer):
     __renderQuizStructure(viewerObj)
+    hideSocials(viewerObj)
     removeBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
-    renderQuizNavbar(viewerObj)
-    hideSocials(viewerObj)
+    removeQuizNavbar(viewerObj)
+    viewerObj.updateHTML(cachedElements.fetchStaticHTML(FileNames.HTML.MatchFound), DivID.changingPage, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -570,6 +575,12 @@ def onMatchFound(match: Match):
                 player.incorrect = 0
                 player.healthImpact = 0
                 player.optionsSelected = {}
+                renderMatchFound(player.viewer)
+    #sleep(3)
+    input("LMK WHEN DONE")
+    for party in match.teamB.parties+match.teamA.parties:
+        for player in party.players:
+            if player.viewer is not None:
                 renderQuiz(player.viewer)
     quiz.start()
 
