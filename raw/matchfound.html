@@ -1,0 +1,185 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <link href="https://fonts.googleapis.com/css2?family=Montserrat:wght@900&display=swap" rel="stylesheet">
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lobby</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="Overall.css">
+
+</head>
+<body>
+<div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
+    <audio id="music-player" preload="none">
+        <source src="" type="audio/x-wav;codec=pcm">
+    </audio>
+
+    <!-- Animation div-->
+    <div class="bg-animation-box">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div id="particles-animation"></div>
+
+
+    <!-- Main Div -->
+    <div class="bg-gradient-to-br from-gray-900 via-gray-800 to-gray-900 mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden relative animate-fade-in scale-95 transform transition-all duration-1000 shadow-xl hover:scale-100 hover:shadow-2xl flex items-center justify-center">
+
+    <!-- Background Animation -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.1)_0%,_transparent_70%)] animate-pulse-slow"></div>
+
+    <!-- Glowing Effect -->
+    <div class="absolute inset-0 bg-[radial-gradient(circle_at_center,_rgba(255,255,255,0.2)_0%,_transparent_70%)] animate-glow"></div>
+
+    <h1 class="text-transparent bg-clip-text bg-white text-7xl sm:text-9xl md:text-[9vw] font-extrabold animate-text-pop font-[Montserrat]">
+    MATCH FOUND
+</h1>
+
+
+
+    <!-- Floating Particles Effect -->
+    <div class="absolute inset-0 overflow-hidden">
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+        <div class="particle"></div>
+    </div>
+</div>
+
+<style>
+    /* Fade-in Animation */
+    @keyframes fade-in {
+        0% {
+            opacity: 0;
+            transform: scale(0.8);
+        }
+        100% {
+            opacity: 1;
+            transform: scale(1);
+        }
+    }
+
+    .animate-fade-in {
+        animation: fade-in 0.5s ease forwards;
+    }
+
+    /* Glow Animation */
+    @keyframes glow {
+        0% {
+            opacity: 0.5;
+        }
+        50% {
+            opacity: 1;
+        }
+        100% {
+            opacity: 0.5;
+        }
+    }
+
+    .animate-glow {
+        animation: glow 3s ease-in-out infinite;
+    }
+
+    /* Slow Pulse Animation */
+    @keyframes pulse-slow {
+        0%, 100% {
+            opacity: 0.5;
+        }
+        50% {
+            opacity: 1;
+        }
+    }
+
+    .animate-pulse-slow {
+        animation: pulse-slow 4s ease-in-out infinite;
+    }
+
+    /* Text Pop Animation */
+    @keyframes text-pop {
+        0% {
+            transform: scale(0.9);
+            opacity: 0;
+        }
+        50% {
+            transform: scale(1.1);
+            opacity: 1;
+        }
+        100% {
+            transform: scale(1);
+            opacity: 1;
+        }
+    }
+
+    .animate-text-pop {
+        animation: text-pop 1s ease-out forwards;
+    }
+
+    /* Floating Particles */
+    .particle {
+        position: absolute;
+        width: 10px;
+        height: 10px;
+        background: rgba(255, 255, 255, 0.5);
+        border-radius: 50%;
+        animation: float 5s infinite ease-in-out;
+    }
+
+    @keyframes float {
+        0% {
+            transform: translateY(0) translateX(0) scale(1);
+            opacity: 0.5;
+        }
+        50% {
+            transform: translateY(-100px) translateX(100px) scale(1.2);
+            opacity: 1;
+        }
+        100% {
+            transform: translateY(0) translateX(0) scale(1);
+            opacity: 0.5;
+        }
+    }
+
+    .particle:nth-child(1) {
+        top: 10%;
+        left: 20%;
+        animation-duration: 6s;
+    }
+
+    .particle:nth-child(2) {
+        top: 30%;
+        left: 70%;
+        animation-duration: 8s;
+    }
+
+    .particle:nth-child(3) {
+        top: 50%;
+        left: 40%;
+        animation-duration: 7s;
+    }
+
+    .particle:nth-child(4) {
+        top: 70%;
+        left: 10%;
+        animation-duration: 9s;
+    }
+
+    .particle:nth-child(5) {
+        top: 90%;
+        left: 60%;
+        animation-duration: 10s;
+    }
+</style>
+
+</body>
+</html>
