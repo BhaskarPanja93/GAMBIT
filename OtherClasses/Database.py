@@ -18,20 +18,14 @@ class Database:
         COUNT = "count"
 
 
-    class NOTE_RELEVANCE:
-        TABLE_NAME ="note_relevance"
-
-        NOTE_ID = "note_id"
-        SUBJECT = "subject"
-        HEADER = "header"
-        DESCRIPTION = "description"
-
-
-    class NOTE:
+    class NOTES:
         TABLE_NAME ="note"
 
         NOTE_ID = "note_id"
         USERNAME = "username"
+        SUBJECT = "subject"
+        HEADER = "header"
+        DESCRIPTION = "description"
 
 
     class PURCHASABLE:
@@ -41,6 +35,13 @@ class Database:
         PRICE = "price"
         ADDED_ON = "added_on"
 
+    class ATTACHMENTS:
+        TABLE_NAME ="attachments"
+
+        ATTACHMENT_ID = "attachment_id"
+        TYPE = "type"
+        Y = "y"
+        X = "x"
 
     class QUESTION:
         TABLE_NAME ="question"
@@ -107,6 +108,7 @@ class Database:
         RECEIVER = "receiver"
         SENDER = "sender"
         TEXT = "text"
+        SENT_AT = "sent_at"
 
 
     class PENDING_FRIEND_REQUESTS:

@@ -62,7 +62,6 @@ class Matchmaker:
                         for team2parties in combinations(remainingParties, team2Size):
                             team1 = Team(team1parties, self.cachedElements)
                             team2 = Team(team2parties, self.cachedElements)
-                            if len(self.inQueue)==1: print(team1.isValid(False) , team2.isValid(True))
                             if team1.isValid(False) and team2.isValid(True):
                                 dummyMatch = Match(team1, team2)
                                 if dummyMatch.isValid():
@@ -75,6 +74,8 @@ class Matchmaker:
                 teamB = smallestDiffMatch.teamB
                 teamB.fillBots(teamA.averageMMR, playersPerTeam)
                 teamA.fillBots(teamB.averageMMR, playersPerTeam)
+                teamA.opponentTeam = teamB
+                teamB.opponentTeam = teamA
                 match = Match(teamA, teamB)
                 for party in teamA.parties:
                     party.matchStarted = True
