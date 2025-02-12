@@ -35,12 +35,15 @@ class Quiz:
         for player in list(self.match.teamA.allPlayers())+list(self.match.teamB.allPlayers()):
             if player in lastAllowed or len(lastAllowed)==0:
                 self.allowAnswersFrom.append(player)
-        self.sortPlayersByScore()
-        self.updateNavbar()
-        self.prepareQuestion()
+        if self.allowAnswersFrom:
+            self.sortPlayersByScore()
+            self.updateNavbar()
+            self.prepareQuestion()
 
     def prepareQuestion(self):
         q = self.SQLconn.execute(f"SELECT * FROM {Database.QUESTION.TABLE_NAME} ORDER BY RAND() LIMIT 1")[0]
+        for question in self.questionHistory:
+            if question.questionID == q[Database.QUESTION.QUESTION_ID].decode(): return self.prepareQuestion()
         question = Question(q[Database.QUESTION.QUESTION_ID].decode(), q[Database.QUESTION.TEXT], loads(q[Database.QUESTION.OPTIONS]), loads(q[Database.QUESTION.CORRECT]))
         self.questionHistory.append(question)
         self.showPreQuestion()
@@ -50,27 +53,27 @@ class Quiz:
             isAlly = player.party.team==toSend.party.team
             if isAlly: toSend.viewer.updateHTML(player.displayAsTeam(player in self.crowns), f"team-player-{index}", DynamicWebsite.UpdateMethods.update)
             else: toSend.viewer.updateHTML(player.displayAsOpponent(player in self.crowns), f"opponent-player-{index}", DynamicWebsite.UpdateMethods.update)
-        teamAHealth = max(0,min(100,int(self.match.teamA.health)))
-        teamBHealth = max(0,min(100,int(self.match.teamB.health)))
+        teamAHealth = max(0,min(100,round(self.match.teamA.health, 2)))
+        teamBHealth = max(0,min(100,round(self.match.teamB.health, 2)))
         for toSend in list(self.match.teamA.allPlayers())+list(self.match.teamB.allPlayers()):
             if toSend.viewer is not None:
                 if self.match.teamB == toSend.party.team:
-                    toSend.viewer.updateHTML(f"""{teamBHealth}""", f"team-health", DynamicWebsite.UpdateMethods.update)
+                    toSend.viewer.updateHTML(f"""{teamBHealth}%""", f"team-health", DynamicWebsite.UpdateMethods.update)
                     toSend.viewer.updateHTML(f"""<div class="bg-green-500 h-full" style="width: {teamBHealth}%;"></div>""", f"team-health-bar", DynamicWebsite.UpdateMethods.update)
-                    toSend.viewer.updateHTML(f"""{teamAHealth}""", f"opponent-health", DynamicWebsite.UpdateMethods.update)
+                    toSend.viewer.updateHTML(f"""{teamAHealth}%""", f"opponent-health", DynamicWebsite.UpdateMethods.update)
                     toSend.viewer.updateHTML(f"""<div class="bg-red-500 h-full" style="width: {teamAHealth}%;"></div>""", f"opponent-health-bar", DynamicWebsite.UpdateMethods.update)
                 else:
-                    toSend.viewer.updateHTML(f"""{teamBHealth}""", f"opponent-health", DynamicWebsite.UpdateMethods.update)
+                    toSend.viewer.updateHTML(f"""{teamBHealth}%""", f"opponent-health", DynamicWebsite.UpdateMethods.update)
                     toSend.viewer.updateHTML(f"""<div class="bg-red-500 h-full" style="width: {teamBHealth}%;"></div>""", f"opponent-health-bar", DynamicWebsite.UpdateMethods.update)
-                    toSend.viewer.updateHTML(f"""{teamAHealth}""", f"team-health", DynamicWebsite.UpdateMethods.update)
+                    toSend.viewer.updateHTML(f"""{teamAHealth}%""", f"team-health", DynamicWebsite.UpdateMethods.update)
                     toSend.viewer.updateHTML(f"""<div class="bg-green-500 h-full" style="width: {teamAHealth}%;"></div>""", f"team-health-bar", DynamicWebsite.UpdateMethods.update)
                 for index in range(3):
-                    if len(list(self.match.teamA.allPlayers()))>=index:
-                        player = list(self.match.teamA.allPlayers())[index]
-                        renderPlayer(player, toSend)
-                    if len(list(self.match.teamB.allPlayers()))>=index:
-                        player = list(self.match.teamB.allPlayers())[index]
-                        renderPlayer(player, toSend)
+                    toSend.viewer.updateHTML("", f"team-player-{index}", DynamicWebsite.UpdateMethods.update)
+                    toSend.viewer.updateHTML("", f"opponent-player-{index}", DynamicWebsite.UpdateMethods.update)
+                    try: renderPlayer(list(self.match.teamA.allPlayers())[index], toSend)
+                    except: pass
+                    try: renderPlayer(list(self.match.teamB.allPlayers())[index], toSend)
+                    except: pass
 
     def showPreQuestion(self):
         self.showQuestion()
@@ -105,28 +108,29 @@ class Quiz:
                     timeTaken = optionData.get("TIME", question.generatedAt+5) - question.generatedAt
                     player.optionsSelected[question.questionID] = optionSelected
                 else:
-                    scoreChange = -5
-                    healthImpact = -len(self.questionHistory) * 1.5
-                    player.healthImpact += healthImpact
+                    scoreChange = -3
+                    healthImpact = -len(self.questionHistory) * 3
+                    player.unattempted += 1
                     player.score += scoreChange
+                    player.healthImpact += healthImpact
                     player.party.team.health += healthImpact
                     continue
             if optionSelected.isCorrect:
-                scoreChange = 10 * (self.timePerQuestion - timeTaken)
-                healthImpact = 1.5 * (self.timePerQuestion - timeTaken)
+                scoreChange = 2 * (self.timePerQuestion - timeTaken)
+                healthImpact = (self.timePerQuestion - timeTaken) * 2
                 player.correct += 1
-                player.healthImpact += healthImpact
                 player.score += scoreChange
+                player.healthImpact += healthImpact
                 player.party.team.health += healthImpact
             else:
-                scoreChange = -5 * timeTaken
-                healthImpact = -len(self.questionHistory) * 1.5 * timeTaken
+                scoreChange = -3 * timeTaken
+                healthImpact = -len(self.questionHistory) * timeTaken
                 player.incorrect += 1
-                player.healthImpact += healthImpact
                 player.score += scoreChange
+                player.healthImpact += healthImpact
                 player.party.team.health += healthImpact
 
-        if self.match.teamA.health<=0 or self.match.teamB.health<=0: self.end()
+        if 100<=self.match.teamA.health or self.match.teamA.health<=0 or 100<=self.match.teamB.health or self.match.teamB.health<=0: self.end()
         else: self.start()
 
     def sortPlayersByScore(self):
@@ -139,7 +143,8 @@ class Quiz:
                 self.crowns.append(player)
 
     def end(self):
-        if self.match.teamB.health> self.match.teamA.health:self.match.teamB.winner = True
+        if self.match.teamB.health > self.match.teamA.health: self.match.teamB.winner = True
+        else: self.match.teamA.winner = True
         self.endAt = time()
         self.onQuizEnd(self)
 

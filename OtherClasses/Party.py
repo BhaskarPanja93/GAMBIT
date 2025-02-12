@@ -127,6 +127,6 @@ class Party:
                 self.removePlayer(toKick, True)
     def receiveMessage(self, sender, text):
         for player in self.players:
-            player.viewer.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.PARTY, sender if sender!=player.userName else ChatMessageNodes.YOU, text))
+            if player.viewer: player.viewer.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.PARTY, sender if sender!=player.userName else ChatMessageNodes.YOU, text))
     def __eq__(self, other):
         return self.partyID == other.partyID

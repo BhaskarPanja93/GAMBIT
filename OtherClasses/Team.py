@@ -20,7 +20,7 @@ class Team:
         self.maxMMR = 0
         self.oldestPartyCreatedAt = None
         self.averageMMR = 0
-        self.health = 100
+        self.health = 50
         self.cachedElements = cachedElements
         self.match = None
         self.winner = False
@@ -65,7 +65,7 @@ class Team:
 
     def receiveMessage(self, sender, text):
         for player in self.allPlayers():
-            player.viewer.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.TEAM, sender if sender!=player.userName else ChatMessageNodes.YOU, text))
+            if player.viewer: player.viewer.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.TEAM, sender if sender!=player.userName else ChatMessageNodes.YOU, text))
 
     def __eq__(self, other):
         return self.teamID == other.teamID

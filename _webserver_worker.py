@@ -2,6 +2,7 @@ from gevent import monkey
 
 monkey.patch_all()
 
+from datetime import datetime
 from time import time, sleep
 from sys import argv
 from typing import Any
@@ -142,7 +143,7 @@ def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
 
 
 def sendPendingChats(viewerObj: DynamicWebsite.Viewer):
-    pendingChats = SQLconn.execute(f"SELECT * FROM {Database.PENDING_CHATS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=?", [viewerObj.privateData.userName])
+    pendingChats = SQLconn.execute(f"SELECT * FROM {Database.PENDING_CHATS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=? ORDER BY {Database.PENDING_CHATS.SENT_AT}", [viewerObj.privateData.userName])
     for chat in pendingChats: viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, chat[Database.PENDING_CHATS.SENDER], chat[Database.PENDING_CHATS.TEXT]))
 
 
@@ -211,17 +212,22 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
 
 def __renderQuizStructure(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() != Pages.QUIZ:
-        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.QUIZ)
         viewerObj.privateData.player.viewer.sendCustomMessage(CustomMessages.pageChanged(Pages.QUIZ))
 
 
 def renderQuiz(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+    renderQuizNavbar(viewerObj)
+
+
+def renderMatchFound(viewerObj: DynamicWebsite.Viewer):
     __renderQuizStructure(viewerObj)
+    hideSocials(viewerObj)
     removeBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
-    renderQuizNavbar(viewerObj)
-    hideSocials(viewerObj)
+    removeQuizNavbar(viewerObj)
+    viewerObj.updateHTML(cachedElements.fetchStaticHTML(FileNames.HTML.MatchFound), DivID.changingPage, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -367,7 +373,7 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
                         viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "You need to be in a team to send this message."))
             elif form["TO"] in viewerObj.privateData.friends:
                 if form["TO"] in activeUsernames: return activeUsernames[form["TO"]].sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, form["FROM"], form["TEXT"]))
-                else: return SQLconn.execute(f"INSERT INTO {Database.PENDING_CHATS.TABLE_NAME} VALUES (?, ?, ?)", [form['TO'], form['FROM'], form['TEXT']])
+                else: return SQLconn.execute(f"INSERT INTO {Database.PENDING_CHATS.TABLE_NAME} VALUES (?, ?, ?, ?)", [form['TO'], form['FROM'], form['TEXT'], datetime.now()])
             else:
                 viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "Unable to send. Recipient unknown"))
     if viewerObj.privateData.currentPage() in [Pages.LOBBY, Pages.POST_AUTH, Pages.NOTES, Pages.MARKETPLACE]:
@@ -484,7 +490,7 @@ def manualLogin(viewerObj: DynamicWebsite.Viewer, identifier:str, password:str):
     savedCredentials = SQLconn.execute(f"SELECT {Database.USER_AUTH.USERNAME}, {Database.USER_AUTH.PW_HASH} FROM {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.USERNAME}=? OR {Database.USER_AUTH.EMAIL}=? LIMIT 1", [identifier, identifier])
     if savedCredentials:
         savedCredentials = savedCredentials[0]
-        username = savedCredentials[Database.USER_AUTH.USERNAME]
+        username = savedCredentials[Database.USER_AUTH.USERNAME].decode()
         pwHash = savedCredentials[Database.USER_AUTH.PW_HASH]
         try:
             if passwordHasher.verify(pwHash.decode(), password):
@@ -548,9 +554,9 @@ def onQuizEnd(quiz:Quiz):
     for toSend in sortedPlayers:
         if toSend.viewer:
             renderBaseNavbar(toSend.viewer)
-            renderBaseNavbar(toSend.viewer)
             removeQuizNavbar(toSend.viewer)
             toSend.viewer.updateHTML(quiz.cachedElements.fetchStaticHTML(FileNames.HTML.QuizScoreBoard), DivID.changingPage, DynamicWebsite.UpdateMethods.update)
+            #toSend.viewer.updateHTML(f"{'Victory' if toSend.party.team.winner else 'Loss'} ({toSend.party.team.health}-{toSend.party.team.opponentTeam.health})", DivID.navbar2, DynamicWebsite.UpdateMethods.append)
             for player in sortedPlayers:
                 player.healthImpact = int(player.healthImpact)
                 player.score = int(player.score)
@@ -570,6 +576,11 @@ def onMatchFound(match: Match):
                 player.incorrect = 0
                 player.healthImpact = 0
                 player.optionsSelected = {}
+                renderMatchFound(player.viewer)
+    sleep(3)
+    for party in match.teamB.parties+match.teamA.parties:
+        for player in party.players:
+            if player.viewer is not None:
                 renderQuiz(player.viewer)
     quiz.start()
 
