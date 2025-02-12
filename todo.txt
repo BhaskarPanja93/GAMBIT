@@ -8,13 +8,13 @@ KEEP 1080p RESOLUTION !!
 ✓ Fix friend list scroll and size
 ✓ Adjust pop-up
 ✓ Adjust friend req css in static
+✓ Final adjustments for nav bar
+✓ UI Changes
+✓ Ready in lobby page
+✓ Start -> Ready 1/3
 
-x Final adjustments for nav bar
-x UI Changes
 x Make usernames standout
-x Ready in lobby page
-x Start -> Ready 1/3
-
+x Change arrows in victory screen to be beside victory/lose
 
 
 [B]
