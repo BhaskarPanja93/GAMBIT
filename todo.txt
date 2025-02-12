@@ -15,6 +15,7 @@ KEEP 1080p RESOLUTION !!
 
 x Make usernames standout
 x Change arrows in victory screen to be beside victory/lose
+x Third row not hovering ( arrows )
 
 
 [B]
