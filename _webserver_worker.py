@@ -533,9 +533,12 @@ def createUser(viewerObj: DynamicWebsite.Viewer, username:str, password:str, per
     else:
         SQLconn.execute(f"INSERT INTO {Database.USER_INFO.TABLE_NAME} VALUES (?, ?, ?)", [username, personName, viewerObj.privateData.activeSince])
         SQLconn.execute(f"INSERT INTO {Database.USER_AUTH.TABLE_NAME} VALUES (?, ?, ?)", [username, email, passwordHasher.hash(password)])
-        freezeViewerTillUsernameRelease(viewerObj, username)
-        createDevice(viewerObj)
-        return True, "User registered"
+        allowed, reason = freezeViewerTillUsernameRelease(viewerObj, username)
+        if allowed:
+            createDevice(viewerObj)
+            return True, "User registered"
+        else:
+            return False, reason
 
 
 def manualLogin(viewerObj: DynamicWebsite.Viewer, identifier:str, password:str):
@@ -546,9 +549,12 @@ def manualLogin(viewerObj: DynamicWebsite.Viewer, identifier:str, password:str):
         pwHash = savedCredentials[Database.USER_AUTH.PW_HASH]
         try:
             if passwordHasher.verify(pwHash.decode(), password):
-                freezeViewerTillUsernameRelease(viewerObj, username)
-                createDevice(viewerObj)
-                return True, "Manual Logged In"
+                allowed, reason = freezeViewerTillUsernameRelease(viewerObj, username)
+                if allowed:
+                    createDevice(viewerObj)
+                    return True, "Manual Logged In"
+                else:
+                    return False, reason
         except:
             pass
     return False, "Invalid Credentials"
@@ -559,22 +565,25 @@ def autoLogin(viewerObj: DynamicWebsite.Viewer):
     if savedDevice:
         savedDevice = savedDevice[0]
         username = savedDevice[Database.USER_DEVICES.USERNAME].decode()
-        freezeViewerTillUsernameRelease(viewerObj, username)
-        return True, "Auto Logged In"
+        allowed, reason = freezeViewerTillUsernameRelease(viewerObj, username)
+        if allowed: return True, "Auto Logged In"
+        else: return False, reason
     return False, "Unknown Device"
 
 
 def freezeViewerTillUsernameRelease(viewerObj:DynamicWebsite.Viewer, username):
+    print(viewerObj.cookie.instanceID)
     if username in activeUsernames:
         viewerObj.updateHTML("Please close any other instances/tabs to use GAMBIT on this tab.", DivID.root, DynamicWebsite.UpdateMethods.update)
-        while username in activeUsernames:
-            print(username, "FROZEN LOGIN")
-            sleep(1)
+        while username in activeUsernames and viewerObj.currentState != DynamicWebsite.VIEWER_STATES.DEAD:
+            print(username, "FROZEN LOGIN", )
+            sleep(2)
         if viewerObj.currentState == DynamicWebsite.VIEWER_STATES.DEAD: return False, "Disconnected"
     print("Activated username:", username)
     activeUsernames[username] = viewerObj
     viewerObj.privateData.userName = username
     print(username, "ALLOWED LOGIN")
+    return True, "Username free"
 
 
 ##############################################################################################################################
@@ -582,7 +591,6 @@ def freezeViewerTillUsernameRelease(viewerObj:DynamicWebsite.Viewer, username):
 
 
 def closeParty(party: Party):
-    print(f"CLOSING PARTY {party.partyID}")
     if party.partyID in partyIDs: del partyIDs[party.partyID]
     if party.partyCode in partyCodes: del partyCodes[party.partyCode]
     matchmaker.removeFromQueue(party)

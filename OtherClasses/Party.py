@@ -64,6 +64,7 @@ class Party:
         if player in self.readyPlayers:
             self.readyPlayers.remove(player)
             self.updateReadyStat()
+        self.checkAllPlayersReady()
     def updateReadyStat(self):
         for player in self.players:
             if player.viewer: player.viewer.updateHTML(f"{'CANCEL' if player in self.readyPlayers else 'START'} <span class='text-sm ml-2'>[{len(self.readyPlayers)}/{len(self.players)}]</span>", DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
@@ -97,12 +98,10 @@ class Party:
                 self.__notifyOtherPlayersLeft(index)
                 self.__notifyOtherPlayersIndexDecrement(index)
                 self.players.pop(index)
-                if len(self.players) == 0 and self.onPartyClosed is not None:
-                    self.onPartyClosed(self)
-                else:
-                    self.updateReadyStat()
-                    self.checkAllPlayersReady()
+                if len(self.players) == 0 and self.onPartyClosed is not None: self.onPartyClosed(self)
+                else: self.playerUnready(oldPlayer)
                 return index
+
     def sendPartyCode(self, player):
         if player.viewer is not None:
             player.viewer.updateHTML(self.partyCode, DivID.partyCodeShow, DynamicWebsite.UpdateMethods.update)
