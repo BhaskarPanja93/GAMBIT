@@ -6,10 +6,12 @@ from randomisedString import RandomisedString
 
 from OtherClasses.CachedElements import CachedElements
 from OtherClasses.FileNames import FileNames
+from OtherClasses.Question import Question
+from internal.dynamicWebsite import DynamicWebsite
 
 
 class Player:
-    def __init__(self, viewerObj, playerName, cachedElements:CachedElements):
+    def __init__(self, viewerObj:DynamicWebsite.Viewer|None, cachedElements:CachedElements):
         self.PFP_LIST = [
         "https://i.pinimg.com/564x/05/0b/4b/050b4b5204d7b8f92bea7da09a819a3e.jpg",
         "https://i.pinimg.com/236x/ed/1d/92/ed1d9261080d42ef548d6dfe44df5c03.jpg",
@@ -37,17 +39,23 @@ class Player:
         self.cachedElements = cachedElements
         self.viewer = viewerObj
         self.PFP = choice(self.PFP_LIST)
-        self.userName = (playerName if playerName else "BOT_"+RandomisedString().AlphaNumeric(2, 2))
+        self.userName = (viewerObj.privateData.userName if viewerObj is not None else "BOT_"+RandomisedString().AlphaNumeric(2, 2))
         self.state = "ONLINE"
-        self.level = 0
+        self.level = 1
         self.rank = "https://static.wixstatic.com/media/cb04e9_db781b062c6d4d02b1d5dbaf314ad2ef~mv2.png/v1/fill/w_256,h_256,al_c,q_85,enc_auto/cb04e9_db781b062c6d4d02b1d5dbaf314ad2ef~mv2.png"
         self.MMR = randrange(400, 500)
-        self.optionsSelected = {}
+        self.quizQuestions:dict[str, Question] = {}
         self.score = 0
         self.correct = 0
         self.incorrect = 0
         self.unattempted = 0
         self.healthImpact = 0
+        self.friends = []
+        self.incomingFriendRequests = []
+        self.outgoingFriendRequests = []
+
+        self.outgoingPartyJoinRequests = {}
+        self.outgoingPartyInvites = {}
 
     def displayPFP(self):
         return self.PFP
@@ -56,7 +64,7 @@ class Player:
     def displayState(self):
         return self.state
     def displayLevel(self):
-        return self.level
+        return f"Level {self.level}"
     def displayRank(self):
         return self.rank
     def displayAsTeam(self, hasCrown:bool=False):

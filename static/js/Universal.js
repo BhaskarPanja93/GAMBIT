@@ -13,7 +13,11 @@ const CUSTOM_MESSAGE_TASKS = {
     KICKED_FROM_PARTY: 'KICKED_FROM_PARTY',
     CHAT: 'CHAT',
     PARTY_CODE: 'PARTY_CODE',
-    TOGGLE_SOCIALS: 'TOGGLE_SOCIALS'
+    TOGGLE_SOCIALS: 'TOGGLE_SOCIALS',
+    PARTY_JOIN_REQUEST: 'PARTY_JOIN_REQUEST',
+    PARTY_INVITE: 'PARTY_INVITE',
+    FRIEND_REQUEST: 'FRIEND_REQUEST',
+    DELETE_INTERACTION: 'DELETE_INTERACTION',
 }
 
 
@@ -29,6 +33,10 @@ function WSListener(data) {
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.PAGE_CHANGED) window["currentPage"] = data["PAGE"]
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.CHAT) waitForElementPresence("#script-chat", ()=>receiveText(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.TOGGLE_SOCIALS) waitForElementPresence("#script-friends", ()=>toggleSocials(data["DISPLAY"]))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.PARTY_JOIN_REQUEST) waitForElementPresence("#script-friends", ()=>receivedPartyJoin(data))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.PARTY_INVITE) waitForElementPresence("#script-friends", ()=>receivedPartyInvite(data))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_REQUEST) waitForElementPresence("#script-friends", ()=>receivedFriendRequest(data))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.DELETE_INTERACTION) waitForElementPresence("#script-friends", ()=>deleteInteraction(data["INTERACTION"]))
 }
 
 

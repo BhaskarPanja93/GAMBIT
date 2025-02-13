@@ -52,16 +52,18 @@ class Team:
         botMMR = totalMMRNeeded / botsNeeded
         botParty = Party()
         for _ in range(botsNeeded):
-            botPlayer = Player(None, None, self.cachedElements)
+            botPlayer = Player(None, self.cachedElements)
             botPlayer.MMR = botMMR
             botParty.addPlayer(botPlayer)
         self.parties.append(botParty)
         self.generateDetails()
 
     def allPlayers(self):
+        allPlayers = []
         for party in self.parties:
             for player in party.players:
-                yield player
+                allPlayers.append(player)
+        return allPlayers
 
     def receiveMessage(self, sender, text):
         for player in self.allPlayers():

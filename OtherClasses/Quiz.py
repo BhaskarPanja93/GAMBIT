@@ -1,6 +1,7 @@
-from random import shuffle, choice, randrange
-from time import time, sleep
 from json import loads
+from random import shuffle, choice
+from time import time, sleep
+
 from jinja2 import Template
 from pooledMySQL import PooledMySQL
 from randomisedString import RandomisedString
@@ -22,30 +23,39 @@ class Quiz:
         self.endAt = None
         self.match = match
         self.onQuizEnd = onQuizEnd
-        self.questionHistory:list[Question] = []
-        self.allowAnswersFrom:list[Player] = []
+        self.questionHistory:dict[str, Question] = {}
+        self.currentQuestionID = None
+        self.allowAnswersFrom = []
         self.SQLconn = SQLconn
         self.crowns:list[Player] = []
         self.cachedElements = cachedElements
-        self.timePerQuestion = 5
+        self.match.quiz = self
+
+    def updateVisuals(self):
+        self.sortPlayersByScore()
+        self.updateNavbar()
 
     def start(self):
-        lastAllowed = self.allowAnswersFrom
+        lastAllowedPlayers = self.allowAnswersFrom
         self.allowAnswersFrom = []
-        for player in list(self.match.teamA.allPlayers())+list(self.match.teamB.allPlayers()):
-            if player in lastAllowed or len(lastAllowed)==0:
+        for player in self.match.teamA.allPlayers()+self.match.teamB.allPlayers():
+            if player in lastAllowedPlayers or len(lastAllowedPlayers)==0:
                 self.allowAnswersFrom.append(player)
         if self.allowAnswersFrom:
-            self.sortPlayersByScore()
-            self.updateNavbar()
+            if not self.questionHistory: self.updateVisuals()
             self.prepareQuestion()
 
     def prepareQuestion(self):
-        q = self.SQLconn.execute(f"SELECT * FROM {Database.QUESTION.TABLE_NAME} ORDER BY RAND() LIMIT 1")[0]
-        for question in self.questionHistory:
-            if question.questionID == q[Database.QUESTION.QUESTION_ID].decode(): return self.prepareQuestion()
-        question = Question(q[Database.QUESTION.QUESTION_ID].decode(), q[Database.QUESTION.TEXT], loads(q[Database.QUESTION.OPTIONS]), loads(q[Database.QUESTION.CORRECT]))
-        self.questionHistory.append(question)
+        QRaw = self.SQLconn.execute(f"SELECT * FROM {Database.QUESTION.TABLE_NAME} ORDER BY RAND() LIMIT 1")[0]
+        QRaw[Database.QUESTION.QUESTION_ID] = QRaw[Database.QUESTION.QUESTION_ID].decode()
+        if QRaw[Database.QUESTION.QUESTION_ID] in self.questionHistory: return self.prepareQuestion()
+        question = Question(len(self.questionHistory)+1, QRaw[Database.QUESTION.QUESTION_ID], QRaw[Database.QUESTION.TEXT], loads(QRaw[Database.QUESTION.OPTIONS]), loads(QRaw[Database.QUESTION.CORRECT]))
+        question.prepare()
+        self.questionHistory[question.questionID] = question
+        self.currentQuestionID = question.questionID
+        for player in self.match.teamA.allPlayers()+self.match.teamB.allPlayers():
+            player.quizQuestions[question.questionID] = question.replicate()
+            shuffle(player.quizQuestions[question.questionID].options)
         self.showPreQuestion()
 
     def updateNavbar(self):
@@ -53,9 +63,9 @@ class Quiz:
             isAlly = player.party.team==toSend.party.team
             if isAlly: toSend.viewer.updateHTML(player.displayAsTeam(player in self.crowns), f"team-player-{index}", DynamicWebsite.UpdateMethods.update)
             else: toSend.viewer.updateHTML(player.displayAsOpponent(player in self.crowns), f"opponent-player-{index}", DynamicWebsite.UpdateMethods.update)
-        teamAHealth = max(0,min(100,round(self.match.teamA.health, 2)))
-        teamBHealth = max(0,min(100,round(self.match.teamB.health, 2)))
-        for toSend in list(self.match.teamA.allPlayers())+list(self.match.teamB.allPlayers()):
+        teamAHealth = round(self.match.teamA.health, 2)
+        teamBHealth = round(self.match.teamB.health, 2)
+        for toSend in self.match.teamA.allPlayers()+self.match.teamB.allPlayers():
             if toSend.viewer is not None:
                 if self.match.teamB == toSend.party.team:
                     toSend.viewer.updateHTML(f"""{teamBHealth}%""", f"team-health", DynamicWebsite.UpdateMethods.update)
@@ -70,72 +80,85 @@ class Quiz:
                 for index in range(3):
                     toSend.viewer.updateHTML("", f"team-player-{index}", DynamicWebsite.UpdateMethods.update)
                     toSend.viewer.updateHTML("", f"opponent-player-{index}", DynamicWebsite.UpdateMethods.update)
-                    try: renderPlayer(list(self.match.teamA.allPlayers())[index], toSend)
+                    try: renderPlayer(self.match.teamA.allPlayers()[index], toSend)
                     except: pass
-                    try: renderPlayer(list(self.match.teamB.allPlayers())[index], toSend)
+                    try: renderPlayer(self.match.teamB.allPlayers()[index], toSend)
                     except: pass
 
     def showPreQuestion(self):
         self.showQuestion()
 
-    def showQuestion(self):
-        for party in self.match.teamA.parties+self.match.teamB.parties:
-            for player in party.players:
+    def showPostQuestion(self, lastQuestionID):
+        if self.questionHistory:
+            for player in self.match.teamA.allPlayers()+self.match.teamB.allPlayers():
                 if player.viewer is not None:
-                    question = self.questionHistory[-1]
-                    shuffle(question.options)
-                    temp = Template(self.cachedElements.fetchStaticHTML(FileNames.HTML.QuizQuestion))
-                    player.viewer.updateHTML(temp.render(baseURI=player.viewer.privateData.baseURI, count=len(self.questionHistory), question=question, option=question.options), DivID.quizContent, DynamicWebsite.UpdateMethods.update)
+                    questionInstance = player.quizQuestions[lastQuestionID]
+                    for index in range(4):
+                        temp = Template(self.cachedElements.fetchStaticHTML(FileNames.HTML.QuizOption))
+                        if questionInstance.selectedOption is not None and questionInstance.selectedOption.optionID == questionInstance.options[index].optionID: isSelected = True
+                        else: isSelected = False
+                        player.viewer.updateHTML(temp.render(baseURI=player.viewer.privateData.baseURI, index=index, option=questionInstance.options[index], showAnswer=True, isSelected=isSelected), f"{DivID.quizOption}{index}", DynamicWebsite.UpdateMethods.replace)
+            sleep(2)
+
+    def showQuestion(self):
+        for player in self.match.teamA.allPlayers()+self.match.teamB.allPlayers():
+            if player.viewer is not None:
+                temp = Template(self.cachedElements.fetchStaticHTML(FileNames.HTML.QuizQuestion))
+                player.viewer.updateHTML(temp.render(baseURI=player.viewer.privateData.baseURI, question=player.quizQuestions[self.currentQuestionID]), DivID.quizContent, DynamicWebsite.UpdateMethods.update)
+        sleep(1)
+        for player in self.match.teamA.allPlayers()+self.match.teamB.allPlayers():
+            if player.viewer is not None:
+                for index in range(4):
+                    temp = Template(self.cachedElements.fetchStaticHTML(FileNames.HTML.QuizOption))
+                    player.viewer.updateHTML(temp.render(baseURI=player.viewer.privateData.baseURI, index=index, option=player.quizQuestions[self.currentQuestionID].options[index], showAnswer=False, isSelected=False), f"{DivID.quizOption}{index}", DynamicWebsite.UpdateMethods.replace)
+            player.quizQuestions[self.currentQuestionID].startTime = time()
         self.countDown()
 
     def countDown(self):
-        for _ in range(self.timePerQuestion, -1, -1):
-            for toSend in list(self.match.teamA.allPlayers())+list(self.match.teamB.allPlayers()):
+        for _ in range(self.questionHistory[self.currentQuestionID].maxTime, -1, -1):
+            for toSend in self.match.teamA.allPlayers()+self.match.teamB.allPlayers():
                 if toSend.viewer: toSend.viewer.updateHTML(str(_), DivID.quizTimer, DynamicWebsite.UpdateMethods.update)
             sleep(1)
         self.endQuestion()
 
     def endQuestion(self):
-        question = self.questionHistory[-1]
+        lastQuestionID = self.currentQuestionID
+        self.currentQuestionID = None
         for player in self.allowAnswersFrom:
             if player.viewer is None:
-                optionSelected = choice(question.options)
-                timeTaken = randrange(self.timePerQuestion)
-            else:
-                optionData = player.optionsSelected.get(question.questionID)
-                if optionData:
-                    optionSelected = question.fetchOption(optionData.get("OPTION_ID"))
-                    timeTaken = optionData.get("TIME", question.generatedAt+5) - question.generatedAt
-                    player.optionsSelected[question.questionID] = optionSelected
-                else:
-                    scoreChange = -3
-                    healthImpact = -len(self.questionHistory) * 3
-                    player.unattempted += 1
-                    player.score += scoreChange
-                    player.healthImpact += healthImpact
-                    player.party.team.health += healthImpact
-                    continue
-            if optionSelected.isCorrect:
-                scoreChange = 2 * (self.timePerQuestion - timeTaken)
-                healthImpact = (self.timePerQuestion - timeTaken) * 2
+                player.quizQuestions[lastQuestionID].selectedOption = choice(player.quizQuestions[lastQuestionID].options)
+                player.quizQuestions[lastQuestionID].timeTaken = time() - player.quizQuestions[lastQuestionID].startTime
+            questionInstance:Question = player.quizQuestions.get(lastQuestionID)
+            if questionInstance.selectedOption is None:
+                scoreChange = -3
+                healthImpact = -questionInstance.questionNumber * 2
+                player.unattempted += 1
+                player.score += scoreChange
+                player.healthImpact += healthImpact
+                player.party.team.health += healthImpact
+            elif questionInstance.selectedOption.isCorrect:
+                scoreChange = 5 * (questionInstance.maxTime - questionInstance.timeTaken)
+                healthImpact = (questionInstance.maxTime - questionInstance.timeTaken) * len(self.questionHistory)
                 player.correct += 1
                 player.score += scoreChange
                 player.healthImpact += healthImpact
                 player.party.team.health += healthImpact
             else:
-                scoreChange = -3 * timeTaken
-                healthImpact = -len(self.questionHistory) * timeTaken
+                scoreChange = -questionInstance.timeTaken
+                healthImpact = -len(self.questionHistory) * questionInstance.timeTaken /2
                 player.incorrect += 1
                 player.score += scoreChange
                 player.healthImpact += healthImpact
                 player.party.team.health += healthImpact
 
+        if self.questionHistory: self.updateVisuals()
+        self.showPostQuestion(lastQuestionID)
         if 100<=self.match.teamA.health or self.match.teamA.health<=0 or 100<=self.match.teamB.health or self.match.teamB.health<=0: self.end()
         else: self.start()
 
     def sortPlayersByScore(self):
         highestScore = 0
-        for player in list(self.match.teamA.allPlayers())+list(self.match.teamB.allPlayers()):
+        for player in self.match.teamA.allPlayers()+self.match.teamB.allPlayers():
             if player.score > highestScore:
                 highestScore = player.score
                 self.crowns = [player]

@@ -1,27 +1,11 @@
-<div class="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Question {{ count }}</div>
-<div class="text-white text-lg sm:text-xl md:text-2xl text-center mb-6 sm:mb-8">{{ question.text }}
-</div>
+<div class="text-white text-2xl sm:text-3xl md:text-4xl font-bold mb-4 sm:mb-6">Question {{ question.questionNumber }}</div>
+<div class="text-white text-lg sm:text-xl md:text-2xl text-center mb-6 sm:mb-8">{{ question.text }}</div>
 <div class="grid grid-cols-1 sm:grid-cols-2 gap-3 sm:gap-4 w-full" data-questionid="{{ question.questionID }}">
-    <button id="option-0" class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg" data-optionid="{{ option[0].optionID }}">
-        {{ option[0].text }}
-    </button>
-    <button id="option-1" class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg" data-optionid="{{ option[1].optionID }}">
-        {{ option[1].text }}
-    </button>
-    <button id="option-2" class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg" data-optionid="{{ option[2].optionID }}">
-        {{ option[2].text }}
-    </button>
-    <button id="option-3" class="bg-gray-600 text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg" data-optionid="{{ option[3].optionID }}">
-        {{ option[3].text }}
-    </button>
+    <button id="quiz-option-0" class="hidden"></button>
+    <button id="quiz-option-1" class="hidden"></button>
+    <button id="quiz-option-2" class="hidden"></button>
+    <button id="quiz-option-3" class="hidden"></button>
 </div>
 <script>
-    [0,1,2,3].forEach((optionNumber)=>{
-        selectedOption = null
-        waitForElementPresence(`#option-${optionNumber}`, (button)=>{
-            button.onclick = () => {
-                changeSelectedOption(button)
-                sendCustomMessage({PURPOSE: "OPTION_SELECTED", QUESTION:button.parentElement.dataset.questionid, OPTION:button.dataset.optionid})}
-        })
-    })
+    selectedOption = null
 </script>

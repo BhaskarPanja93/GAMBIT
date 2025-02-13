@@ -74,7 +74,7 @@ class Party:
             while len(self.readyPlayers)==len(self.players):
                 for player in self.players:
                     if player.viewer is not None:
-                        player.viewer.updateHTML(int(self.partyTimer), DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
+                        player.viewer.updateHTML(str(self.partyTimer), DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
                 sleep(1)
                 self.partyTimer += 1
             if not self.matchStarted:

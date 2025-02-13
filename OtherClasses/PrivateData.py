@@ -10,7 +10,6 @@ class PrivateData:
         self.baseURI = ""
         self.userName = ""
         self.player = None
-        self.friends = []
         self.pagesHistory = []
         self.renderedElements = set()
         self.renderedScripts = set()
