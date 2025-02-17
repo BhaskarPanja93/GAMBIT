@@ -1,0 +1,22 @@
+
+<button id="quiz-option-{{ index }}"
+        class="{% if showAnswer %}
+                  {% if option.isCorrect and isSelected %}bg-green-600
+                  {% elif option.isCorrect and not isSelected %}bg-green-900
+                  {% elif not option.isCorrect and isSelected %}bg-red-600
+                  {% else %}bg-gray-600
+                  {% endif %}
+               {% else %}bg-gray-600
+               {% endif %}
+               text-white text-base sm:text-lg md:text-xl font-semibold px-4 sm:px-6 py-3 sm:py-4 rounded-lg"
+        data-optionid="{{ option.optionID }}">
+    {{ option.text }}
+</button>
+
+<script>
+    waitForElementPresence("#quiz-option-{{index}}", (button)=>{
+        button.onclick = () => {
+            changeSelectedOption(button)
+            sendCustomMessage({PURPOSE: "OPTION_SELECTED", QUESTION:button.parentElement.dataset.questionid, OPTION:button.dataset.optionid})}
+    })
+</script>

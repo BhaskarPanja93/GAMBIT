@@ -28,5 +28,6 @@ class DivID:
     partyCodeShow = "party-code-show"
     startStopQueue = "start-stop-button"
     quizContent = "quiz-content"
+    quizOption = "quiz-option-"
     quizTimer = "quiz-timer"
     quizScoreBoard = "quiz-score-board"
