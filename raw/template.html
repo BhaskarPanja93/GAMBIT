@@ -1,0 +1,71 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lobby</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="Overall.css">
+
+</head>
+<body>
+<div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
+    <audio id="music-player" preload="none">
+        <source src="" type="audio/x-wav;codec=pcm">
+    </audio>
+
+    <!-- Animation div-->
+    <div class="bg-animation-box">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div id="particles-animation"></div>
+
+    <!-- Main Div -->
+    <div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden relative">
+
+
+        <!-- Content here -->
+
+
+        <script src="Music.js"></script>
+        <script src="Trail.js"></script>
+
+
+        <script>
+            const friendList = document.getElementById("friend-list")
+            friendList.onmouseleave = function () {
+                friendList.classList.add("w-17")
+                friendList.classList.remove("w-60")
+                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
+                    e.children[1].classList.add("hidden")
+                })
+                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
+                    e.children[1].classList.add("hidden")
+                })
+            }
+            friendList.onmouseenter = function () {
+                friendList.classList.add("w-60")
+                friendList.classList.remove("w-17")
+                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
+                    e.children[1].classList.remove("hidden")
+                })
+                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
+                    e.children[1].classList.remove("hidden")
+                })
+            }
+        </script>
+    </div>
+
+</div>
+</body>
+</html>
