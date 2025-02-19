@@ -567,7 +567,104 @@ class DynamicWebsite:
 
         self.baseApp = Imports.Flask(self.appName)
         self.baseApp.config.setdefault('TURBO_WEBSOCKET_ROUTE', actionsRoute)
-        self.sock = Imports.Sock(self.baseApp)
+        self.WSApp = Imports.Sock(self.baseApp)
+
+        @self.baseApp.route(self.actionsRoute, methods=["GET", "POST"])
+        def _actionRoute():
+            """
+            Generates new ViewerID or uses old one and generates and sends a 2-phase cookie
+            :return:
+            """
+            if Imports.request.args.get(self.HTMLElements.giveMeTheFile) == "dynamicWebsite.js":
+                return Imports.send_file("dynamicWebsite.js"), 200
+            elif Imports.request.args.get(self.HTMLElements.giveMeTheFile) == "hotwire.js":
+                return Imports.send_file("hotwire.js"), 200
+            # Requesting L2 Cookie
+            if "RECEIVE_NEW_L2_COOKIE" in Imports.request.args:
+                viewerObj = self.createViewer(Imports.request, Imports.request.get_json())
+                if viewerObj is None:
+                    return ""
+                viewerObj.currentWS[self.WSPurposes.RESPONSIVE] = None
+                viewerObj.currentWS[self.WSPurposes.LARGE] = None
+                response = Imports.make_response({
+                    self.WSPurposes.RESPONSIVE: self.createWSToken(viewerObj, self.WSPurposes.RESPONSIVE, True),
+                    self.WSPurposes.LARGE: self.createWSToken(viewerObj, self.WSPurposes.LARGE, True)
+                })
+                return viewerObj.cookie.wrapResponse(response, self.fernetKey)
+
+            # Requesting L1 Cookie
+            else:
+                return self.createL1Cookie(Imports.request).wrapResponse(self.firstPageRendererCallback(), self.fernetKey)
+
+
+        @self.WSApp.route(self.actionsRoute)
+        def _turboRoute(rawWS):
+            """
+            Executed for every websocket connection request received. Handles initial handshake token exchange along with all future communication
+            :param rawWS: The Sock object that will be used for communication
+            :return:
+            """
+            validCookie = self.CookieHolder().readL1(Imports.request)
+            presentL1Cookie = self.CookieHolder().decrypt(Imports.request.cookies.get("DW-ID-L1"), self.fernetKey)
+            presentL2Cookie = self.CookieHolder().decrypt(Imports.request.cookies.get("DW-ID-L2"), self.fernetKey)
+            WSObj = self.WSHolder(rawWS, self.stringGenerator.AlphaNumeric(10,10).encode(), self.stringGenerator.AlphaNumeric(10,10).encode())
+            WSObj.purpose = Imports.request.args.get("WS_PURPOSE")
+            if presentL1Cookie.instanceID in self.inCompleteViewers and self.inCompleteViewers[presentL1Cookie.instanceID].currentWS.get(WSObj.purpose) is None and type(self.inCompleteViewers[presentL1Cookie.instanceID].futureWS.get(WSObj.purpose)) == str and validCookie.match(presentL1Cookie, 1) and presentL2Cookie.match(presentL1Cookie, 1, True, True): # current person is recent person
+                viewerObj = self.inCompleteViewers[presentL1Cookie.instanceID]
+                CSRFVerified = False
+                while True:
+                    try:
+                        receivedBytes = rawWS.receive(timeout=60 if CSRFVerified else 5)
+                    except (BrokenPipeError, Imports.ConnectionClosed):
+                        WSObj.isActive = False
+                        viewerObj.currentWS[WSObj.purpose] = None
+                        for _WSObj in viewerObj.currentWS.values():
+                            if _WSObj is not None and _WSObj.isActive: # Has active WS
+                                self.makeViewerInComplete(viewerObj)
+                                break
+                        else: # No active WS
+                            self.makeViewerDying(viewerObj, 0) ## Viewer left callback is called 1 seconds after he actually leaves (giving them a scope to reconnect in cases of network disconnections)
+                        break
+                    if receivedBytes is None and not CSRFVerified: break # WS couldn't prove authenticity in specified time
+                    if receivedBytes:
+                        dictReceived:dict = Imports.loads(receivedBytes)
+                        reason = dictReceived.get("REASON")
+                        if WSObj.key is None: # Should be the first data from WS
+                            if reason == self.WS_DATA_REASONS.IN.VERIFY_CSRF:
+                                if viewerObj.currentWS.get(WSObj.purpose) is None and viewerObj.futureWS.get(WSObj.purpose) == dictReceived["CSRF"] and viewerObj.futureWS.get(WSObj.purpose): # Viewer has pending CSRF of same purpose and is valid
+                                    del viewerObj.futureWS[WSObj.purpose]
+                                    viewerObj.currentWS[WSObj.purpose] = WSObj
+                                    requireEncryption= dictReceived.get("REQUEST_ENCRYPTION", False)
+                                    if requireEncryption:
+                                        WSObj.key = self.serverKeys.sharedKey(dictReceived.get("CLIENT-KEY").get("PubB64"), WSObj.salt, WSObj.info)
+                                        rawWS.send(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.CSRF_ACCEPTED, "SERVER-KEY": {"PubB64":self.serverKeys.pubB64(), "SaltB64": Imports.urlsafe_b64encode(WSObj.salt).decode(), "InfoB64": Imports.urlsafe_b64encode(WSObj.info).decode()}}))
+                                    else:
+                                        WSObj.key = False
+                                        rawWS.send(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.CSRF_ACCEPTED}))
+                                    CSRFVerified = True
+                                else:
+                                    break
+                        elif WSObj.key is not None and WSObj.key != True and CSRFVerified: # Encryption handshake complete (either success or fail)
+                            if WSObj.key:
+                                dictReceived = Imports.loads(WSObj.decrypt(dictReceived))
+                                reason = dictReceived.get("REASON")
+                            if reason == self.WS_DATA_REASONS.IN.READY:
+                                if WSObj.key:
+                                    rawWS.send(Imports.dumps(WSObj.encrypt(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.FUTURE_CSRF, "CSRF": self.createWSToken(viewerObj, WSObj.purpose, True)}), self.stringGenerator.AlphaNumeric(12, 12).encode())))
+                                else:
+                                    rawWS.send(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.FUTURE_CSRF, "CSRF": self.createWSToken(viewerObj, WSObj.purpose, True)}))
+                                WSObj.isActive = True
+                                for _WSObj in viewerObj.currentWS.values():
+                                    if _WSObj is None or WSObj.isActive is None: # Has incomplete CSRF
+                                        break
+                                else:
+                                    if not viewerObj.arrivalCalled:
+                                        viewerObj.arrivalCalled = True
+                                        self.viewerConnectedCallback(viewerObj)
+                                    self.makeViewerComplete(viewerObj)
+                                continue
+                            Imports.Thread(target=viewerObj.receive, args=(dictReceived,)).start()
+                rawWS.close()
 
 
     def createL1Cookie(self, requestObj: Imports.Request) -> DynamicWebsite.CookieHolder:
@@ -681,103 +778,3 @@ class DynamicWebsite:
     @staticmethod
     def fixB64Pads(B64String):
         return B64String + '=' * (4 - len(B64String) % 4)
-
-
-    def start(self):
-        @self.baseApp.route(self.actionsRoute, methods=["GET", "POST"])
-        def _actionRoute():
-            """
-            Generates new ViewerID or uses old one and generates and sends a 2-phase cookie
-            :return:
-            """
-            if Imports.request.args.get(self.HTMLElements.giveMeTheFile) == "dynamicWebsite.js":
-                return Imports.send_file("dynamicWebsite.js"), 200
-            elif Imports.request.args.get(self.HTMLElements.giveMeTheFile) == "hotwire.js":
-                return Imports.send_file("hotwire.js"), 200
-            # Requesting L2 Cookie
-            if "RECEIVE_NEW_L2_COOKIE" in Imports.request.args:
-                viewerObj = self.createViewer(Imports.request, Imports.request.get_json())
-                if viewerObj is None:
-                    return ""
-                viewerObj.currentWS[self.WSPurposes.RESPONSIVE] = None
-                viewerObj.currentWS[self.WSPurposes.LARGE] = None
-                response = Imports.make_response({
-                    self.WSPurposes.RESPONSIVE: self.createWSToken(viewerObj, self.WSPurposes.RESPONSIVE, True),
-                    self.WSPurposes.LARGE: self.createWSToken(viewerObj, self.WSPurposes.LARGE, True)
-                })
-                return viewerObj.cookie.wrapResponse(response, self.fernetKey)
-
-            # Requesting L1 Cookie
-            else:
-                return self.createL1Cookie(Imports.request).wrapResponse(self.firstPageRendererCallback(), self.fernetKey)
-
-
-        @self.sock.route(self.actionsRoute)
-        def _turboRoute(rawWS):
-            """
-            Executed for every websocket connection request received. Handles initial handshake token exchange along with all future communication
-            :param rawWS: The Sock object that will be used for communication
-            :return:
-            """
-            validCookie = self.CookieHolder().readL1(Imports.request)
-            presentL1Cookie = self.CookieHolder().decrypt(Imports.request.cookies.get("DW-ID-L1"), self.fernetKey)
-            presentL2Cookie = self.CookieHolder().decrypt(Imports.request.cookies.get("DW-ID-L2"), self.fernetKey)
-            WSObj = self.WSHolder(rawWS, self.stringGenerator.AlphaNumeric(10,10).encode(), self.stringGenerator.AlphaNumeric(10,10).encode())
-            WSObj.purpose = Imports.request.args.get("WS_PURPOSE")
-            if presentL1Cookie.instanceID in self.inCompleteViewers and self.inCompleteViewers[presentL1Cookie.instanceID].currentWS.get(WSObj.purpose) is None and type(self.inCompleteViewers[presentL1Cookie.instanceID].futureWS.get(WSObj.purpose)) == str and validCookie.match(presentL1Cookie, 1) and presentL2Cookie.match(presentL1Cookie, 1, True, True): # current person is recent person
-                viewerObj = self.inCompleteViewers[presentL1Cookie.instanceID]
-                CSRFVerified = False
-                while True:
-                    try:
-                        receivedBytes = rawWS.receive(timeout=60 if CSRFVerified else 5)
-                    except (BrokenPipeError, Imports.ConnectionClosed):
-                        WSObj.isActive = False
-                        viewerObj.currentWS[WSObj.purpose] = None
-                        for _WSObj in viewerObj.currentWS.values():
-                            if _WSObj is not None and _WSObj.isActive: # Has active WS
-                                self.makeViewerInComplete(viewerObj)
-                                break
-                        else: # No active WS
-                            self.makeViewerDying(viewerObj, 0) ## Viewer left callback is called 1 seconds after he actually leaves (giving them a scope to reconnect in cases of network disconnections)
-                        break
-                    if receivedBytes is None and not CSRFVerified: break # WS couldn't prove authenticity in specified time
-                    if receivedBytes:
-                        dictReceived:dict = Imports.loads(receivedBytes)
-                        reason = dictReceived.get("REASON")
-                        if WSObj.key is None: # Should be the first data from WS
-                            if reason == self.WS_DATA_REASONS.IN.VERIFY_CSRF:
-                                if viewerObj.currentWS.get(WSObj.purpose) is None and viewerObj.futureWS.get(WSObj.purpose) == dictReceived["CSRF"] and viewerObj.futureWS.get(WSObj.purpose): # Viewer has pending CSRF of same purpose and is valid
-                                    del viewerObj.futureWS[WSObj.purpose]
-                                    viewerObj.currentWS[WSObj.purpose] = WSObj
-                                    requireEncryption= dictReceived.get("REQUEST_ENCRYPTION", False)
-                                    if requireEncryption:
-                                        WSObj.key = self.serverKeys.sharedKey(dictReceived.get("CLIENT-KEY").get("PubB64"), WSObj.salt, WSObj.info)
-                                        rawWS.send(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.CSRF_ACCEPTED, "SERVER-KEY": {"PubB64":self.serverKeys.pubB64(), "SaltB64": Imports.urlsafe_b64encode(WSObj.salt).decode(), "InfoB64": Imports.urlsafe_b64encode(WSObj.info).decode()}}))
-                                    else:
-                                        WSObj.key = False
-                                        rawWS.send(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.CSRF_ACCEPTED}))
-                                    CSRFVerified = True
-                                else:
-                                    break
-                        elif WSObj.key is not None and WSObj.key != True and CSRFVerified: # Encryption handshake complete (either success or fail)
-                            if WSObj.key:
-                                dictReceived = Imports.loads(WSObj.decrypt(dictReceived))
-                                reason = dictReceived.get("REASON")
-                            if reason == self.WS_DATA_REASONS.IN.READY:
-                                if WSObj.key:
-                                    rawWS.send(Imports.dumps(WSObj.encrypt(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.FUTURE_CSRF, "CSRF": self.createWSToken(viewerObj, WSObj.purpose, True)}), self.stringGenerator.AlphaNumeric(12,12).encode())))
-                                else:
-                                    rawWS.send(Imports.dumps({"REASON": self.WS_DATA_REASONS.OUT.FUTURE_CSRF, "CSRF": self.createWSToken(viewerObj, WSObj.purpose, True)}))
-                                WSObj.isActive = True
-                                for _WSObj in viewerObj.currentWS.values():
-                                    if _WSObj is None or WSObj.isActive is None: # Has incomplete CSRF
-                                        break
-                                else:
-                                    if not viewerObj.arrivalCalled:
-                                        viewerObj.arrivalCalled = True
-                                        self.viewerConnectedCallback(viewerObj)
-                                    self.makeViewerComplete(viewerObj)
-                                continue
-                            Imports.Thread(target=viewerObj.receive, args=(dictReceived,)).start()
-                rawWS.close()
-        return self.baseApp, self.sock

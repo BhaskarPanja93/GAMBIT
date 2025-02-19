@@ -9,7 +9,7 @@ from OtherClasses.Folders import Folders
 from OtherClasses.Routes import Routes
 from OtherClasses.CoreValues import CoreValues
 from OtherClasses.MusicCollection import MusicCollection
-from OtherClasses.CommonFunctions import WSGIRunner
+from OtherClasses.WSGIElements import WSGIRunner
 from customisedLogs import CustomisedLogs
 from flask_cors import CORS
 

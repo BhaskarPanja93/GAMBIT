@@ -28,8 +28,8 @@ class CustomMessages:
     def friendRemoved(username):
         return {"MESSAGE": CustomMessageTask.FRIEND_REMOVED, "USERNAME":username}
     @staticmethod
-    def friendAdded(username, pfp, state):
-        return {"MESSAGE": CustomMessageTask.FRIEND_ADDED, "FRIEND_DATA": {"USERNAME": username, "PFP": pfp, "STATE": state}}
+    def friendAdded(player):
+        return {"MESSAGE": CustomMessageTask.FRIEND_ADDED, "USERNAME": player.displayUserName(), "PFP": player.displayPFP(), "STATE": player.displayState()}
     @staticmethod
     def addedPartyMember(index, player):
         return {"MESSAGE": CustomMessageTask.ADDED_PARTY_MEMBER, "INDEX": index, "PFP":player.displayPFP(), "USERNAME": player.displayUserName(), "LEVEL": player.displayLevel(), "RANK": player.displayRank()}
@@ -52,8 +52,8 @@ class CustomMessages:
     def toggleSocials(display:bool):
         return {"MESSAGE": CustomMessageTask.TOGGLE_SOCIALS, "DISPLAY": display}
     @staticmethod
-    def newSocialInteraction(invite, interactionType):
-        return {"MESSAGE": CustomMessageTask.PARTY_JOIN_REQUEST, "FROM": invite.sender, "INTERACTION": invite.interactionID, "INTERACTION_TYPE": interactionType}
+    def newSocialInteraction(invite):
+        return {"MESSAGE": CustomMessageTask.PARTY_JOIN_REQUEST, "FROM": invite.sender, "INTERACTION": invite.interactionID, "TYPE": invite.type}
     @staticmethod
     def deleteInteraction(interactionID):
         return {"MESSAGE": CustomMessageTask.DELETE_INTERACTION, "INTERACTION": interactionID}

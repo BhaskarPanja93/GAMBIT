@@ -1,0 +1,3 @@
+class Interactions:
+    PARTY_INVITE = "PARTY_INVITE"
+    PARTY_JOIN_REQUEST = "PARTY_JOIN_REQUEST"

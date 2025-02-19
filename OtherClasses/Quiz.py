@@ -60,9 +60,10 @@ class Quiz:
 
     def updateNavbar(self):
         def renderPlayer(player, toSend):
+            playerElement = Template(self.cachedElements.fetchStaticHTML(FileNames.HTML.QuizPlayer)).render(crownHide="hidden" if not player in self.crowns else "", username=player.displayUserName(), score=int(player.score), PFP=player.displayPFP())
             isAlly = player.party.team==toSend.party.team
-            if isAlly: toSend.viewer.updateHTML(player.displayAsTeam(player in self.crowns), f"team-player-{index}", DynamicWebsite.UpdateMethods.update)
-            else: toSend.viewer.updateHTML(player.displayAsOpponent(player in self.crowns), f"opponent-player-{index}", DynamicWebsite.UpdateMethods.update)
+            if isAlly: toSend.viewer.updateHTML(playerElement, f"team-player-{index}", DynamicWebsite.UpdateMethods.update)
+            else: toSend.viewer.updateHTML(playerElement, f"opponent-player-{index}", DynamicWebsite.UpdateMethods.update)
         teamAHealth = round(self.match.teamA.health, 2)
         teamBHealth = round(self.match.teamB.health, 2)
         for toSend in self.match.teamA.allPlayers()+self.match.teamB.allPlayers():

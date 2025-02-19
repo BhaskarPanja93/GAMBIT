@@ -431,11 +431,11 @@ fetch(baseURI + "?RECEIVE_NEW_L2_COOKIE", {
     body: getDeviceFingerprint(),
     credentials: "include",
 }).then((response) => response.json()).then((parsed) => {
-        window.ConnmanagerWS.initiate(parsed[WS_PURPOSES.RESPONSIVE], parsed[WS_PURPOSES.LARGE]);
-    }).catch((error) => {
-        console.error("Error:", error);
-        location.reload();
-    });
+    window.ConnmanagerWS.initiate(parsed[WS_PURPOSES.RESPONSIVE], parsed[WS_PURPOSES.LARGE]);
+}).catch((error) => {
+    console.error("Error:", error);
+    location.reload();
+});
 
 
 function sendCustomMessage(data, isLargeData) {

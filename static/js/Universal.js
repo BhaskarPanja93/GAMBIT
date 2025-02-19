@@ -24,8 +24,8 @@ const CUSTOM_MESSAGE_TASKS = {
 function WSListener(data) {
     console.log(data)
     if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.REFRESH) location.reload()
-    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_REMOVED) waitForElementPresence("#script-friends", ()=>friendRemoved(data["FRIEND_DATA"]))
-    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_ADDED) waitForElementPresence("#script-friends", ()=>friendAdded(data["FRIEND_DATA"]))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_REMOVED) waitForElementPresence("#script-friends", ()=>friendRemoved(data))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_ADDED) waitForElementPresence("#script-friends", ()=>friendAdded(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.ADDED_PARTY_MEMBER) waitForElementPresence("#script-lobby", ()=>addedPartyMember(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.REMOVED_PARTY_MEMBER) waitForElementPresence("#script-lobby", ()=>removedPartyMember(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.DECREMENT_PARTY_MEMBER_INDEX) waitForElementPresence("#script-lobby", ()=>decrementPartyMemberIndex(data))

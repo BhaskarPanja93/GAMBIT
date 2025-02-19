@@ -52,7 +52,7 @@ class Team:
         botMMR = totalMMRNeeded / botsNeeded
         botParty = Party()
         for _ in range(botsNeeded):
-            botPlayer = Player(None, self.cachedElements)
+            botPlayer = Player(None)
             botPlayer.MMR = botMMR
             botParty.addPlayer(botPlayer)
         self.parties.append(botParty)
