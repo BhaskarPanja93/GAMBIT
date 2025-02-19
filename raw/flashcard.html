@@ -1,0 +1,245 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>lobby</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="Overall.css">
+
+</head>
+<body>
+<div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
+    <audio id="music-player" preload="none">
+        <source src="" type="audio/x-wav;codec=pcm">
+    </audio>
+
+    <!-- Animation div-->
+    <div class="bg-animation-box">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div id="particles-animation"></div>
+
+    <!-- Main Div -->
+    <div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden relative">
+
+
+        <!-- Content here -->
+        <div class="flex flex-col items-center justify-center h-full p-6">
+            <!-- Flashcard Container -->
+            <div class="flashcard w-[600px] h-[400px] relative cursor-pointer" onclick="flipCard()">
+                <div class="flashcard-inner">
+                    <!-- Front Side of the Flashcard -->
+                    <div class="flashcard-front">
+                        <p id="flashcard-question">What is the capital of France?</p>
+                    </div>
+                    <!-- Back Side of the Flashcard -->
+                    <div class="flashcard-back">
+                        <p id="flashcard-answer">Paris</p>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Navigation Buttons -->
+            <div class="flex space-x-4 mt-8">
+                <button onclick="prevCard()">Previous</button>
+                <button onclick="nextCard()">Next</button>
+            </div>
+        </div>
+
+        <script>
+            const flashcards = [
+                {question: "What is the capital of France?", answer: "Paris"},
+                {question: "What is 2 + 2?", answer: "4"},
+                {question: "What is the largest planet in the solar system?", answer: "Jupiter"},
+                {question: "What is the chemical symbol for water?", answer: "H₂O"},
+            ];
+
+            let currentCardIndex = 0;
+            let flipped = false;
+            const flashcardElement = document.querySelector(".flashcard");
+
+            function updateFlashcard(direction) {
+                flashcardElement.classList.add(direction === "next" ? "slide-out-left" : "slide-out-right");
+
+                setTimeout(() => {
+                    document.getElementById("flashcard-question").textContent = flashcards[currentCardIndex].question;
+                    document.getElementById("flashcard-answer").textContent = flashcards[currentCardIndex].answer;
+
+                    // Always reset flip state when switching to a new card
+                    flashcardElement.classList.remove("flipped");
+                    flipped = false;
+
+                    flashcardElement.classList.remove("slide-out-left", "slide-out-right");
+                    flashcardElement.classList.add("fade-in");
+                    setTimeout(() => flashcardElement.classList.remove("fade-in"), 300);
+                }, 300);
+            }
+
+            function nextCard() {
+                currentCardIndex = (currentCardIndex + 1) % flashcards.length;
+                updateFlashcard("next");
+            }
+
+            function prevCard() {
+                currentCardIndex = (currentCardIndex - 1 + flashcards.length) % flashcards.length;
+                updateFlashcard("prev");
+            }
+
+            function flipCard() {
+                flipped = !flipped;
+                flashcardElement.classList.toggle("flipped", flipped);
+            }
+
+            // Initialize first flashcard
+            updateFlashcard("next");
+        </script>
+
+        <style>
+            /* Flashcard styling */
+            .flashcard {
+                perspective: 1000px;
+                transition: transform 0.6s ease-in-out;
+            }
+
+            .flashcard-inner {
+                width: 100%;
+                height: 100%;
+                position: relative;
+                transition: transform 0.6s ease-in-out;
+                transform-style: preserve-3d;
+            }
+
+            .flashcard.flipped .flashcard-inner {
+                transform: rotateY(180deg);
+            }
+
+            .flashcard-front, .flashcard-back {
+                position: absolute;
+                width: 100%;
+                height: 100%;
+                backface-visibility: hidden;
+                display: flex;
+                align-items: center;
+                justify-content: center;
+                font-size: 24px;
+                font-weight: bold;
+                text-align: center;
+                border-radius: 1rem;
+                box-shadow: 0 8px 16px rgba(0, 0, 0, 0.3);
+            }
+
+            .flashcard-front {
+                background: #1f2937;
+                color: white;
+            }
+
+            .flashcard-back {
+                background: #374151;
+                color: white;
+                transform: rotateY(180deg);
+            }
+
+            /* Navigation buttons */
+            button {
+                background: #374151;
+                color: white;
+                padding: 10px 20px;
+                border-radius: 8px;
+                font-size: 18px;
+                cursor: pointer;
+                transition: background 0.2s;
+            }
+
+            button:hover {
+                background: #4b5563;
+            }
+
+            /* Animations */
+            .fade-in {
+                animation: fadeIn 0.3s ease-in-out;
+            }
+
+            .slide-out-left {
+                animation: slideOutLeft 0.3s ease-in-out;
+            }
+
+            .slide-out-right {
+                animation: slideOutRight 0.3s ease-in-out;
+            }
+
+            @keyframes fadeIn {
+                from {
+                    opacity: 0;
+                }
+                to {
+                    opacity: 1;
+                }
+            }
+
+            @keyframes slideOutLeft {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(-100px);
+                    opacity: 0;
+                }
+            }
+
+            @keyframes slideOutRight {
+                from {
+                    transform: translateX(0);
+                    opacity: 1;
+                }
+                to {
+                    transform: translateX(100px);
+                    opacity: 0;
+                }
+            }
+        </style>
+
+
+        <script src="Music.js"></script>
+        <script src="Trail.js"></script>
+
+
+        <script>
+            const friendList = document.getElementById("friend-list")
+            friendList.onmouseleave = function () {
+                friendList.classList.add("w-17")
+                friendList.classList.remove("w-60")
+                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
+                    e.children[1].classList.add("hidden")
+                })
+                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
+                    e.children[1].classList.add("hidden")
+                })
+            }
+            friendList.onmouseenter = function () {
+                friendList.classList.add("w-60")
+                friendList.classList.remove("w-17")
+                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
+                    e.children[1].classList.remove("hidden")
+                })
+                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
+                    e.children[1].classList.remove("hidden")
+                })
+            }
+        </script>
+    </div>
+
+</div>
+</body>
+</html>
