@@ -391,6 +391,7 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
     if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
         if purpose == "CHAT":
             form["TEXT"] = Template(form["TEXT"][:50]).render()
+            form["TO"] = Template(form["TO"]).render()
             if form["TO"] == ChatMessageNodes.PARTY:
                 if viewerObj.privateData.player.party is not None:
                     return viewerObj.privateData.player.party.receiveMessage(viewerObj.privateData.userName, form["TEXT"])
@@ -403,8 +404,9 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
                     else:
                         viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "You need to be in a team to send this message."))
             elif form["TO"] in viewerObj.privateData.player.friends:
-                if form["TO"] in activeUsernames: return activeUsernames[form["TO"]].sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, viewerObj.privateData.userName, form["TEXT"]))
-                else: return DBHolder.useDB().execute(f"INSERT INTO {Database.PENDING_CHATS.TABLE_NAME} VALUES (?, ?, ?, ?)", [form['TO'], viewerObj.privateData.userName, form['TEXT'], datetime.now()])
+                if form["TO"] in activeUsernames: activeUsernames[form["TO"]].sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, viewerObj.privateData.userName, form["TEXT"]))
+                else: DBHolder.useDB().execute(f"INSERT INTO {Database.PENDING_CHATS.TABLE_NAME} VALUES (?, ?, ?, ?)", [form['TO'], viewerObj.privateData.userName, form['TEXT'], datetime.now()])
+                return viewerObj.sendCustomMessage(CustomMessages.chatMessage(form["TO"], ChatMessageNodes.YOU, form["TEXT"]))
             else:
                 return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "Unable to send. Recipient unknown"))
         if purpose == "PARTY_INVITE":
