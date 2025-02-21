@@ -12,7 +12,10 @@ class PartyInvite:
         self.receiver = receiver
         self.type = Interactions.PARTY_INVITE if self.sender.userName==self.whoseParty.userName else Interactions.PARTY_JOIN_REQUEST
         self.ID = f"{sender.userName}-{'' if self.sender.userName==self.whoseParty.userName else ''}-{self.type}"
+        self.active = True
     def sendToReceiver(self):
-        self.receiver.viewer.sendCustomMessage(CustomMessages.newSocialInteraction(self))
+        if self.receiver.viewer and self.active: self.receiver.viewer.sendCustomMessage(CustomMessages.newSocialInteraction(self.sender.userName, self.ID, self.type))
     def destroy(self):
-        pass
+        if self.receiver.viewer and self.active:
+            self.receiver.viewer.sendCustomMessage(CustomMessages.deleteInteraction(self.ID))
+            self.active = False

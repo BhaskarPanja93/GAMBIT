@@ -11,9 +11,7 @@ class CustomMessageTask:
     CHAT = 'CHAT'
     PARTY_CODE = 'PARTY_CODE'
     TOGGLE_SOCIALS = 'TOGGLE_SOCIALS'
-    PARTY_JOIN_REQUEST = 'PARTY_JOIN_REQUEST'
-    PARTY_INVITE = 'PARTY_INVITE'
-    FRIEND_REQUEST = 'FRIEND_REQUEST'
+    NEW_INTERACTION = 'NEW_INTERACTION'
     DELETE_INTERACTION = 'DELETE_INTERACTION'
 
 
@@ -52,8 +50,8 @@ class CustomMessages:
     def toggleSocials(display:bool):
         return {"MESSAGE": CustomMessageTask.TOGGLE_SOCIALS, "DISPLAY": display}
     @staticmethod
-    def newSocialInteraction(invite):
-        return {"MESSAGE": CustomMessageTask.PARTY_JOIN_REQUEST, "FROM": invite.sender, "INTERACTION": invite.interactionID, "TYPE": invite.type}
+    def newSocialInteraction(username, interactionID, interactionType):
+        return {"MESSAGE": CustomMessageTask.NEW_INTERACTION, "USERNAME": username, "ID":interactionID, "TYPE":interactionType}
     @staticmethod
     def deleteInteraction(interactionID):
-        return {"MESSAGE": CustomMessageTask.DELETE_INTERACTION, "INTERACTION": interactionID}
+        return {"MESSAGE": CustomMessageTask.DELETE_INTERACTION, "ID":interactionID}

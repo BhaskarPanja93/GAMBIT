@@ -50,8 +50,8 @@ class Player:
         self.healthImpact = 0
 
         self.friends = []
-        self.incomingFriendRequests = []
-        self.outgoingFriendRequests = []
+        self.incomingFriendRequests = {}
+        self.outgoingFriendRequests = {}
 
         self.outgoingPartyJoinRequests = {}
         self.outgoingPartyInvites = {}
