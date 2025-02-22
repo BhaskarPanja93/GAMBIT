@@ -10,8 +10,6 @@ from flask import request, redirect, make_response
 from jinja2 import Template
 from argon2 import PasswordHasher
 
-from OtherClasses.FriendRequest import FriendRequest
-from OtherClasses.PartyInvite import PartyInvite
 from OtherClasses.PlayerStatus import PlayerStatus
 from OtherClasses.Question import Question
 from OtherClasses.ChatMessageNodes import ChatMessageNodes
@@ -24,12 +22,13 @@ from OtherClasses.CachedElements import CachedElements
 from OtherClasses.CoreValues import CoreValues
 from OtherClasses.DivIDs import DivID
 from OtherClasses.Pages import Pages
-from OtherClasses.Player import Player
+from OtherClasses.Social import Player, SocialInteraction
 from OtherClasses.Party import Party
 from OtherClasses.Routes import Routes
 from OtherClasses.CustomMessages import CustomMessages
 from OtherClasses.WSGIElements import WSGIRunner
 from OtherClasses.DBHolder import DBHolder
+from OtherClasses.Interactions import Interactions
 
 
 from customisedLogs import CustomisedLogs
@@ -116,6 +115,7 @@ def renderAuthForms(viewerObj: DynamicWebsite.Viewer):
 
 def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
     return renderLobby(viewerObj)
+    updateStatus(viewerObj.privateData.player, PlayerStatus.ONLINE)
     __renderAuthStructure(viewerObj)
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
@@ -138,13 +138,9 @@ def renderChatStructure(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.ChatFull):
         viewerObj.privateData.renderElement(FileNames.HTML.ChatFull)
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.ChatFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.chatBox, UpdateMethods.update)
-        sendPendingChats(viewerObj)
-
-
-def sendPendingChats(viewerObj: DynamicWebsite.Viewer):
-    pendingChats = DBHolder.useDB().execute(f"SELECT * FROM {Database.PENDING_CHATS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=? ORDER BY {Database.PENDING_CHATS.SENT_AT}", [viewerObj.privateData.userName])
-    DBHolder.useDB().execute(f"DELETE FROM {Database.PENDING_CHATS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=?", [viewerObj.privateData.userName])
-    for chat in pendingChats: viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, chat[Database.PENDING_CHATS.SENDER].decode(), chat[Database.PENDING_CHATS.TEXT]))
+        pendingChats = DBHolder.useDB().execute(f"SELECT * FROM {Database.PENDING_CHATS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=? ORDER BY {Database.PENDING_CHATS.SENT_AT}", [viewerObj.privateData.userName])
+        DBHolder.useDB().execute(f"DELETE FROM {Database.PENDING_CHATS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=?", [viewerObj.privateData.userName])
+        for chat in pendingChats: viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, chat[Database.PENDING_CHATS.SENDER].decode(), chat[Database.PENDING_CHATS.TEXT]))
 
 
 ##############################################################################################################################
@@ -163,18 +159,15 @@ def showSocials(viewerObj: DynamicWebsite.Viewer):
     if not viewerObj.privateData.isElementRendered(FileNames.HTML.SocialsStructure):
         viewerObj.privateData.renderElement(FileNames.HTML.SocialsStructure)
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.SocialsStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.friendsStructure, UpdateMethods.update)
-        for friendInfo in DBHolder.useDB().execute(f"""SELECT
-            CASE
-                WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
-                WHEN {Database.FRIEND.P2} = ? THEN {Database.FRIEND.P1}
-            END AS result
-            FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userName, viewerObj.privateData.userName]):
+        for friendInfo in [{"result":b"SleepBot"}]+DBHolder.useDB().execute(f"""SELECT CASE
+            WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
+            WHEN {Database.FRIEND.P2} = ? THEN {Database.FRIEND.P1}
+            END AS result FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userName, viewerObj.privateData.userName]):
             friendUsername = friendInfo["result"].decode()
             if friendUsername in activeUsernames:
                 player = activeUsernames[friendUsername].privateData.player
             else:
-                player = Player(None)
-                player.userName = friendUsername
+                player = Player(None, friendUsername)
                 player.setStatus(PlayerStatus.OFFLINE)
             viewerObj.sendCustomMessage(CustomMessages.friendAdded(player))
     viewerObj.sendCustomMessage(CustomMessages.toggleSocials(True))
@@ -197,6 +190,7 @@ def __renderLobbyStructure(viewerObj: DynamicWebsite.Viewer):
 
 def renderLobby(viewerObj: DynamicWebsite.Viewer):
     __renderLobbyStructure(viewerObj)
+    updateStatus(viewerObj.privateData.player, PlayerStatus.LOBBY)
     renderBaseNavbar(viewerObj)
     renderLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
@@ -216,7 +210,6 @@ def __renderQuizStructure(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderQuiz(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.privateData.player.setStatus(PlayerStatus.IN_QUIZ)
     viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
     renderQuizNavbar(viewerObj)
 
@@ -239,6 +232,7 @@ def renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderNotes(viewerObj: DynamicWebsite.Viewer):
+    updateStatus(viewerObj.privateData.player, PlayerStatus.NOTES)
     viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.POST_AUTH))
 
 
@@ -261,37 +255,8 @@ def renderPreAuthUniversal(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderFirstPage(viewerObj: DynamicWebsite.Viewer, isAuthenticated: bool):
-    renderPreAuthUniversal(viewerObj)
-    renderMusicTray(viewerObj)
     if isAuthenticated:
-        if viewerObj.privateData.player is None:
-            viewerObj.privateData.player = Player(viewerObj)
-            for friend in DBHolder.useDB().execute(f"""SELECT
-                CASE
-                    WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
-                    WHEN {Database.FRIEND.P2} = ? THEN {Database.FRIEND.P1}
-                END AS result
-                FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userName, viewerObj.privateData.userName]):
-                viewerObj.privateData.player.friends.append(friend["result"].decode())
-            for incomingFriendReq in DBHolder.useDB().execute(f"SELECT {Database.PENDING_FRIEND_REQUESTS.SENDER} FROM {Database.PENDING_FRIEND_REQUESTS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=?", [viewerObj.privateData.userName]):
-                senderUsername = incomingFriendReq[Database.PENDING_FRIEND_REQUESTS.SENDER].decode()
-                if senderUsername in activeUsernames:
-                    player = activeUsernames[senderUsername].privateData.player
-                else:
-                    player = Player(None)
-                    player.userName = senderUsername
-                friendRequest = FriendRequest(player, viewerObj.privateData.player)
-                viewerObj.privateData.player.incomingFriendRequests[senderUsername] = friendRequest
-                friendRequest.sendToReceiver()
-            for outgoingFriendReq in DBHolder.useDB().execute(f"SELECT {Database.PENDING_FRIEND_REQUESTS.RECEIVER} FROM {Database.PENDING_FRIEND_REQUESTS.TABLE_NAME} WHERE {Database.PENDING_CHATS.SENDER}=?", [viewerObj.privateData.userName]):
-                receiverUsername = outgoingFriendReq[Database.PENDING_FRIEND_REQUESTS.RECEIVER].decode()
-                if receiverUsername in activeUsernames:
-                    player = activeUsernames[receiverUsername].privateData.player
-                else:
-                    player = Player(None)
-                    player.userName = receiverUsername
-                viewerObj.privateData.player.outgoingFriendRequests[receiverUsername] = FriendRequest(viewerObj.privateData.player, player)
-        viewerObj.privateData.player.setStatus(PlayerStatus.ONLINE)
+        setPlayerDetails(viewerObj)
         if viewerObj.privateData.expectedPostAuthPage == Pages.LOBBY: renderLobby(viewerObj)
         elif viewerObj.privateData.expectedPostAuthPage == Pages.QUIZ: renderQuiz(viewerObj)
         #elif viewerObj.privateData.expectedPostAuthPage == Pages.marketPlace: renderMarketPlace(viewerObj)
@@ -370,6 +335,7 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
                 if oldParty.partyID != newParty.partyID:
                     viewerObj.privateData.player.party = newParty
                     if oldParty: oldParty.removePlayer(viewerObj.privateData.player, True)
+                    cleanupPartyInvites(viewerObj)
                     return newParty.addPlayer(viewerObj.privateData.player)
         if purpose == "READY":
             return viewerObj.privateData.player.party.playerReady(viewerObj.privateData.player)
@@ -390,7 +356,7 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             return renderLobby(viewerObj)
     if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
         if purpose == "CHAT":
-            form["TEXT"] = Template(form["TEXT"][:50]).render()
+            form["TEXT"] = Template(form["TEXT"][:100]).render()
             form["TO"] = Template(form["TO"]).render()
             if form["TO"] == ChatMessageNodes.PARTY:
                 if viewerObj.privateData.player.party is not None:
@@ -412,45 +378,70 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
         if purpose == "PARTY_INVITE":
             friendUsername = Template(form["USERNAME"]).render()
             if friendUsername in viewerObj.privateData.player.friends and friendUsername in activeUsernames: # person valid
-                if friendUsername in viewerObj.privateData.player.outgoingPartyInvites:
+                if activeUsernames[friendUsername].privateData.player.party.partyID == viewerObj.privateData.player.party.partyID: # Same party
+                    return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"{friendUsername} already in your party"))
+                if friendUsername in viewerObj.privateData.player.outgoingPartyInvites: # Already invited
                     return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"{friendUsername} already has a pending invite"))
-                if viewerObj.privateData.userName in activeUsernames[friendUsername].privateData.player.outgoingPartyJoinRequests:
-                    if viewerObj.privateData.player.party.addPlayer(activeUsernames[friendUsername].privateData.player) is not None:
-                        pass #TODO: idk
-                else:
-                    if not viewerObj.privateData.player.party: return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"You are not in a party"))
+                if friendUsername in viewerObj.privateData.player.incomingPartyJoinRequests:
+                    invite = viewerObj.privateData.player.incomingPartyJoinRequests[friendUsername]
+                    del viewerObj.privateData.player.incomingPartyJoinRequests[friendUsername]
+                    invite.destroy()
+                    if viewerObj.privateData.userName in activeUsernames[friendUsername].privateData.player.outgoingPartyJoinRequests:
+                        del activeUsernames[friendUsername].privateData.player.outgoingPartyJoinRequests[viewerObj.privateData.userName]
+                    if form.get("ACTION") is None or form.get("ACTION")==True:
+                        oldParty = activeUsernames[friendUsername].privateData.player.party
+                        activeUsernames[friendUsername].privateData.player.party = viewerObj.privateData.player.party
+                        if oldParty: oldParty.removePlayer(activeUsernames[friendUsername].privateData.player, True)
+                        cleanupPartyInvites(viewerObj)
+                        return viewerObj.privateData.player.party.addPlayer(activeUsernames[friendUsername].privateData.player)
                     else:
-                        invite = PartyInvite(viewerObj.privateData.player.party.partyID, viewerObj.privateData.player, viewerObj.privateData.player, activeUsernames[friendUsername].privateData.player)
+                        return
+                else:
+                    if not viewerObj.privateData.player.party:
+                        return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"Unable to invite {friendUsername}. You are not in a party"))
+                    if len(viewerObj.privateData.player.party.players) < viewerObj.privateData.player.party.maxPlayers:
+                        invite = SocialInteraction(Interactions.PARTY_INVITE, viewerObj.privateData.player, activeUsernames[friendUsername].privateData.player, viewerObj.privateData.player.party)
                         viewerObj.privateData.player.outgoingPartyInvites[friendUsername] = invite
                         activeUsernames[friendUsername].privateData.player.incomingPartyInvites[viewerObj.privateData.userName] = invite
-                        invite.sendToReceiver()
-                """
-                if sender.userName not in self.receivedJoinRequests.values():
-                    for player in self.players:
-                        if player.viewer is not None:
-                            interactionID = RandomisedString().AlphaNumeric(10,10)
-                            self.receivedJoinRequests[interactionID] = PartyInvite(interactionID, self, sender, receiver)
-                            player.viewer.sendCustomMessage(CustomMessages.receivePartyJoinRequest(interactionID, sender))
-                else:
-                    return sender.viewer.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "Already requested to join the party"))
-            """
+                        return invite.sendToReceiver()
+                    else:
+                        return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"Unable to invite {friendUsername}. Party full"))
             else:
-                return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "Unable to send. Recipient unknown"))
-
+                return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"Unable to invite {friendUsername}. Recipient unknown"))
         if purpose == "PARTY_JOIN_REQUEST":
             friendUsername = Template(form["USERNAME"]).render()
-            if friendUsername in viewerObj.privateData.player.friends and friendUsername in activeUsernames:
-                pass
+            if friendUsername in viewerObj.privateData.player.friends and friendUsername in activeUsernames: # person valid
+                if activeUsernames[friendUsername].privateData.player.party.partyID == viewerObj.privateData.player.party.partyID: # Same party
+                    return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"{friendUsername} already in your party"))
+                if friendUsername in viewerObj.privateData.player.outgoingPartyJoinRequests: # Already requested
+                    return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"{friendUsername} already has a pending request"))
+                if friendUsername in viewerObj.privateData.player.incomingPartyInvites:
+                    invite = viewerObj.privateData.player.incomingPartyInvites[friendUsername]
+                    del viewerObj.privateData.player.incomingPartyInvites[friendUsername]
+                    invite.destroy()
+                    if viewerObj.privateData.userName in activeUsernames[friendUsername].privateData.player.outgoingPartyInvites:
+                        del activeUsernames[friendUsername].privateData.player.outgoingPartyInvites[viewerObj.privateData.userName]
+                    if form.get("ACTION") is None or form.get("ACTION")==True:
+                        oldParty = viewerObj.privateData.player.party
+                        viewerObj.privateData.player.party = activeUsernames[friendUsername].privateData.player.party
+                        if oldParty: oldParty.removePlayer(viewerObj.privateData.player, True)
+                        cleanupPartyInvites(viewerObj)
+                        return activeUsernames[friendUsername].privateData.player.party.addPlayer(viewerObj.privateData.player)
+                    else:
+                        return
+                else:
+                    if not activeUsernames[friendUsername].privateData.player.party:
+                        return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"Unable to request {friendUsername}. Player not in a party"))
+                    if len(activeUsernames[friendUsername].privateData.player.party.players) < activeUsernames[friendUsername].privateData.player.party.maxPlayers:
+                        invite = SocialInteraction(Interactions.PARTY_JOIN_REQUEST, viewerObj.privateData.player, activeUsernames[friendUsername].privateData.player, activeUsernames[friendUsername].privateData.player.party)
+                        viewerObj.privateData.player.outgoingPartyJoinRequests[friendUsername] = invite
+                        activeUsernames[friendUsername].privateData.player.incomingPartyJoinRequests[viewerObj.privateData.userName] = invite
+                        return invite.sendToReceiver()
+                    else:
+                        return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"Unable to invite {friendUsername}. Party disallowed"))
             else:
-                return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, "Unable to send. Recipient unknown"))
-        if purpose == "FRIEND_REQUEST_RESPONSE":
-            username = form["USERNAME"]
-            if username in viewerObj.privateData.player.incomingFriendRequests:
-                if form["ACTION"]: # Accepted
-                    registerBiDirectionFriend(viewerObj.privateData.userName, username, True)
-                else: # Rejected
-                    cleanupFriendRequest(viewerObj.privateData.userName, username, True)
-                    DBHolder.useDB().execute(f"DELETE FROM {Database.PENDING_FRIEND_REQUESTS.TABLE_NAME} WHERE {Database.PENDING_FRIEND_REQUESTS.SENDER}=? AND {Database.PENDING_FRIEND_REQUESTS.RECEIVER}=?", [username, viewerObj.privateData.userName])
+                return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"Unable to invite {friendUsername}. Recipient unknown"))
+
         if purpose == "FRIEND_REQUEST":
             friendUsername = Template(form["USERNAME"]).render()
             if friendUsername == viewerObj.privateData.userName:
@@ -462,21 +453,20 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             if friendUsername in viewerObj.privateData.player.outgoingFriendRequests: # Already sent a request
                 return viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"{friendUsername} didn't accept your last request"))
             if friendUsername in viewerObj.privateData.player.incomingFriendRequests: # Already received a request
-                friendRequest = viewerObj.privateData.player.incomingFriendRequests[friendUsername]
-                del viewerObj.privateData.player.incomingFriendRequests[friendUsername]
-                friendRequest.destroy()
-                return registerBiDirectionFriend(viewerObj.privateData.userName, friendUsername, True)
+                if form.get("ACTION") is None or form.get("ACTION")==True:
+                    return registerBiDirectionFriend(viewerObj.privateData.userName, friendUsername, True)
+                else:
+                    cleanupFriendRequest(viewerObj.privateData.userName, friendUsername, True)
             else: # First interaction
                 DBHolder.useDB().execute(f"INSERT INTO {Database.PENDING_FRIEND_REQUESTS.TABLE_NAME} VALUES (?, ?)", [friendUsername, viewerObj.privateData.userName])
                 if friendUsername in activeUsernames:
-                    friendReq = FriendRequest(viewerObj.privateData.player, activeUsernames[friendUsername].privateData.player)
+                    friendReq = SocialInteraction(Interactions.FRIEND_REQUEST, viewerObj.privateData.player, activeUsernames[friendUsername].privateData.player)
                     friendReq.sendToReceiver()
                     activeUsernames[friendUsername].privateData.player.incomingFriendRequests[viewerObj.privateData.userName] = friendReq
                     activeUsernames[friendUsername].sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"{viewerObj.privateData.userName} sent friend request"))
                 else:
-                    player = Player(None)
-                    player.userName = friendUsername
-                    friendReq = FriendRequest(viewerObj.privateData.player, player)
+                    player = Player(None, friendUsername)
+                    friendReq = SocialInteraction(Interactions.FRIEND_REQUEST, viewerObj.privateData.player, player)
                 viewerObj.privateData.player.outgoingFriendRequests[friendUsername] = friendReq
                 viewerObj.sendCustomMessage(CustomMessages.chatMessage(ChatMessageNodes.YOU, ChatMessageNodes.SYSTEM, f"Sent Friend Request to {friendUsername}"))
                 return
@@ -489,12 +479,16 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
                 if username in activeUsernames:
                     activeUsernames[username].privateData.player.friends.remove(viewerObj.privateData.userName)
                     activeUsernames[username].sendCustomMessage(CustomMessages.friendRemoved(viewerObj.privateData.userName))
+                    return
 
 
     if viewerObj.privateData.currentPage() in [Pages.LOBBY, Pages.POST_AUTH, Pages.NOTES, Pages.MARKETPLACE]:
         if purpose == "LOGOUT":
             freeActiveUsername(viewerObj.privateData.userName)
             logoutDevice(viewerObj)
+            viewerObj.privateData.player.removePFP()
+            updateStatus(viewerObj.privateData.player, PlayerStatus.OFFLINE)
+            cleanupPartyInvites(viewerObj)
             return viewerObj.sendCustomMessage(CustomMessages.refreshBrowser())
 
     return rejectForm(viewerObj, form, "Unknown Purpose")
@@ -519,6 +513,9 @@ def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Left: ", viewerObj.viewerID)
     if viewerObj.privateData.player is not None and viewerObj.privateData.player.party is not None:
         viewerObj.privateData.player.party.removePlayer(viewerObj.privateData.player, False)
+    viewerObj.privateData.player.removePFP()
+    updateStatus(viewerObj.privateData.player, PlayerStatus.OFFLINE)
+    cleanupPartyInvites(viewerObj)
     freeActiveUsername(viewerObj.privateData.userName)
 
 
@@ -526,6 +523,8 @@ def newVisitorCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Joined: ", viewerObj.viewerID)
     setPrivateDetails(viewerObj)
     accepted, reason = autoLogin(viewerObj)
+    renderPreAuthUniversal(viewerObj)
+    renderMusicTray(viewerObj)
     renderFirstPage(viewerObj, accepted)
 
 
@@ -588,6 +587,35 @@ def setPrivateDetails(viewerObj: DynamicWebsite.Viewer):
     viewerObj.privateData.baseURI = request.path.split("?")[0]
 
 
+def setPlayerDetails(viewerObj: DynamicWebsite.Viewer):
+    if viewerObj.privateData.player is None:
+        viewerObj.privateData.player = Player(viewerObj)
+        viewerObj.privateData.player.setPFP()
+
+        for friend in DBHolder.useDB().execute(f"""SELECT CASE
+                WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
+                WHEN {Database.FRIEND.P2} = ? THEN {Database.FRIEND.P1}
+                END AS result FROM {Database.FRIEND.TABLE_NAME}""", [viewerObj.privateData.userName, viewerObj.privateData.userName]):
+            viewerObj.privateData.player.friends.append(friend["result"].decode())
+        for incomingFriendReq in DBHolder.useDB().execute(f"SELECT {Database.PENDING_FRIEND_REQUESTS.SENDER} FROM {Database.PENDING_FRIEND_REQUESTS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=?", [viewerObj.privateData.userName]):
+            senderUsername = incomingFriendReq[Database.PENDING_FRIEND_REQUESTS.SENDER].decode()
+            if senderUsername in activeUsernames:
+                player = activeUsernames[senderUsername].privateData.player
+            else:
+                player = Player(None, senderUsername)
+            friendRequest = SocialInteraction(Interactions.FRIEND_REQUEST, player, viewerObj.privateData.player)
+            viewerObj.privateData.player.incomingFriendRequests[senderUsername] = friendRequest
+            friendRequest.sendToReceiver()
+        for outgoingFriendReq in DBHolder.useDB().execute(f"SELECT {Database.PENDING_FRIEND_REQUESTS.RECEIVER} FROM {Database.PENDING_FRIEND_REQUESTS.TABLE_NAME} WHERE {Database.PENDING_CHATS.SENDER}=?", [viewerObj.privateData.userName]):
+            receiverUsername = outgoingFriendReq[Database.PENDING_FRIEND_REQUESTS.RECEIVER].decode()
+            if receiverUsername in activeUsernames:
+                player = activeUsernames[receiverUsername].privateData.player
+            else:
+                player = Player(None, receiverUsername)
+            viewerObj.privateData.player.outgoingFriendRequests[receiverUsername] = SocialInteraction(Interactions.FRIEND_REQUEST, viewerObj.privateData.player, player)
+        updateStatus(viewerObj.privateData.player, PlayerStatus.ONLINE)
+
+
 def createUser(viewerObj: DynamicWebsite.Viewer, username:str, password:str, personName:str, email:str):
     username = Template(username).render()
     if len(username) > 9:
@@ -642,12 +670,12 @@ def autoLogin(viewerObj: DynamicWebsite.Viewer):
 
 
 def freezeViewerTillUsernameRelease(viewerObj:DynamicWebsite.Viewer, username):
-    print(viewerObj.cookie.instanceID)
+    print(viewerObj.cookie.instanceID, viewerObj.cookie.viewerID, username, "freezer")
     if username in activeUsernames:
         viewerObj.updateHTML("Please close any other instances/tabs to use GAMBIT on this tab.", DivID.root, DynamicWebsite.UpdateMethods.update)
         while username in activeUsernames and viewerObj.currentState != DynamicWebsite.VIEWER_STATES.DEAD:
-            print(username, "FROZEN LOGIN", )
-            sleep(2)
+            print(username, "FROZEN LOGIN")
+            sleep(1)
         if viewerObj.currentState == DynamicWebsite.VIEWER_STATES.DEAD: return False, "Disconnected"
     print("Activated username:", username)
     activeUsernames[username] = viewerObj
@@ -680,6 +708,38 @@ def createParty(player):
 ##############################################################################################################################
 # FRIENDS
 
+
+def updateStatus(player:Player, newStatus):
+    if player.state != newStatus:
+        player.setStatus(newStatus)
+        for friendUsername in player.friends:
+            if friendUsername in activeUsernames:
+                activeUsernames[friendUsername].sendCustomMessage(CustomMessages.friendStateChanged(player))
+
+
+def cleanupPartyInvites(viewerObj: DynamicWebsite.Viewer):
+    for friendUsername in list(viewerObj.privateData.player.outgoingPartyInvites):
+        viewerObj.privateData.player.outgoingPartyInvites[friendUsername].destroy()
+        del viewerObj.privateData.player.outgoingPartyInvites[friendUsername]
+        if friendUsername in activeUsernames and viewerObj.privateData.userName in activeUsernames[friendUsername].privateData.player.incomingPartyInvites:
+            del activeUsernames[friendUsername].privateData.player.incomingPartyInvites[viewerObj.privateData.userName]
+    for friendUsername in list(viewerObj.privateData.player.outgoingPartyJoinRequests):
+        viewerObj.privateData.player.outgoingPartyJoinRequests[friendUsername].destroy()
+        del viewerObj.privateData.player.outgoingPartyJoinRequests[friendUsername]
+        if friendUsername in activeUsernames and viewerObj.privateData.userName in activeUsernames[friendUsername].privateData.player.incomingPartyInvites:
+            del activeUsernames[friendUsername].privateData.player.incomingPartyInvites[viewerObj.privateData.userName]
+    for friendUsername in list(viewerObj.privateData.player.incomingPartyInvites):
+        viewerObj.privateData.player.incomingPartyInvites[friendUsername].destroy()
+        del viewerObj.privateData.player.incomingPartyInvites[friendUsername]
+        if friendUsername in activeUsernames and viewerObj.privateData.userName in activeUsernames[friendUsername].privateData.player.outgoingPartyInvites:
+            del activeUsernames[friendUsername].privateData.player.outgoingPartyInvites[viewerObj.privateData.userName]
+    for friendUsername in list(viewerObj.privateData.player.outgoingPartyInvites):
+        viewerObj.privateData.player.outgoingPartyInvites[friendUsername].destroy()
+        del viewerObj.privateData.player.outgoingPartyInvites[friendUsername]
+        if friendUsername in activeUsernames and viewerObj.privateData.userName in activeUsernames[friendUsername].privateData.player.outgoingPartyJoinRequests:
+            del activeUsernames[friendUsername].privateData.player.outgoingPartyJoinRequests[viewerObj.privateData.userName]
+
+
 def cleanupFriendRequest(username1, username2, flip=False):
     if username1 in activeUsernames:
         sender = activeUsernames[username1]
@@ -705,8 +765,7 @@ def registerBiDirectionFriend(username1, username2, flip=False):
         if username2 in activeUsernames:
             other = activeUsernames[username2].privateData.player
         else:
-            other = Player(None)
-            other.userName = username2
+            other = Player(None, username2)
         receiver.sendCustomMessage(CustomMessages.friendAdded(other))
     if flip:
         DBHolder.useDB().execute(f"INSERT INTO {Database.FRIEND.TABLE_NAME} VALUES (?, ?)", [username1, username2])
@@ -721,7 +780,8 @@ def registerBiDirectionFriend(username1, username2, flip=False):
 def onQuizEnd(quiz:Quiz):
     sortedPlayers = sorted(quiz.match.teamA.allPlayers()+quiz.match.teamB.allPlayers(), reverse=True)
     for toSend in sortedPlayers:
-        if toSend.viewer:
+        if toSend.viewer is not None:
+            updateStatus(toSend, PlayerStatus.RESULT)
             renderBaseNavbar(toSend.viewer)
             removeQuizNavbar(toSend.viewer)
             toSend.viewer.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizScoreBoard)).render(resultWord="VICTORY" if toSend.party.team.winner else "DEFEAT"), DivID.changingPage, DynamicWebsite.UpdateMethods.update)
@@ -741,6 +801,7 @@ def onMatchFound(match: Match):
     for party in match.teamB.parties+match.teamA.parties:
         for player in party.players:
             if player.viewer is not None:
+                updateStatus(player, PlayerStatus.QUIZ)
                 player.score = 0
                 player.correct = 0
                 player.incorrect = 0

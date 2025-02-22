@@ -1,5 +1,7 @@
 KEEP 1080p RESOLUTION !!
 
+
+
 [R]
 ✓ Friend Request Box and Party Invite Box
 ✓ Display auth pages error
@@ -19,8 +21,11 @@ x Third row not hovering ( arrows )
 
 
 [B]
-x Friend and Invites mechanism
 
+
+
+✓ Remove all invites and join requests when player disconnects or joins a party
+✓ Friend and Invites mechanism
 ✓ Auth errors added
 ✓ Join party using party code
 ✓ Auth forms don't reset incase error

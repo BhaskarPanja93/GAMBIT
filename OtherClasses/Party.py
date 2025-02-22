@@ -7,7 +7,7 @@ from randomisedString import RandomisedString
 from OtherClasses.ChatMessageNodes import ChatMessageNodes
 from OtherClasses.CustomMessages import CustomMessages
 from OtherClasses.DivIDs import DivID
-from OtherClasses.Player import Player
+from OtherClasses.Social import Player
 from internal.dynamicWebsite import DynamicWebsite
 
 

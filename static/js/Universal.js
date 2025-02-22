@@ -5,6 +5,7 @@ const CUSTOM_MESSAGE_TASKS = {
     REFRESH: "REFRESH",
     FRIEND_REMOVED: 'FRIEND_REMOVED',
     FRIEND_ADDED: 'FRIEND_ADDED',
+    FRIEND_STATE_CHANGED: 'FRIEND_STATE_CHANGED',
     PAGE_CHANGED: 'PAGE_CHANGED',
     ADDED_PARTY_MEMBER: 'ADDED_PARTY_MEMBER',
     REMOVED_PARTY_MEMBER: 'REMOVED_PARTY_MEMBER',
@@ -33,6 +34,7 @@ function WSListener(data) {
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.TOGGLE_SOCIALS) waitForElementPresence("#script-friends", ()=>toggleSocials(data["DISPLAY"]))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.NEW_INTERACTION) waitForElementPresence("#script-friends", ()=>newInteraction(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.DELETE_INTERACTION) waitForElementPresence("#script-friends", ()=>deleteInteraction(data))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_STATE_CHANGED) waitForElementPresence("#script-friends", ()=>friendStateChanged(data))
 }
 
 

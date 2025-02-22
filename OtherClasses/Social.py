@@ -3,12 +3,16 @@ from random import randrange
 
 from randomisedString import RandomisedString
 
+from OtherClasses.CustomMessages import CustomMessages
+from OtherClasses.Interactions import Interactions
+from OtherClasses.PlayerStatus import PlayerStatus
 from OtherClasses.Question import Question
 from internal.dynamicWebsite import DynamicWebsite
 
 
 class Player:
-    def __init__(self, viewerObj:DynamicWebsite.Viewer|None):
+    def __init__(self, viewerObj:DynamicWebsite.Viewer|None=None, username:str|None=None):
+        self.OFFLINE_PFP = "https://a0.anyrgb.com/pngimg/438/1372/unfriended-unknown-user-profile-online-and-offline-avatar-person-user-youtube-logos-information.png"
         self.PFP_LIST = [
             "https://i.pinimg.com/564x/05/0b/4b/050b4b5204d7b8f92bea7da09a819a3e.jpg",
             "https://i.pinimg.com/236x/ed/1d/92/ed1d9261080d42ef548d6dfe44df5c03.jpg",
@@ -34,9 +38,9 @@ class Player:
         ]
         self.party = None
         self.viewer = viewerObj
-        self.PFP = choice(self.PFP_LIST)
-        self.userName = (viewerObj.privateData.userName if viewerObj is not None else "BOT_"+RandomisedString().AlphaNumeric(2, 2))
-        self.state = "Unknown"
+        self.PFP = self.OFFLINE_PFP
+        self.userName = viewerObj.privateData.userName if viewerObj is not None else username if username else "BOT_"+RandomisedString().AlphaNumeric(2, 2)
+        self.state = PlayerStatus.OFFLINE
         self.level = 1
         self.currentXP = 0
         self.maxXP = 0
@@ -53,10 +57,11 @@ class Player:
         self.incomingFriendRequests = {}
         self.outgoingFriendRequests = {}
 
-        self.outgoingPartyJoinRequests = {}
-        self.outgoingPartyInvites = {}
         self.incomingPartyJoinRequests = {}
+        self.outgoingPartyJoinRequests = {}
+
         self.incomingPartyInvites = {}
+        self.outgoingPartyInvites = {}
 
     def fetchFromDB(self):
         pass
@@ -64,6 +69,10 @@ class Player:
         self.state = status
     def getStatus(self):
         return self.state
+    def setPFP(self):
+        self.PFP = choice(self.PFP_LIST)
+    def removePFP(self):
+        self.PFP = self.OFFLINE_PFP
     def displayPFP(self):
         return self.PFP
     def displayUserName(self):
@@ -78,3 +87,19 @@ class Player:
         return self.score > other.score
     def __lt__(self, other):
         return self.score < other.score
+
+
+class SocialInteraction:
+    def __init__(self, interactionType:Interactions, sender:Player, receiver:Player, party=None):
+        self.sender = sender
+        self.receiver = receiver
+        self.interactionType = interactionType
+        self.ID = f"{sender.userName}-{self.interactionType}"
+        self.party = party
+        self.active = True
+    def sendToReceiver(self):
+        if self.receiver.viewer and self.active: self.receiver.viewer.sendCustomMessage(CustomMessages.newSocialInteraction(self.sender.userName, self.ID, self.interactionType))
+    def destroy(self):
+        if self.receiver.viewer and self.active:
+            self.receiver.viewer.sendCustomMessage(CustomMessages.deleteInteraction(self.ID))
+            self.active = False

@@ -11,7 +11,7 @@ from OtherClasses.Database import Database
 from OtherClasses.DivIDs import DivID
 from OtherClasses.FileNames import FileNames
 from OtherClasses.Matchmaker import Match
-from OtherClasses.Player import Player
+from OtherClasses.Social import Player
 from OtherClasses.Question import Question
 from internal.dynamicWebsite import DynamicWebsite
 

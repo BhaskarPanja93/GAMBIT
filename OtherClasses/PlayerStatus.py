@@ -1,5 +1,7 @@
 class PlayerStatus:
     ONLINE = "Online"
     OFFLINE = "Offline"
-    IDLE = "Idle"
-    IN_QUIZ = "In-Quiz"
+    NOTES = "Notes"
+    LOBBY = "Lobby"
+    QUIZ = "Quiz"
+    RESULT = "Result"

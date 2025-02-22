@@ -2,6 +2,7 @@ class CustomMessageTask:
     REFRESH = "REFRESH"
     FRIEND_REMOVED = 'FRIEND_REMOVED'
     FRIEND_ADDED = 'FRIEND_ADDED'
+    FRIEND_STATE_CHANGED = 'FRIEND_STATE_CHANGED'
     PAGE_CHANGED = 'PAGE_CHANGED'
     ADDED_PARTY_MEMBER = 'ADDED_PARTY_MEMBER'
     REMOVED_PARTY_MEMBER = 'REMOVED_PARTY_MEMBER'
@@ -28,6 +29,9 @@ class CustomMessages:
     @staticmethod
     def friendAdded(player):
         return {"MESSAGE": CustomMessageTask.FRIEND_ADDED, "USERNAME": player.displayUserName(), "PFP": player.displayPFP(), "STATE": player.displayState()}
+    @staticmethod
+    def friendStateChanged(player):
+        return {"MESSAGE": CustomMessageTask.FRIEND_STATE_CHANGED, "USERNAME": player.displayUserName(), "PFP": player.displayPFP(), "STATE": player.displayState()}
     @staticmethod
     def addedPartyMember(index, player):
         return {"MESSAGE": CustomMessageTask.ADDED_PARTY_MEMBER, "INDEX": index, "PFP":player.displayPFP(), "USERNAME": player.displayUserName(), "LEVEL": player.displayLevel(), "RANK": player.displayRank()}

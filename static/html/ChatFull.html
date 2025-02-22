@@ -123,10 +123,8 @@
             waitForElementPresence("#chat-sending-to", (element)=>{
                 element.innerText = `[${unmodifiedReceiver}]:`
             })
-            console.log(selectedReceiver)
             return true
         }
-        console.log("error", selectedReceiver, capitalisedReceiver, unmodifiedReceiver)
         return false
     }
 

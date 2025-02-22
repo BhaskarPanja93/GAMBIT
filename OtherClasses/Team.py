@@ -7,7 +7,7 @@ from OtherClasses.CachedElements import CachedElements
 from OtherClasses.ChatMessageNodes import ChatMessageNodes
 from OtherClasses.CustomMessages import CustomMessages
 from OtherClasses.Party import Party
-from OtherClasses.Player import Player
+from OtherClasses.Social import Player
 
 
 class Team:
@@ -52,7 +52,7 @@ class Team:
         botMMR = totalMMRNeeded / botsNeeded
         botParty = Party()
         for _ in range(botsNeeded):
-            botPlayer = Player(None)
+            botPlayer = Player()
             botPlayer.MMR = botMMR
             botParty.addPlayer(botPlayer)
         self.parties.append(botParty)
