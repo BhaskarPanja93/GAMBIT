@@ -12,7 +12,7 @@ from internal.dynamicWebsite import DynamicWebsite
 
 class Player:
     def __init__(self, viewerObj:DynamicWebsite.Viewer|None=None, username:str|None=None):
-        self.OFFLINE_PFP = "https://a0.anyrgb.com/pngimg/438/1372/unfriended-unknown-user-profile-online-and-offline-avatar-person-user-youtube-logos-information.png"
+        self.OFFLINE_PFP = "https://i.pinimg.com/736x/9f/64/75/9f6475a845d14fb7647e2fdfd1407976.jpg"
         self.PFP_LIST = [
             "https://i.pinimg.com/564x/05/0b/4b/050b4b5204d7b8f92bea7da09a819a3e.jpg",
             "https://i.pinimg.com/236x/ed/1d/92/ed1d9261080d42ef548d6dfe44df5c03.jpg",

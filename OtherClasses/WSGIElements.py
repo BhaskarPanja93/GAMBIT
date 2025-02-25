@@ -7,8 +7,8 @@ from gevent.pywsgi import WSGIHandler, WSGIServer
 
 class WSGIRunner:
     def __init__(self, app: Flask, port: int, route: str, logger: CustomisedLogs):
-        cert_file = r'C:\cert\fullchain1.pem'
-        key_file = r'C:\cert\privkey1.pem'
+        cert_file = r'C:\cert\fullchain.pem'
+        key_file = r'C:\cert\privkey.pem'
         if Path(cert_file).is_file() and Path(key_file).is_file() and False:
             print(f"https://127.0.0.1:{port}{route}")
             WSGIRunner.LogAttached(('0.0.0.0', port,), app, logger, certfile=cert_file, keyfile=key_file).serve_forever()

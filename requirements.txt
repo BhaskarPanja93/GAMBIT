@@ -1,12 +1,9 @@
 gevent
 Flask
 randomisedString
-Werkzeug
 customisedLogs
 pooledMySQL
 autoReRun
 pydub
 Flask-Cors
-argon2-cffi
-argon2-cffi-bindings
 Jinja2

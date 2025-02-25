@@ -596,7 +596,7 @@ def setPlayerDetails(viewerObj: DynamicWebsite.Viewer):
                 WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
                 WHEN {Database.FRIEND.P2} = ? THEN {Database.FRIEND.P1}
                 END AS result FROM {Database.FRIEND.TABLE_NAME}""", [viewerObj.privateData.userName, viewerObj.privateData.userName]):
-            viewerObj.privateData.player.friends.append(friend["result"].decode())
+            if friend is not None: viewerObj.privateData.player.friends.append(friend["result"].decode())
         for incomingFriendReq in DBHolder.useDB().execute(f"SELECT {Database.PENDING_FRIEND_REQUESTS.SENDER} FROM {Database.PENDING_FRIEND_REQUESTS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=?", [viewerObj.privateData.userName]):
             senderUsername = incomingFriendReq[Database.PENDING_FRIEND_REQUESTS.SENDER].decode()
             if senderUsername in activeUsernames:
@@ -890,6 +890,5 @@ def handle_404(error):
 
 
 #Thread(target=testMatchmaking).start()
-
 
 WSGIRunner(dynamicWebsiteApp.baseApp, webPort, Routes.webHomePage, logger)
