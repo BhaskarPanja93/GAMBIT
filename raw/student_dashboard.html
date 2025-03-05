@@ -25,7 +25,7 @@
                     <div class="flex items-center space-x-2 mb-8">
                         <img src="/api/placeholder/50/50" alt="Student Avatar" class="rounded-full w-12 h-12">
                         <div>
-                            <h2 class="font-bold text-lg">John Doe</h2>
+                            <h2 class="font-bold text-lg">Bhaskar</h2>
                             <p class="text-sm text-gray-400">Computer Science</p>
                         </div>
                     </div>
@@ -109,7 +109,7 @@
 
                     <!-- Performance Chart -->
                     <div class="col-span-full bg-gray-800 p-4 rounded-xl shadow-lg h-64">
-                        <h3 class="text-lg font-semibold mb-2">Academic Performance</h3>
+                        <h3 class="text-lg font-semibold mb-2">Rank MMR</h3>
                         <canvas id="performanceChart"></canvas>
                     </div>
 
@@ -210,10 +210,10 @@
     new Chart(ctx, {
         type: 'line',
         data: {
-            labels: ['Sem 1', 'Sem 2', 'Sem 3', 'Sem 4', 'Sem 5'],
+            labels: ['Jan 2023', 'Jun 2023', 'Dec 2023', 'May 2024', 'Oct 2024', 'Mar 2025', 'Aug 2025', 'Feb 2026', 'Jul 2026', 'Nov 2026'],
             datasets: [{
-                label: 'GPA',
-                data: [3.2, 3.5, 3.7, 3.9, 4.0],
+                label: 'Rank MMR',
+                data: [928, 999, 940, 950, 923,928, 999, 940, 950, 923],
                 borderColor: 'rgb(75, 192, 192)',
                 tension: 0.1
             }]
@@ -224,7 +224,7 @@
             scales: {
                 y: {
                     beginAtZero: false,
-                    max: 4.2
+                    max: 1000
                 }
             }
         }
