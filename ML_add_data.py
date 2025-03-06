@@ -29,7 +29,7 @@ class Answer:
     def __init__(self, person: Person, question: Question):
         self.person = person
         self.question = question
-        self.timeTaken = max(0, min(30, (int(15 * (1 - person.hiddenMMR) + 15 * question.toughness))))
+        self.timeTaken = max(0, min(10, (int(5 * (1 - person.hiddenMMR) +  question.toughness))))
         person.goodMood += secrets.choice(range(-1, 2))*secrets.randbelow(100000) / 100000
         self.optionSelected = secrets.choice(range(1, 5)) if (secrets.randbelow(1000000) / 1000000) > (self.success_probability()) else question.correctOption
 

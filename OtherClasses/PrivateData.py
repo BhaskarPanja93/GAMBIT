@@ -6,7 +6,7 @@ from OtherClasses.Pages import Pages
 class PrivateData:
     def __init__(self):
         self.activeSince = datetime.now()
-        self.expectedPostAuthPage = Pages.LOBBY
+        self.expectedPostAuthPage = None
         self.baseURI = ""
         self.userName = ""
         self.player = None

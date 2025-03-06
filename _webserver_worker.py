@@ -35,7 +35,6 @@ from customisedLogs import CustomisedLogs
 from internal.dynamicWebsite import DynamicWebsite
 
 
-
 ##############################################################################################################################
 # NAVBAR
 
@@ -82,7 +81,7 @@ def removeQuizNavbar(viewerObj: DynamicWebsite.Viewer):
 
 
 def __renderAuthStructure(viewerObj: DynamicWebsite.Viewer):
-    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.POST_AUTH]:
+    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.HOMEPAGE]:
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.AuthStructure)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Ghost3d)).render(baseURI=viewerObj.privateData.baseURI), DivID.ghost3d, UpdateMethods.update)
 
@@ -113,21 +112,18 @@ def renderAuthForms(viewerObj: DynamicWebsite.Viewer):
         sendRegisterForm(viewerObj)
 
 
-def renderAuthPost(viewerObj: DynamicWebsite.Viewer):
-    return renderLobby(viewerObj)
+def renderHomePage(viewerObj: DynamicWebsite.Viewer):
+    #return renderLobby(viewerObj)
     updateStatus(viewerObj.privateData.player, PlayerStatus.ONLINE)
     __renderAuthStructure(viewerObj)
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     renderBaseNavbar(viewerObj)
     showSocials(viewerObj)
-    if viewerObj.privateData.currentPage() != Pages.POST_AUTH:
-        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.AuthPost)).render(baseURI=viewerObj.privateData.baseURI, player=viewerObj.privateData.player), DivID.auth, UpdateMethods.update)
-        viewerObj.privateData.newPage(Pages.POST_AUTH)
-        viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.POST_AUTH))
-        sleep(3)
-        if viewerObj.privateData.currentPage() == Pages.POST_AUTH:
-            renderLobby(viewerObj)
+    if viewerObj.privateData.currentPage() != Pages.HOMEPAGE:
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Homepage)).render(baseURI=viewerObj.privateData.baseURI, player=viewerObj.privateData.player), DivID.auth, UpdateMethods.update)
+        viewerObj.privateData.newPage(Pages.HOMEPAGE)
+        viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.HOMEPAGE))
 
 
 ##############################################################################################################################
@@ -162,7 +158,7 @@ def showSocials(viewerObj: DynamicWebsite.Viewer):
         for friendInfo in [{"result":b"SleepBot"}]+DBHolder.useDB().execute(f"""SELECT CASE
             WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
             WHEN {Database.FRIEND.P2} = ? THEN {Database.FRIEND.P1}
-            END AS result FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userName, viewerObj.privateData.userName]):
+            END AS result FROM {Database.FRIEND.TABLE_NAME}""", [viewerObj.privateData.userName, viewerObj.privateData.userName]):
             if friendInfo and friendInfo["result"]:
                 friendUsername = friendInfo["result"].decode()
                 if friendUsername in activeUsernames:
@@ -176,6 +172,21 @@ def showSocials(viewerObj: DynamicWebsite.Viewer):
 
 def hideSocials(viewerObj: DynamicWebsite.Viewer):
     viewerObj.sendCustomMessage(CustomMessages.toggleSocials(False))
+
+
+##############################################################################################################################
+# NAVGRID PAGES
+
+
+def renderNavGrid(viewerObj: DynamicWebsite.Viewer):
+    if viewerObj.privateData.currentPage() != Pages.NAV_GRID:
+        viewerObj.privateData.newPage(Pages.NAV_GRID)
+        viewerObj.updateHTML(cachedElements.fetchStaticHTML(FileNames.HTML.NavgridStructure), DivID.changingPage, UpdateMethods.update)
+        updateStatus(viewerObj.privateData.player, PlayerStatus.ONLINE)
+        renderBaseNavbar(viewerObj)
+        removeLobbyNavbar(viewerObj)
+        removeQuizNavbar(viewerObj)
+        showSocials(viewerObj)
 
 
 ##############################################################################################################################
@@ -234,7 +245,7 @@ def renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
 
 def renderNotes(viewerObj: DynamicWebsite.Viewer):
     updateStatus(viewerObj.privateData.player, PlayerStatus.NOTES)
-    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.POST_AUTH))
+    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.HOMEPAGE))
 
 
 ##############################################################################################################################
@@ -261,7 +272,7 @@ def renderFirstPage(viewerObj: DynamicWebsite.Viewer, isAuthenticated: bool):
         if viewerObj.privateData.expectedPostAuthPage == Pages.LOBBY: renderLobby(viewerObj)
         elif viewerObj.privateData.expectedPostAuthPage == Pages.QUIZ: renderQuiz(viewerObj)
         #elif viewerObj.privateData.expectedPostAuthPage == Pages.marketPlace: renderMarketPlace(viewerObj)
-        else: renderAuthPost(viewerObj)
+        else: renderHomePage(viewerObj)
         renderChatStructure(viewerObj)
     else:
         renderAuthPre(viewerObj)
@@ -349,10 +360,13 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
                 question.selectedOption = question.fetchOption(form.get("OPTION"))
                 question.timeTaken = time() - question.startTime
                 return
-    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.POST_AUTH]:
+    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.HOMEPAGE]:
         if purpose == "RENDER_HOMEPAGE":
-            return renderAuthPost(viewerObj)
-    if viewerObj.privateData.currentPage() == Pages.POST_AUTH:
+            return renderHomePage(viewerObj)
+    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.NAV_GRID]:
+        if purpose == "RENDER_NAVGRID":
+            return renderNavGrid(viewerObj)
+    if viewerObj.privateData.currentPage() == Pages.HOMEPAGE:
         if purpose == "RENDER_LOBBY":
             return renderLobby(viewerObj)
     if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
@@ -483,7 +497,7 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
                     return
 
 
-    if viewerObj.privateData.currentPage() in [Pages.LOBBY, Pages.POST_AUTH, Pages.NOTES, Pages.MARKETPLACE]:
+    if viewerObj.privateData.currentPage() in [Pages.LOBBY, Pages.HOMEPAGE, Pages.NOTES, Pages.MARKETPLACE]:
         if purpose == "LOGOUT":
             freeActiveUsername(viewerObj.privateData.userName)
             logoutDevice(viewerObj)

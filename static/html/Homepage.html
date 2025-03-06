@@ -1,12 +1,9 @@
 <div class=" w-full text-3xl sm:text-5xl font-extrabold mb-10 flex gap-x-4">
-    Welcome <div class="text-purple-500 color-change"> {{player.displayUserName()}} </div>
+    Hi <div class="text-purple-500 color-change"> {{player.displayUserName()}} </div>
 </div>
 <div class="w-full bg-gray-800 rounded-lg shadow-lg p-4">
     <div class="flex items-center">
-        <img
-                src={{player.displayPFP()}}
-                        alt="User Avatar"
-        class="w-16 h-16 rounded-full border-2 border-indigo-500">
+        <img src={{player.displayPFP()}} alt="User Avatar" class="w-16 h-16 rounded-full border-2 border-indigo-500">
         <div class="ml-4">
             <h2 class="text-lg font-bold text-white">{{player.displayUserName()}}</h2>
             <p class="text-sm text-gray-400">{{player.displayLevel()}}</p>
@@ -24,4 +21,12 @@
             <div class="bg-indigo-500 h-2.5 rounded-full" style="width: 80%;"></div>
         </div>
     </div>
+    <button id="navgrid-page" class="bg-purple-600 text-xl hover:bg-purple-700 text-white font-bold py-2 px-6 h-12 w-full md:w-48 rounded-md shadow-lg order-2 hover:scale-105 transition-transform duration-300">
+        EXPLORE
+    </button>
+    <script>
+        waitForElementPresence("#navgrid-page", (button)=>{
+            button.onclick = () => sendCustomMessage({PURPOSE: "RENDER_NAVGRID"})
+        })
+    </script>
 </div>
