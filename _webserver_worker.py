@@ -179,8 +179,8 @@ def hideSocials(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderNavGrid(viewerObj: DynamicWebsite.Viewer):
-    if viewerObj.privateData.currentPage() != Pages.NAV_GRID:
-        viewerObj.privateData.newPage(Pages.NAV_GRID)
+    if viewerObj.privateData.currentPage() != Pages.NAVGRID:
+        viewerObj.privateData.newPage(Pages.NAVGRID)
         viewerObj.updateHTML(cachedElements.fetchStaticHTML(FileNames.HTML.NavgridStructure), DivID.changingPage, UpdateMethods.update)
         updateStatus(viewerObj.privateData.player, PlayerStatus.ONLINE)
         renderBaseNavbar(viewerObj)
@@ -363,12 +363,28 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
     if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.HOMEPAGE]:
         if purpose == "RENDER_HOMEPAGE":
             return renderHomePage(viewerObj)
-    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.NAV_GRID]:
+    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.NAVGRID]:
         if purpose == "RENDER_NAVGRID":
             return renderNavGrid(viewerObj)
-    if viewerObj.privateData.currentPage() == Pages.HOMEPAGE:
+    if viewerObj.privateData.currentPage() == Pages.NAVGRID:
         if purpose == "RENDER_LOBBY":
             return renderLobby(viewerObj)
+    if viewerObj.privateData.currentPage() == Pages.NAVGRID:
+        if purpose == "RENDER_NOTES":
+            return renderNotes(viewerObj)
+    if viewerObj.privateData.currentPage() == Pages.NAVGRID:
+        if purpose == "RENDER_DASHBOARD":
+            return renderDashboard(viewerObj)
+    if viewerObj.privateData.currentPage() == Pages.NAVGRID:
+        if purpose == "RENDER_FLASHCARD":
+            return renderFlashcards(viewerObj)
+    if viewerObj.privateData.currentPage() == Pages.NAVGRID:
+        if purpose == "RENDER_MARKETPLACE":
+            return renderMarketplace(viewerObj)
+    if viewerObj.privateData.currentPage() == Pages.NAVGRID:
+        if purpose == "RENDER_CHATBOT":
+            return renderChatbot(viewerObj)
+
     if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
         if purpose == "CHAT":
             form["TEXT"] = Template(form["TEXT"][:100]).render()
