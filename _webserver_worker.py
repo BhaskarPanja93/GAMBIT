@@ -163,13 +163,14 @@ def showSocials(viewerObj: DynamicWebsite.Viewer):
             WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
             WHEN {Database.FRIEND.P2} = ? THEN {Database.FRIEND.P1}
             END AS result FROM {Database.FRIEND.TABLE_NAME};""", [viewerObj.privateData.userName, viewerObj.privateData.userName]):
-            friendUsername = friendInfo["result"].decode()
-            if friendUsername in activeUsernames:
-                player = activeUsernames[friendUsername].privateData.player
-            else:
-                player = Player(None, friendUsername)
-                player.setStatus(PlayerStatus.OFFLINE)
-            viewerObj.sendCustomMessage(CustomMessages.friendAdded(player))
+            if friendInfo and friendInfo["result"]:
+                friendUsername = friendInfo["result"].decode()
+                if friendUsername in activeUsernames:
+                    player = activeUsernames[friendUsername].privateData.player
+                else:
+                    player = Player(None, friendUsername)
+                    player.setStatus(PlayerStatus.OFFLINE)
+                viewerObj.sendCustomMessage(CustomMessages.friendAdded(player))
     viewerObj.sendCustomMessage(CustomMessages.toggleSocials(True))
 
 
@@ -591,12 +592,11 @@ def setPlayerDetails(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.player is None:
         viewerObj.privateData.player = Player(viewerObj)
         viewerObj.privateData.player.setPFP()
-
         for friend in DBHolder.useDB().execute(f"""SELECT CASE
                 WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
                 WHEN {Database.FRIEND.P2} = ? THEN {Database.FRIEND.P1}
                 END AS result FROM {Database.FRIEND.TABLE_NAME}""", [viewerObj.privateData.userName, viewerObj.privateData.userName]):
-            if friend is not None: viewerObj.privateData.player.friends.append(friend["result"].decode())
+            if friend and friend["result"]: viewerObj.privateData.player.friends.append(friend["result"].decode())
         for incomingFriendReq in DBHolder.useDB().execute(f"SELECT {Database.PENDING_FRIEND_REQUESTS.SENDER} FROM {Database.PENDING_FRIEND_REQUESTS.TABLE_NAME} WHERE {Database.PENDING_CHATS.RECEIVER}=?", [viewerObj.privateData.userName]):
             senderUsername = incomingFriendReq[Database.PENDING_FRIEND_REQUESTS.SENDER].decode()
             if senderUsername in activeUsernames:
@@ -607,6 +607,7 @@ def setPlayerDetails(viewerObj: DynamicWebsite.Viewer):
             viewerObj.privateData.player.incomingFriendRequests[senderUsername] = friendRequest
             friendRequest.sendToReceiver()
         for outgoingFriendReq in DBHolder.useDB().execute(f"SELECT {Database.PENDING_FRIEND_REQUESTS.RECEIVER} FROM {Database.PENDING_FRIEND_REQUESTS.TABLE_NAME} WHERE {Database.PENDING_CHATS.SENDER}=?", [viewerObj.privateData.userName]):
+            if not outgoingFriendReq[Database.PENDING_FRIEND_REQUESTS.RECEIVER]: continue
             receiverUsername = outgoingFriendReq[Database.PENDING_FRIEND_REQUESTS.RECEIVER].decode()
             if receiverUsername in activeUsernames:
                 player = activeUsernames[receiverUsername].privateData.player
