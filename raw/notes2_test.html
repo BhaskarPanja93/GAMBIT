@@ -1,0 +1,850 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Notes Repository</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link rel="stylesheet" href="Overall.css">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body>
+<div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
+    <audio id="music-player" preload="none">
+        <source src="" type="audio/x-wav;codec=pcm">
+    </audio>
+
+    <!-- Animation div-->
+    <div class="bg-animation-box">
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+        <div></div>
+    </div>
+    <div id="particles-animation"></div>
+
+    <!-- Main Div -->
+    <div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden relative">
+
+        <!-- Notes Repository Content -->
+        <div class="flex h-full">
+            <!-- Friend List (kinda sorted according to online offline) -->
+            <div id="friend-list"
+                 class="bg-gray-900 h-full transition-all duration-300 w-16 hover:w-60 overflow-hidden z-10 group">
+                <div class="h-full flex flex-col">
+                    <!-- User Profile (profile changed according to current one)-->
+                    <div class="flex items-center p-4 border-b border-gray-800">
+                        <img src="/api/placeholder/40/40" alt="Profile" class="rounded-full min-w-10"/>
+                        <div class="ml-3 opacity-0 group-hover:opacity-100 transition-opacity duration-200">
+                            <h3 class="text-white font-medium">Bhaskar</h3>
+                            <p class="text-gray-400 text-sm">Computer Science</p>
+                        </div>
+                    </div>
+
+                    <!-- Friends Online -->
+                    <div class="p-4 border-b border-gray-800">
+                        <h3 class="text-gray-400 text-xs uppercase mb-2 truncate">Online Friends</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center cursor-pointer">
+                                <div class="relative min-w-8">
+                                    <img src="/api/placeholder/32/32" alt="Friend" class="rounded-full"/>
+                                    <div class="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full"></div>
+                                </div>
+                                <span class="ml-3 text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Sarah Johnson</span>
+                            </div>
+                            <div class="flex items-center cursor-pointer">
+                                <div class="relative min-w-8">
+                                    <img src="/api/placeholder/32/32" alt="Friend" class="rounded-full"/>
+                                    <div class="absolute bottom-0 right-0 w-2 h-2 bg-green-500 rounded-full"></div>
+                                </div>
+                                <span class="ml-3 text-gray-300 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Mike Chen</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Friends Offline -->
+                    <div class="p-4">
+                        <h3 class="text-gray-400 text-xs uppercase mb-2 truncate">Offline Friends</h3>
+                        <div class="space-y-2">
+                            <div class="flex items-center cursor-pointer">
+                                <div class="relative min-w-8">
+                                    <img src="/api/placeholder/32/32" alt="Friend" class="rounded-full opacity-50"/>
+                                    <div class="absolute bottom-0 right-0 w-2 h-2 bg-gray-500 rounded-full"></div>
+                                </div>
+                                <span class="ml-3 text-gray-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">James Wilson</span>
+                            </div>
+                            <div class="flex items-center cursor-pointer">
+                                <div class="relative min-w-8">
+                                    <img src="/api/placeholder/32/32" alt="Friend" class="rounded-full opacity-50"/>
+                                    <div class="absolute bottom-0 right-0 w-2 h-2 bg-gray-500 rounded-full"></div>
+                                </div>
+                                <span class="ml-3 text-gray-400 text-sm opacity-0 group-hover:opacity-100 transition-opacity duration-200 whitespace-nowrap">Emily Davis</span>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Main Content Area -->
+            <div class="flex-1 flex flex-col h-full overflow-hidden">
+                <!-- Header -->
+                <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-900 bg-opacity-50">
+                    <h1 class="text-xl font-bold">Notes Repository</h1>
+                    <div class="flex space-x-2">
+                        <button id="create-note-btn"
+                                class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center">
+                            <i class="fas fa-plus mr-2"></i>
+                            <span class="hidden sm:inline">Create Note</span>
+                        </button>
+                        <button id="upload-note-btn"
+                                class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm flex items-center">
+                            <i class="fas fa-upload mr-2"></i>
+                            <span class="hidden sm:inline">Upload</span>
+                        </button>
+                    </div>
+                </div>
+
+                <!-- Filters and Search -->
+                <div class="p-4 bg-gray-800 bg-opacity-40 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
+                    <div class="flex space-x-2 w-full sm:w-auto">
+                        <button class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full text-xs filter-btn active"
+                                data-filter="all">All Notes
+                        </button>
+                        <button class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full text-xs filter-btn"
+                                data-filter="my">My Notes
+                        </button>
+                        <button class="bg-gray-700 hover:bg-gray-600 px-3 py-1 rounded-full text-xs filter-btn"
+                                data-filter="public">Public
+                        </button>
+                    </div>
+                    <div class="relative w-full sm:w-64">
+                        <input type="text" id="search-input" placeholder="Search notes..."
+                               class="bg-gray-700 text-white w-full py-2 pl-10 pr-4 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500 text-sm"/>
+                        <i class="fas fa-search absolute left-3 top-3 text-gray-400"></i>
+                    </div>
+                </div>
+
+                <!-- Main Content Container with Grid and Note View -->
+                <div id="main-content-container" class="flex-1 relative overflow-hidden">
+                    <!-- Notes Grid (Default View) -->
+                    <div id="notes-grid-view"
+                         class="absolute inset-0 overflow-y-auto p-4 transition-transform duration-300 transform translate-x-0">
+                        <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
+
+                            <!-- Example of different kinds of notes -->
+                            <!-- Example of different kinds of notes -->
+                            <!-- Example of different kinds of notes -->
+
+                            <!-- Note Card 1 - My Note (Private) -->
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-700 flex flex-col note-card"
+                                 data-note-id="1" data-owner="you" data-visibility="private">
+                                <div class="p-4 flex-1">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 class="font-bold text-white">Data Structures Final Review</h3>
+                                            <p class="text-gray-400 text-xs">Created: March 4, 2025</p>
+                                        </div>
+                                        <div class="flex items-center">
+                                        <span class="bg-red-900 text-red-300 text-xs px-2 py-1 rounded-full flex items-center">
+                                            <i class="fas fa-lock text-xs mr-1"></i> Private
+                                        </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-300 text-sm mb-3 line-clamp-3">Comprehensive review of stacks,
+                                        queues, trees, and graph algorithms. Includes practice problems and solutions
+                                        from previous exams.</p>
+                                    <div class="flex items-center text-xs text-gray-400">
+                                        <i class="fas fa-file-alt mr-1"></i>
+                                        <span>5 pages</span>
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-download mr-1"></i>
+                                        <span>24 downloads</span>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-900 p-3 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <img src="/api/placeholder/24/24" alt="You" class="rounded-full"/>
+                                        <span class="ml-2 text-sm text-gray-300">You</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-400 hover:text-blue-400 view-note-btn">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-blue-400">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-red-400">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Note Card 2 - Public Note -->
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-700 flex flex-col note-card"
+                                 data-note-id="2" data-owner="sarah" data-visibility="public">
+                                <div class="p-4 flex-1">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 class="font-bold text-white">Machine Learning Fundamentals</h3>
+                                            <p class="text-gray-400 text-xs">Created: March 1, 2025</p>
+                                        </div>
+                                        <div class="flex items-center">
+                                        <span class="bg-green-900 text-green-300 text-xs px-2 py-1 rounded-full flex items-center">
+                                            <i class="fas fa-globe text-xs mr-1"></i> Public
+                                        </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-300 text-sm mb-3 line-clamp-3">Introduction to ML algorithms
+                                        including linear regression, neural networks, and decision trees with Python
+                                        examples.</p>
+                                    <div class="flex items-center text-xs text-gray-400">
+                                        <i class="fas fa-file-alt mr-1"></i>
+                                        <span>12 pages</span>
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-download mr-1"></i>
+                                        <span>132 downloads</span>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-900 p-3 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <img src="/api/placeholder/24/24" alt="Sarah" class="rounded-full"/>
+                                        <span class="ml-2 text-sm text-gray-300">Sarah Johnson</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-400 hover:text-blue-400 view-note-btn">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-blue-400">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Note Card 3 -->
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-700 flex flex-col note-card"
+                                 data-note-id="3" data-owner="mike" data-visibility="public">
+                                <div class="p-4 flex-1">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 class="font-bold text-white">Advanced Web Development</h3>
+                                            <p class="text-gray-400 text-xs">Created: February 25, 2025</p>
+                                        </div>
+                                        <div class="flex items-center">
+                                        <span class="bg-green-900 text-green-300 text-xs px-2 py-1 rounded-full flex items-center">
+                                            <i class="fas fa-globe text-xs mr-1"></i> Public
+                                        </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-300 text-sm mb-3 line-clamp-3">React hooks, state management
+                                        with Redux, and modern CSS frameworks like Tailwind. Includes real-world project
+                                        examples.</p>
+                                    <div class="flex items-center text-xs text-gray-400">
+                                        <i class="fas fa-file-alt mr-1"></i>
+                                        <span>8 pages</span>
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-download mr-1"></i>
+                                        <span>87 downloads</span>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-900 p-3 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <img src="/api/placeholder/24/24" alt="Mike" class="rounded-full"/>
+                                        <span class="ml-2 text-sm text-gray-300">Mike Chen</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-400 hover:text-blue-400 view-note-btn">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-blue-400">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Note Card 4 -->
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-700 flex flex-col note-card"
+                                 data-note-id="4" data-owner="you" data-visibility="private">
+                                <div class="p-4 flex-1">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 class="font-bold text-white">Networking Fundamentals</h3>
+                                            <p class="text-gray-400 text-xs">Created: February 20, 2025</p>
+                                        </div>
+                                        <div class="flex items-center">
+                                        <span class="bg-red-900 text-red-300 text-xs px-2 py-1 rounded-full flex items-center">
+                                            <i class="fas fa-lock text-xs mr-1"></i> Private
+                                        </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-300 text-sm mb-3 line-clamp-3">Overview of OSI model, TCP/IP,
+                                        routing protocols, and network security principles with practical examples.</p>
+                                    <div class="flex items-center text-xs text-gray-400">
+                                        <i class="fas fa-file-alt mr-1"></i>
+                                        <span>10 pages</span>
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-download mr-1"></i>
+                                        <span>15 downloads</span>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-900 p-3 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <img src="/api/placeholder/24/24" alt="You" class="rounded-full"/>
+                                        <span class="ml-2 text-sm text-gray-300">You</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-400 hover:text-blue-400 view-note-btn">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-blue-400">
+                                            <i class="fas fa-edit"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-red-400">
+                                            <i class="fas fa-trash"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Note Card 5 -->
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-700 flex flex-col note-card"
+                                 data-note-id="5" data-owner="emily" data-visibility="public">
+                                <div class="p-4 flex-1">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 class="font-bold text-white">Database Systems</h3>
+                                            <p class="text-gray-400 text-xs">Created: February 18, 2025</p>
+                                        </div>
+                                        <div class="flex items-center">
+                                        <span class="bg-green-900 text-green-300 text-xs px-2 py-1 rounded-full flex items-center">
+                                            <i class="fas fa-globe text-xs mr-1"></i> Public
+                                        </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-300 text-sm mb-3 line-clamp-3">SQL fundamentals, database
+                                        design, normalization, and NoSQL alternatives. Includes performance optimization
+                                        tips.</p>
+                                    <div class="flex items-center text-xs text-gray-400">
+                                        <i class="fas fa-file-alt mr-1"></i>
+                                        <span>15 pages</span>
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-download mr-1"></i>
+                                        <span>94 downloads</span>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-900 p-3 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <img src="/api/placeholder/24/24" alt="Emily" class="rounded-full"/>
+                                        <span class="ml-2 text-sm text-gray-300">Emily Davis</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-400 hover:text-blue-400 view-note-btn">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-blue-400">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+
+                            <!-- Note Card 6 -->
+                            <div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-700 flex flex-col note-card"
+                                 data-note-id="6" data-owner="james" data-visibility="public">
+                                <div class="p-4 flex-1">
+                                    <div class="flex justify-between items-start mb-3">
+                                        <div>
+                                            <h3 class="font-bold text-white">Artificial Intelligence</h3>
+                                            <p class="text-gray-400 text-xs">Created: February 15, 2025</p>
+                                        </div>
+                                        <div class="flex items-center">
+                                        <span class="bg-green-900 text-green-300 text-xs px-2 py-1 rounded-full flex items-center">
+                                            <i class="fas fa-globe text-xs mr-1"></i> Public
+                                        </span>
+                                        </div>
+                                    </div>
+                                    <p class="text-gray-300 text-sm mb-3 line-clamp-3">Introduction to AI concepts,
+                                        natural language processing, computer vision, and ethical considerations in AI
+                                        development.</p>
+                                    <div class="flex items-center text-xs text-gray-400">
+                                        <i class="fas fa-file-alt mr-1"></i>
+                                        <span>20 pages</span>
+                                        <span class="mx-2">•</span>
+                                        <i class="fas fa-download mr-1"></i>
+                                        <span>156 downloads</span>
+                                    </div>
+                                </div>
+                                <div class="bg-gray-900 p-3 flex justify-between items-center">
+                                    <div class="flex items-center">
+                                        <img src="/api/placeholder/24/24" alt="James" class="rounded-full"/>
+                                        <span class="ml-2 text-sm text-gray-300">James Wilson</span>
+                                    </div>
+                                    <div class="flex space-x-2">
+                                        <button class="text-gray-400 hover:text-blue-400 view-note-btn">
+                                            <i class="fas fa-eye"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-blue-400">
+                                            <i class="fas fa-download"></i>
+                                        </button>
+                                        <button class="text-gray-400 hover:text-yellow-400">
+                                            <i class="fas fa-star"></i>
+                                        </button>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Note View (Hidden by default) -->
+                    <div id="note-viewer"
+                         class="absolute inset-0 bg-gray-900 overflow-hidden transform translate-x-full transition-transform duration-300">
+                        <!-- Note Viewer Header -->
+                        <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-800">
+                            <div class="flex items-center">
+                                <button id="back-to-grid" class="mr-3 text-gray-400 hover:text-white">
+                                    <i class="fas fa-arrow-left"></i>
+                                </button>
+                                <h2 id="note-title" class="text-lg font-bold">Note Title</h2>
+                            </div>
+                            <div class="flex space-x-3">
+                                <button id="toggle-study-tools"
+                                        class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg text-sm flex items-center">
+                                    <i class="fas fa-tools mr-2"></i>
+                                    <span class="hidden sm:inline">Study Tools</span>
+                                </button>
+                                <button id="add-bookmark"
+                                        class="bg-yellow-600 hover:bg-yellow-700 text-white px-3 py-1 rounded-lg text-sm flex items-center">
+                                    <i class="fas fa-bookmark mr-2"></i>
+                                    <span class="hidden sm:inline">Bookmark</span>
+                                </button>
+                                <button id="export-note"
+                                        class="bg-green-600 hover:bg-green-700 text-white px-3 py-1 rounded-lg text-sm flex items-center">
+                                    <i class="fas fa-file-export mr-2"></i>
+                                    <span class="hidden sm:inline">Export</span>
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Note Content Area with Study Tools Sidebar -->
+                        <div class="flex h-full overflow-hidden" style="height: calc(100% - 69px);">
+                            <!-- Note Content -->
+                            <div id="note-content-wrapper" class="flex-1 overflow-y-auto transition-all duration-300">
+                                <div id="note-content" class="p-6 bg-gray-900">
+                                    <!-- Content will be loaded dynamically -->
+                                </div>
+                            </div>
+
+                            <!-- Study Tools Sidebar (Hidden by default) -->
+                            <div id="study-tools"
+                                 class="w-0 bg-gray-800 border-l border-gray-700 overflow-y-auto transition-all duration-300">
+                                <div class="p-4">
+                                    <h3 class="text-lg font-bold mb-4">Study Tools</h3>
+
+                                    <!-- Flashcards [Can apply GPT models here to create flashcards] -->
+                                    <div class="mb-6">
+                                        <h4 class="text-md font-semibold mb-2 flex items-center">
+                                            <i class="fas fa-clone mr-2 text-indigo-400"></i>Flashcards
+                                        </h4>
+                                        <div class="space-y-2">
+                                            <button class="w-full bg-gray-700 hover:bg-gray-600 text-white text-left px-3 py-2 rounded-lg text-sm">
+                                                Generate Flashcards
+                                            </button>
+                                            <div class="text-xs text-gray-400">Auto-creates flashcards from your note
+                                                content
+                                            </div>
+                                        </div>
+                                    </div>
+
+                                    <!-- Notes and Highlighting -->
+                                    <div class="mb-6">
+                                        <h4 class="text-md font-semibold mb-2 flex items-center">
+                                            <i class="fas fa-highlighter mr-2 text-yellow-400"></i>Highlights
+                                        </h4>
+                                        <div class="flex space-x-2 mb-2">
+                                            <button class="w-8 h-8 rounded-full bg-yellow-200 opacity-70 hover:opacity-100"></button>
+                                            <button class="w-8 h-8 rounded-full bg-green-200 opacity-70 hover:opacity-100"></button>
+                                            <button class="w-8 h-8 rounded-full bg-blue-200 opacity-70 hover:opacity-100"></button>
+                                            <button class="w-8 h-8 rounded-full bg-pink-200 opacity-70 hover:opacity-100"></button>
+                                        </div>
+                                        <div class="text-xs text-gray-400">Select text, then choose a highlight color
+                                        </div>
+                                    </div>
+
+                                    <!-- Annotations -->
+                                    <div class="mb-6">
+                                        <h4 class="text-md font-semibold mb-2 flex items-center">
+                                            <i class="fas fa-comment-alt mr-2 text-blue-400"></i>Annotations
+                                        </h4>
+                                        <button class="w-full bg-gray-700 hover:bg-gray-600 text-white text-left px-3 py-2 rounded-lg text-sm">
+                                            Add Note
+                                        </button>
+                                        <div class="mt-2 text-xs text-gray-400">Click anywhere in the document to add an
+                                            annotation
+                                        </div>
+                                    </div>
+
+                                    <!-- Quiz Yourself -->
+                                    <div class="mb-6">
+                                        <h4 class="text-md font-semibold mb-2 flex items-center">
+                                            <i class="fas fa-question-circle mr-2 text-purple-400"></i>Quiz Yourself
+                                        </h4>
+                                        <button class="w-full bg-gray-700 hover:bg-gray-600 text-white text-left px-3 py-2 rounded-lg text-sm">
+                                            Generate Quiz
+                                        </button>
+                                        <div class="mt-2 text-xs text-gray-400">Creates quick assessment questions from
+                                            note content
+                                        </div>
+                                    </div>
+
+                                    <!-- Mind Map -->
+                                    <div class="mb-6">
+                                        <h4 class="text-md font-semibold mb-2 flex items-center">
+                                            <i class="fas fa-project-diagram mr-2 text-green-400"></i>Concept Map
+                                        </h4>
+                                        <button class="w-full bg-gray-700 hover:bg-gray-600 text-white text-left px-3 py-2 rounded-lg text-sm">
+                                            Create Concept Map
+                                        </button>
+                                        <div class="mt-2 text-xs text-gray-400">Visual relationship diagram of key
+                                            concepts
+                                        </div>
+                                    </div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Note Modal (Hidden by default) -->
+        <div id="create-note-modal"
+             class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50">
+            <div class="bg-gray-800 rounded-xl w-full max-w-2xl mx-4 overflow-hidden">
+                <div class="p-4 bg-gray-900 flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Create New Note</h2>
+                    <button class="text-gray-400 hover:text-white" id="close-create-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <div class="space-y-4">
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Title</label>
+                            <input type="text" placeholder="Enter note title"
+                                   class="w-full bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Subject</label>
+                            <select class="w-full bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
+                                <option>Computer Science</option>
+                                <option>Computer Science</option>
+                                <option>Mathematics</option>
+                                <option>Physics</option>
+                                <option>Engineering</option>
+                                <option>Other</option>
+                            </select>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Visibility</label>
+                            <div class="flex space-x-4">
+                                <div class="flex items-center">
+                                    <input type="radio" id="private-visibility" name="visibility" class="mr-2" checked/>
+                                    <label for="private-visibility" class="text-sm text-gray-300">Private</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="public-visibility" name="visibility" class="mr-2"/>
+                                    <label for="public-visibility" class="text-sm text-gray-300">Public</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Content</label>
+                            <div class="border border-gray-700 rounded-lg overflow-hidden">
+                                <div class="bg-gray-900 p-2 flex space-x-2 border-b border-gray-700">
+                                    <button class="text-gray-400 hover:text-white p-1">
+                                        <i class="fas fa-bold"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-white p-1">
+                                        <i class="fas fa-italic"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-white p-1">
+                                        <i class="fas fa-underline"></i>
+                                    </button>
+                                    <div class="border-r border-gray-700 h-6 mx-1"></div>
+                                    <button class="text-gray-400 hover:text-white p-1">
+                                        <i class="fas fa-list-ul"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-white p-1">
+                                        <i class="fas fa-list-ol"></i>
+                                    </button>
+                                    <div class="border-r border-gray-700 h-6 mx-1"></div>
+                                    <button class="text-gray-400 hover:text-white p-1">
+                                        <i class="fas fa-link"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-white p-1">
+                                        <i class="fas fa-image"></i>
+                                    </button>
+                                    <button class="text-gray-400 hover:text-white p-1">
+                                        <i class="fas fa-code"></i>
+                                    </button>
+                                </div>
+                                <textarea
+                                        class="w-full bg-gray-800 text-white p-3 h-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
+                                        placeholder="Write your note content here..."></textarea>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Tags</label>
+                            <input type="text" placeholder="Add tags separated by commas"
+                                   class="w-full bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+                                id="cancel-create">
+                            Cancel
+                        </button>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Create Note
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- Upload Note Modal (Hidden by default) [Can remove if no need PDFs] -->
+        <div id="upload-note-modal"
+             class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50">
+            <div class="bg-gray-800 rounded-xl w-full max-w-md mx-4 overflow-hidden">
+                <div class="p-4 bg-gray-900 flex justify-between items-center">
+                    <h2 class="text-lg font-bold">Upload Notes</h2>
+                    <button class="text-gray-400 hover:text-white" id="close-upload-modal">
+                        <i class="fas fa-times"></i>
+                    </button>
+                </div>
+                <div class="p-4">
+                    <div class="space-y-4">
+                        <div class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
+                            <i class="fas fa-cloud-upload-alt text-4xl text-gray-500 mb-2"></i>
+                            <p class="text-gray-400 mb-4">Drag and drop files here<br>or click to browse</p>
+                            <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                                Select Files
+                            </button>
+                            <input type="file" class="hidden"/>
+                            <p class="text-xs text-gray-500 mt-2">Supports PDF, DOCX, TXT, MD (Max 10MB)</p>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Visibility</label>
+                            <div class="flex space-x-4">
+                                <div class="flex items-center">
+                                    <input type="radio" id="private-upload" name="upload-visibility" class="mr-2"
+                                           checked/>
+                                    <label for="private-upload" class="text-sm text-gray-300">Private</label>
+                                </div>
+                                <div class="flex items-center">
+                                    <input type="radio" id="public-upload" name="upload-visibility" class="mr-2"/>
+                                    <label for="public-upload" class="text-sm text-gray-300">Public</label>
+                                </div>
+                            </div>
+                        </div>
+
+                        <div>
+                            <label class="block text-sm font-medium text-gray-400 mb-1">Tags</label>
+                            <input type="text" placeholder="Add tags separated by commas"
+                                   class="w-full bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
+                        </div>
+                    </div>
+
+                    <div class="mt-6 flex justify-end space-x-3">
+                        <button class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
+                                id="cancel-upload">
+                            Cancel
+                        </button>
+                        <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
+                            Upload
+                        </button>
+                    </div>
+                </div>
+            </div>
+        </div>
+
+        <!-- JavaScript [ChatGPT kinda cracked]-->
+        <script>
+            // Example JavaScript for basic interactions
+            document.addEventListener('DOMContentLoaded', function () {
+                // Modal open/close handlers
+                const createNoteBtn = document.getElementById('create-note-btn');
+                const closeCreateModal = document.getElementById('close-create-modal');
+                const cancelCreate = document.getElementById('cancel-create');
+                const createNoteModal = document.getElementById('create-note-modal');
+
+                const uploadNoteBtn = document.getElementById('upload-note-btn');
+                const closeUploadModal = document.getElementById('close-upload-modal');
+                const cancelUpload = document.getElementById('cancel-upload');
+                const uploadNoteModal = document.getElementById('upload-note-modal');
+
+                // View note handlers
+                const viewNoteBtns = document.querySelectorAll('.view-note-btn');
+                const backToGridBtn = document.getElementById('back-to-grid');
+                const notesGridView = document.getElementById('notes-grid-view');
+                const noteViewer = document.getElementById('note-viewer');
+
+                // Study tools toggle
+                const toggleStudyTools = document.getElementById('toggle-study-tools');
+                const studyTools = document.getElementById('study-tools');
+                const noteContentWrapper = document.getElementById('note-content-wrapper');
+
+                // Filter buttons
+                const filterBtns = document.querySelectorAll('.filter-btn');
+                const searchInput = document.getElementById('search-input');
+                const noteCards = document.querySelectorAll('.note-card');
+
+                // Create Note Modal
+                createNoteBtn.addEventListener('click', function () {
+                    createNoteModal.classList.remove('hidden');
+                });
+
+                closeCreateModal.addEventListener('click', function () {
+                    createNoteModal.classList.add('hidden');
+                });
+
+                cancelCreate.addEventListener('click', function () {
+                    createNoteModal.classList.add('hidden');
+                });
+
+                // Upload Modal
+                uploadNoteBtn.addEventListener('click', function () {
+                    uploadNoteModal.classList.remove('hidden');
+                });
+
+                closeUploadModal.addEventListener('click', function () {
+                    uploadNoteModal.classList.add('hidden');
+                });
+
+                cancelUpload.addEventListener('click', function () {
+                    uploadNoteModal.classList.add('hidden');
+                });
+
+                // View note functionality
+                viewNoteBtns.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const noteCard = this.closest('.note-card');
+                        const noteId = noteCard.dataset.noteId;
+                        const noteTitle = noteCard.querySelector('h3').textContent;
+
+                        // Set the title in the note viewer
+                        document.getElementById('note-title').textContent = noteTitle;
+
+                        // you would fetch the note content from a database here
+                        // Current placeholder content
+                        document.getElementById('note-content').innerHTML = `
+                        <h1 class="text-2xl font-bold mb-4">${noteTitle}</h1>
+                        <p class="mb-4">This is sample content for note #${noteId}. In a real application, this content would be loaded from a database or file system.</p>
+                        <h2 class="text-xl font-bold mb-2">Key Points</h2>
+                        <ul class="list-disc pl-5 mb-4">
+                            <li class="mb-1">Important concept #1 with detailed explanation</li>
+                            <li class="mb-1">Important concept #2 with examples and diagrams</li>
+                            <li class="mb-1">Important concept #3 with practical applications</li>
+                        </ul>
+                        <p class="mb-4">Additional explanations would go here with more detailed content, examples, and diagrams.</p>
+                        <h2 class="text-xl font-bold mb-2">Additional Resources</h2>
+                        <p>Links to related materials and resources would be included here.</p>
+                    `;
+
+                        // Show the note viewer
+                        notesGridView.classList.add('translate-x-full');
+                        noteViewer.classList.remove('translate-x-full');
+                    });
+                });
+
+                // Back to grid view
+                backToGridBtn.addEventListener('click', function () {
+                    notesGridView.classList.remove('translate-x-full');
+                    noteViewer.classList.add('translate-x-full');
+
+                    // Reset study tools if open
+                    studyTools.classList.remove('w-72');
+                    studyTools.classList.add('w-0');
+                    noteContentWrapper.classList.remove('mr-72');
+                });
+
+                // Toggle study tools
+                toggleStudyTools.addEventListener('click', function () {
+                    if (studyTools.classList.contains('w-0')) {
+                        studyTools.classList.remove('w-0');
+                        studyTools.classList.add('w-72');
+                        noteContentWrapper.classList.add('mr-72');
+                    } else {
+                        studyTools.classList.remove('w-72');
+                        studyTools.classList.add('w-0');
+                        noteContentWrapper.classList.remove('mr-72');
+                    }
+                });
+
+                // Filter functionality
+                filterBtns.forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        // Remove active class from all buttons
+                        filterBtns.forEach(b => b.classList.remove('active', 'bg-blue-600'));
+
+                        // Add active class to clicked button
+                        this.classList.add('active', 'bg-blue-600');
+
+                        const filter = this.dataset.filter;
+
+                        // Filter the notes
+                        noteCards.forEach(card => {
+                            if (filter === 'all' ||
+                                (filter === 'my' && card.dataset.owner === 'you') ||
+                                (filter === 'public' && card.dataset.visibility === 'public')) {
+                                card.classList.remove('hidden');
+                            } else {
+                                card.classList.add('hidden');
+                            }
+                        });
+                    });
+                });
+
+                // Search functionality
+                searchInput.addEventListener('input', function () {
+                    const searchTerm = this.value.toLowerCase();
+
+                    noteCards.forEach(card => {
+                        const title = card.querySelector('h3').textContent.toLowerCase();
+                        const description = card.querySelector('p.line-clamp-3').textContent.toLowerCase();
+
+                        if (title.includes(searchTerm) || description.includes(searchTerm)) {
+                            card.classList.remove('hidden');
+                        } else {
+                            card.classList.add('hidden');
+                        }
+                    });
+                });
+            });
+        </script>
+    </div>
+</div>
