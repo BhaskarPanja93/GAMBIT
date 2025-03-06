@@ -1,42 +1,41 @@
 <div class="top-28 w-full text-center text-white text-5xl font-bold translate-y-4" id="quiz-timer">
     STARTING SOON
 </div>
-<div class="mx-auto w-full px-2 sm:px-4 md:px-6 lg:px-8 xl:px-20">
-    <!-- Container for both teams - stack on mobile, side by side on larger screens -->
-    <div class="flex flex-col gap-4 md:flex-row md:justify-between md:gap-6">
-        <!-- Player Team -->
-        <div class="w-full flex flex-col items-center rounded-lg bg-gray-900 p-4 sm:p-6 lg:p-8">
-            <div class="text-white text-lg font-bold mb-4">Your Team</div>
-            <div class="flex w-full items-center justify-between">
-                <div id="team-player-0" class="relative group w-1/4 max-w-[120px]"></div>
-                <div id="team-player-1" class="relative group w-1/4 max-w-[120px]"></div>
-                <div id="team-player-2" class="relative group w-1/4 max-w-[120px]"></div>
-                <!-- Score Board -->
-                <div id="team-health" class="ml-4 text-white text-xl font-bold">30</div>
-            </div>
+<div class="mx-auto w-full px-2 sm:px-4 lg:px-20 flex justify-between items-center">
 
-            <!-- Health bar below the images -->
-            <div id="team-health-bar" class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
-                <!-- Adjust width for different health levels -->
-                <div class="bg-green-500 h-full" style="width: 75%"></div>
-            </div>
+    <!-- Player Team -->
+    <div class="w-full max-w-[650px] flex flex-col items-center rounded-lg bg-gray-900 p-4 sm:p-6 lg:p-8">
+        <div class="text-white text-lg font-bold mb-4">Your Team</div>
+        <div class="flex w-full items-center justify-between">
+            <div id="team-player-0" class="relative group"></div>
+            <div id="team-player-1" class="relative group"></div>
+            <div id="team-player-2" class="relative group"></div>
+            <!-- Score Board -->
+            <div id="team-health" class="ml-4 text-white text-xl font-bold">30</div>
         </div>
 
-        <!-- Opponent Team -->
-        <div class="w-full flex flex-col items-center rounded-lg bg-gray-700 p-4 sm:p-6 lg:p-8">
-            <div class="text-white text-lg font-bold mb-4">Opponent Team</div>
-            <div class="flex w-full items-center justify-between">
-                <!-- Score Board -->
-                <div id="opponent-health" class="mr-4 text-white text-xl font-bold">20</div>
-                <div id="opponent-player-0" class="relative group w-1/4 max-w-[120px]"></div>
-                <div id="opponent-player-1" class="relative group w-1/4 max-w-[120px]"></div>
-                <div id="opponent-player-2" class="relative group w-1/4 max-w-[120px]"></div>
-            </div>
-            <!-- Health bar below the images -->
-            <div id="opponent-health-bar" class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
-                <!-- Adjust width for different health levels -->
-                <div class="bg-green-500 h-full" style="width: 50%"></div>
-            </div>
+        <!-- Health bar below the images -->
+        <div id="team-health-bar" class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
+            <!-- Adjust width for different health levels -->
+        </div>
+    </div>
+
+    <!-- Opponent Team -->
+    <div class="w-full max-w-[650px] flex flex-col items-center rounded-lg bg-gray-700 p-4 sm:p-6 lg:p-8">
+        <!-- Opponent Score Board -->
+        <div class="text-white text-lg font-bold mb-4">Opponent Team</div>
+        <div class="flex w-full items-center justify-between">
+            <!-- Score Board -->
+            <div id="opponent-health" class="ml-4 text-white text-xl font-bold"></div>
+            <div id="opponent-player-0" class="relative group"></div>
+            <div id="opponent-player-1" class="relative group"></div>
+            <div id="opponent-player-2" class="relative group"></div>
+        </div>
+
+        <!-- Health bar below the images -->
+        <div id="opponent-health-bar" class="w-full bg-gray-600 h-2 mt-4 rounded-full overflow-hidden">
+            <!-- Adjust width for different health levels -->
+
         </div>
     </div>
 </div>
