@@ -1,0 +1,206 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Learning Hub</title>
+
+    <script src="https://cdn.tailwindcss.com"></script>
+    <link href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css" rel="stylesheet">
+</head>
+<body>
+<div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col">
+    <div class="bg-gradient-to-br from-gray-900 via-black to-gray-900 mx-4 sm:mx-8 md:mx-12 lg:mx-16 my-4 sm:my-6 md:my-8 lg:my-10 rounded-2xl h-screen overflow-hidden relative p-6 sm:p-8 md:p-10 lg:p-12">
+
+        <h1 class="text-center text-5xl md:text-6xl font-bold mb-16 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 animate-[fade-in-down_1s_ease-in-out]">
+            Welcome to GAMBIT
+        </h1>
+
+        <!-- Navigation Grid -->
+        <div class="grid grid-cols-1 sm:grid-cols-2 lg:grid-cols-3 gap-10">
+            <!-- Quiz Multiplayer -->
+            <div class="nav-button group" data-page="quiz-multiplayer">
+                <div class="nav-button-inner rounded-3xl p-8 text-center bg-gradient-to-br from-blue-800 via-blue-700 to-blue-900 flex flex-col items-center justify-center shadow-lg transition-all duration-300 ease-in-out transform hover:-translate-y-2 hover:scale-[1.03] hover:shadow-2xl">
+                    <div class="nav-icon transition-all duration-300 group-hover:rotate-12 group-hover:scale-110 mb-4">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M17 20h5v-2a3 3 0 00-5.356-1.857M17 20H7m10 0v-2c0-.768-.231-1.477-.638-2.021M7 20H2v-2a3 3 0 015.356-1.857M7 20v-2c0-.768.231-1.477.638-2.021M14 7a3 3 0 11-6 0 3 3 0 016 0zm6 3a2 2 0 11-4 0 2 2 0 014 0zM7 10a2 2 0 11-4 0 2 2 0 014 0z"/>
+                        </svg>
+                    </div>
+                    <h3 class="nav-title text-2xl font-bold text-white">Quiz Multiplayer</h3>
+                    <p class="nav-description text-gray-200">Compete with friends</p>
+                </div>
+            </div>
+
+            <!-- Notes Repository -->
+            <div class="nav-button group" data-page="notes-repository">
+                <div class="nav-button-inner rounded-3xl p-8 text-center bg-gradient-to-br from-green-800 via-green-700 to-green-900 flex flex-col items-center justify-center shadow-lg transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:scale-[1.03] hover:shadow-2xl">
+                    <div class="nav-icon transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 12h6m-6 4h6m2 5H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="nav-title text-2xl font-bold text-white">Notes Repository</h3>
+                    <p class="nav-description">Organize your learning</p>
+                </div>
+            </div>
+
+            <!-- Student Dashboard -->
+            <div class="nav-button group" data-page="student-dashboard">
+                <div class="nav-button-inner rounded-3xl p-8 text-center bg-gradient-to-br from-purple-800 via-purple-700 to-purple-900 flex flex-col items-center justify-center shadow-lg transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:scale-[1.03] hover:shadow-2xl">
+                    <div class="nav-icon transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M9 17v-2m3 2v-4m3 4v-6m2 10H7a2 2 0 01-2-2V5a2 2 0 012-2h5.586a1 1 0 01.707.293l5.414 5.414a1 1 0 01.293.707V19a2 2 0 01-2 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="nav-title text-2xl font-bold text-white">Student Dashboard</h3>
+                    <p class="nav-description">Track your progress</p>
+                </div>
+            </div>
+
+            <!-- Flash Card Study -->
+            <div class="nav-button group" data-page="flashcard-study">
+                <div class="nav-button-inner rounded-3xl p-8 text-center bg-gradient-to-br from-red-800 via-red-700 to-red-900 flex flex-col items-center justify-center shadow-lg transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:scale-[1.03] hover:shadow-2xl">
+                    <div class="nav-icon transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M12 6.253v13m0-13C10.832 5.477 9.246 5 7.5 5S4.168 5.477 3 6.253v13C4.168 18.477 5.754 18 7.5 18s3.332.477 4.5 1.253m0-13C13.168 5.477 14.754 5 16.5 5c1.747 0 3.332.477 4.5 1.253v13C19.832 18.477 18.247 18 16.5 18c-1.746 0-3.332.477-4.5 1.253"/>
+                        </svg>
+                    </div>
+                    <h3 class="nav-title text-2xl font-bold text-white">Flash Card Study</h3>
+                    <p class="nav-description">Memorize effectively</p>
+                </div>
+            </div>
+
+            <!-- Content Delivery -->
+            <div class="nav-button group" data-page="content-delivery">
+                <div class="nav-button-inner rounded-3xl p-8 text-center bg-gradient-to-br from-yellow-800 via-yellow-700 to-yellow-900 flex flex-col items-center justify-center shadow-lg transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:scale-[1.03] hover:shadow-2xl">
+                    <div class="nav-icon transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M17 14v6m-3-3h6M6 10h2a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2zm10 0h2a2 2 0 002-2V6a2 2 0 00-2-2h-2a2 2 0 00-2 2v2a2 2 0 002 2zM6 20h2a2 2 0 002-2v-2a2 2 0 00-2-2H6a2 2 0 00-2 2v2a2 2 0 002 2z"/>
+                        </svg>
+                    </div>
+                    <h3 class="nav-title text-2xl font-bold text-white">Content Delivery</h3>
+                    <p class="nav-description">Learn through content</p>
+                </div>
+            </div>
+
+            <!-- Chatbot -->
+            <div class="nav-button group" data-page="chatbot">
+                <div class="nav-button-inner rounded-3xl p-8 text-center bg-gradient-to-br from-indigo-800 via-indigo-700 to-indigo-900 flex flex-col items-center justify-center shadow-lg transition-all duration-500 ease-in-out transform hover:-translate-y-2 hover:scale-[1.03] hover:shadow-2xl">
+                    <div class="nav-icon transition-all duration-300 group-hover:rotate-12 group-hover:scale-110">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-16 w-16" fill="none" viewBox="0 0 24 24"
+                             stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2"
+                                  d="M8 10h.01M12 10h.01M16 10h.01M9 16H5a2 2 0 01-2-2V6a2 2 0 012-2h14a2 2 0 012 2v8a2 2 0 01-2 2h-5l-5 5v-5z"/>
+                        </svg>
+                    </div>
+                    <h3 class="nav-title text-2xl font-bold text-white">Chatbot</h3>
+                    <p class="nav-description">AI Learning Assistant</p>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <style>
+        /* Base Button Styles */
+        .nav-button {
+            @apply perspective-1000 transform transition-all duration-300 ease-in-out;
+            perspective: 1000px;
+        }
+
+        .nav-button-inner {
+            @apply rounded-3xl p-8 text-center cursor-pointer relative z-10 flex flex-col items-center justify-center shadow-2xl;
+            min-height: 300px;
+            backface-visibility: hidden;
+            transform-style: preserve-3d;
+        }
+
+        /* Hover Effects */
+        .nav-button:hover .nav-button-inner {
+            @apply scale-105;
+            transform: rotateX(-5deg) rotateY(5deg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.5);
+        }
+
+        /* Click/Active Effects */
+        .nav-button:active .nav-button-inner {
+            @apply scale-95;
+            transform: rotateX(3deg) rotateY(-3deg);
+        }
+
+        /* Icon Styles */
+        .nav-icon {
+            @apply w-32 h-32 rounded-full mb-6 flex items-center justify-center text-white bg-white bg-opacity-20;
+            transform: translateZ(50px);
+        }
+
+        .nav-button:hover .nav-icon {
+            @apply scale-110;
+        }
+
+        /* Title and Description Styles */
+        .nav-title {
+            @apply text-2xl font-bold mb-3 text-white;
+            transform: translateZ(30px);
+        }
+
+        .nav-description {
+            @apply text-base text-gray-200;
+            transform: translateZ(20px);
+        }
+
+        /* Pulse Animation on Click */
+        @keyframes pulse {
+            0% {
+                transform: scale(1);
+            }
+            50% {
+                transform: scale(1.05);
+            }
+            100% {
+                transform: scale(1);
+            }
+        }
+
+        .nav-button:active {
+            animation: pulse 0.5s ease-in-out;
+        }
+
+        .animate-student-hub {
+            animation: fadeInDown 2s ease-in-out;
+        }
+
+        @keyframes fadeInDown {
+            0% {
+                opacity: 0;
+                transform: translateY(-20px);
+            }
+            100% {
+                opacity: 1;
+                transform: translateY(0);
+            }
+        }
+    </style>
+
+    <script>
+        const buttons = document.querySelectorAll('.nav-button');
+
+        buttons.forEach(button => {
+            button.addEventListener('click', (e) => {
+                const page = button.getAttribute('data-page');
+                console.log(`Navigating to: ${page}`);
+            });
+        });
+    </script>
+</div>
+</body>
+</html>
