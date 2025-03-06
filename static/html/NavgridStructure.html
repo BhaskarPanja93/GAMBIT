@@ -1,4 +1,4 @@
-<div class="mx-4 sm:mx-8 md:mx-12 lg:mx-16 my-4 sm:my-6 md:my-8 lg:my-10-mt-4 sm:-mt-6 md:-mt-8 lg:-mt-10 rounded-2xl h-screen overflow-hidden relative p-6 sm:p-8 md:p-10 lg:p-12">
+<div class="mx-4 sm:mx-8 md:mx-12 lg:mx-16 my-4 sm:my-6 md:my-8 lg:my-10 -mt-4 sm:-mt-6 md:-mt-8 lg:-mt-10 rounded-2xl min-h-screen overflow-hidden relative p-6 sm:p-8 md:p-10 lg:p-12">
     <h1 class="text-center text-5xl md:text-6xl font-bold mb-16 text-transparent bg-clip-text bg-gradient-to-r from-purple-400 via-pink-500 to-red-500 animate-[fade-in-down_1s_ease-in-out]">
         Welcome to GAMBIT
     </h1>
@@ -95,6 +95,7 @@
             </div>
         </div>
     </div>
+
     <script>
         waitForElementPresence("#open-quiz-lobby", (button)=>{
             button.onclick = () => sendCustomMessage({PURPOSE: "RENDER_LOBBY"})
