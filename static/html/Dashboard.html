@@ -67,12 +67,12 @@
                     <div class="bg-gray-800 p-4 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-lg font-semibold">Level</h3>
-                            <span class="text-xl font-bold text-green-400">5</span>
+                            <span class="text-xl font-bold text-green-400">{{ player.level }}</span>
                         </div>
                         <div class="w-full bg-gray-700 rounded-full h-2">
                             <div class="bg-green-600 h-2 rounded-full" style="width: 65%"></div>
                         </div>
-                        <p class="text-xs text-gray-400 mt-1">Next level in 35%</p>
+                        <p class="text-xs text-gray-400 mt-1">Next level in {{ 100 - (player.currentXP*100 / player.levelXP) }}%</p>
                     </div>
 
                     <div class="bg-gray-800 p-4 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
@@ -89,7 +89,7 @@
                     <div class="bg-gray-800 p-4 rounded-xl shadow-lg transform hover:scale-105 transition-transform">
                         <div class="flex justify-between items-center mb-2">
                             <h3 class="text-lg font-semibold">Performance</h3>
-                            <span class="text-xl font-bold text-purple-400">A-</span>
+                            <span class="text-xl font-bold text-purple-400">A</span>
                         </div>
                         <div class="w-full bg-gray-700 rounded-full h-2">
                             <div class="bg-purple-600 h-2 rounded-full" style="width: 88%"></div>
