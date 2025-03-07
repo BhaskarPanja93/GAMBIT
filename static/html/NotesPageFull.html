@@ -1,14 +1,11 @@
-
-<div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden relative">
+<div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[5vw] sm:mt-[4vw] md:mt-[3vw] lg:mt-[2vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen sm:h-[95vh] md:h-[90vh] lg:h-[85vh] overflow-hidden relative transform -translate-y-6 sm:-translate-y-10 md:-translate-y-14 lg:-translate-y-16">
 
     <!-- Notes Repository Content -->
-    <div class="flex h-full">
-        <!-- Friend List (kinda sorted according to online offline) -->
-
+    <div class="flex flex-col sm:flex-row h-screen">
         <!-- Main Content Area -->
-        <div class="flex-1 flex flex-col h-full overflow-hidden">
-            <!-- Header -->
-            <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-900 bg-opacity-50">
+        <div class="flex-1 flex flex-col h-screen sm:h-[95vh] md:h-[90vh] lg:h-[85vh] overflow-hidden">
+            <div class="relative p-5 sm:p-6 md:p-8 lg:p-10 border-b border-gray-700
+                flex justify-between items-center bg-gray-900 bg-opacity-50">
                 <h1 class="text-xl font-bold">Notes Repository</h1>
                 <div class="flex space-x-2">
                     <button id="create-note-btn"
@@ -47,8 +44,7 @@
             <!-- Main Content Container with Grid and Note View -->
             <div id="main-content-container" class="flex-1 relative overflow-hidden">
                 <!-- Notes Grid (Default View) -->
-                <div id="notes-grid-view"
-                     class="absolute inset-0 overflow-y-auto p-4 transition-transform duration-300 transform translate-x-0">
+                <div id="notes-grid-view" class="absolute inset-0 overflow-y-auto p-4 sm:p-6 md:p-8 mx-4 sm:mx-8 md:mx-12 lg:mx-16 transition-transform duration-300 transform translate-x-0">
                     <div class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-4">
 
                         <!-- Example of different kinds of notes -->
