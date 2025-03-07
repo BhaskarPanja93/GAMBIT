@@ -1,0 +1,173 @@
+<div class="w-full h-full p-6 overflow-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div class="flex items-center">
+            <a href="favicon.ico" class="mr-2">
+                <img src="favicon.ico" alt="Logo" class="h-8 w-8">
+            </a>
+            <div class="text-indigo-400 font-bold text-2xl py-3">GAMBIT</div>
+        </div>
+        <div class="flex space-x-4">
+            <button id="create-deck-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                New Deck
+            </button>
+            <button id="view-decks-btn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                My Decks
+            </button>
+        </div>
+    </div>
+
+    <!-- Main Content Area -->
+    <div id="app-container" class="flex flex-col h-5/6">
+        <!-- Deck List View (Default) -->
+        <div id="deck-list-view" class="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6">
+            <!-- Sample Decks -->
+            <div class="deck-card bg-gradient-to-br from-blue-900 to-blue-950 rounded-xl p-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-blue-300">Mathematics</h3>
+                    <span class="bg-blue-700 text-xs px-2 py-1 rounded-full text-white">24 cards</span>
+                </div>
+                <p class="text-gray-300 mb-6 text-sm">Basic algebra, geometry, and calculus concepts</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-400">Last practiced: 2 days ago</span>
+                    <button class="practice-btn bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded-lg transition-colors duration-200">Practice</button>
+                </div>
+            </div>
+
+            <div class="deck-card bg-gradient-to-br from-purple-900 to-purple-950 rounded-xl p-6 hover:shadow-lg hover:shadow-purple-500/20 transition-all duration-300 cursor-pointer">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-purple-300">Spanish Vocabulary</h3>
+                    <span class="bg-purple-700 text-xs px-2 py-1 rounded-full text-white">42 cards</span>
+                </div>
+                <p class="text-gray-300 mb-6 text-sm">Common Spanish words and phrases for beginners</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-400">Last practiced: Today</span>
+                    <button class="practice-btn bg-purple-600 hover:bg-purple-700 text-white text-sm px-3 py-1 rounded-lg transition-colors duration-200">Practice</button>
+                </div>
+            </div>
+
+            <div class="deck-card bg-gradient-to-br from-emerald-900 to-emerald-950 rounded-xl p-6 hover:shadow-lg hover:shadow-emerald-500/20 transition-all duration-300 cursor-pointer">
+                <div class="flex justify-between items-start mb-4">
+                    <h3 class="text-xl font-bold text-emerald-300">Biology Terms</h3>
+                    <span class="bg-emerald-700 text-xs px-2 py-1 rounded-full text-white">18 cards</span>
+                </div>
+                <p class="text-gray-300 mb-6 text-sm">Important biological concepts and terminology</p>
+                <div class="flex justify-between items-center">
+                    <span class="text-xs text-gray-400">Last practiced: 5 days ago</span>
+                    <button class="practice-btn bg-emerald-600 hover:bg-emerald-700 text-white text-sm px-3 py-1 rounded-lg transition-colors duration-200">Practice</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Create Deck View (Hidden by default) -->
+        <div id="create-deck-view" class="hidden">
+            <div class="bg-gray-800 rounded-xl p-6 mb-6">
+                <div class="flex justify-between items-center mb-6">
+                    <h2 class="text-2xl font-bold text-indigo-300">Create New Deck</h2>
+                    <button id="close-create-view" class="text-gray-400 hover:text-white">
+                        <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                            <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                        </svg>
+                    </button>
+                </div>
+                <div class="mb-6">
+                    <label for="deck-title" class="block text-gray-300 mb-2">Deck Title</label>
+                    <input type="text" id="deck-title" class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" placeholder="Enter deck title...">
+                </div>
+                <div class="mb-6">
+                    <label for="deck-description" class="block text-gray-300 mb-2">Description (optional)</label>
+                    <textarea id="deck-description" class="w-full bg-gray-700 text-white px-4 py-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-indigo-500" rows="2" placeholder="Enter deck description..."></textarea>
+                </div>
+
+                <div class="mb-6">
+                    <div class="flex justify-between items-center mb-2">
+                        <label class="text-gray-300">Cards</label>
+                        <button id="add-card-btn" class="text-indigo-400 hover:text-indigo-300 text-sm flex items-center">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                                <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                            </svg>
+                            Add Card
+                        </button>
+                    </div>
+
+                    <div id="cards-container" class="space-y-4">
+                        <div class="card-item bg-gray-700 rounded-lg p-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm text-gray-400">Card 1</span>
+                                <button class="delete-card text-gray-400 hover:text-red-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <input type="text" class="w-full bg-gray-600 text-white px-3 py-2 rounded mb-2 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Front (question)">
+                            <textarea class="w-full bg-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500" rows="2" placeholder="Back (answer)"></textarea>
+                        </div>
+                        <div class="card-item bg-gray-700 rounded-lg p-4">
+                            <div class="flex justify-between mb-2">
+                                <span class="text-sm text-gray-400">Card 2</span>
+                                <button class="delete-card text-gray-400 hover:text-red-400">
+                                    <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                    </svg>
+                                </button>
+                            </div>
+                            <input type="text" class="w-full bg-gray-600 text-white px-3 py-2 rounded mb-2 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Front (question)">
+                            <textarea class="w-full bg-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500" rows="2" placeholder="Back (answer)"></textarea>
+                        </div>
+                    </div>
+                </div>
+
+                <div class="flex justify-end">
+                    <button id="save-deck-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-colors duration-200">Save Deck</button>
+                </div>
+            </div>
+        </div>
+
+        <!-- Practice View (Hidden by default) -->
+        <div id="practice-view" class="hidden flex flex-col h-full">
+            <div class="flex justify-between items-center mb-6">
+                <div>
+                    <h2 id="practice-deck-title" class="text-2xl font-bold text-indigo-300">Mathematics</h2>
+                    <p id="practice-progress" class="text-gray-400 text-sm">Card 1 of 24</p>
+                </div>
+                <button id="close-practice-view" class="text-gray-400 hover:text-white">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                        <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
+                    </svg>
+                </button>
+            </div>
+
+            <div class="flex-grow flex items-center justify-center">
+                <div id="flashcard" class="w-full max-w-2xl perspective-1000">
+                    <div class="flashcard-inner relative w-full h-64 transition-transform duration-700 transform-style-3d cursor-pointer">
+                        <div class="flashcard-front absolute w-full h-full backface-hidden bg-gradient-to-br from-indigo-900 to-indigo-950 rounded-xl p-8 flex items-center justify-center text-center">
+                            <p class="text-2xl text-white">What is the Pythagorean theorem?</p>
+                        </div>
+                        <div class="flashcard-back absolute w-full h-full backface-hidden bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 flex items-center justify-center text-center transform-rotate-y-180">
+                            <p class="text-xl text-white">In a right triangle, the square of the length of the hypotenuse equals the sum of the squares of the lengths of the other two sides: a² + b² = c²</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+
+            <div class="flex justify-center mt-8 mb-4 space-x-6">
+                <button id="prev-card" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M12.707 5.293a1 1 0 010 1.414L9.414 10l3.293 3.293a1 1 0 01-1.414 1.414l-4-4a1 1 0 010-1.414l4-4a1 1 0 011.414 0z" clip-rule="evenodd" />
+                    </svg>
+                    Previous
+                </button>
+                <button id="next-card" class="bg-indigo-600 hover:bg-indigo-700 text-white px-6 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                    Next
+                    <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 ml-1" viewBox="0 0 20 20" fill="currentColor">
+                        <path fill-rule="evenodd" d="M7.293 14.707a1 1 0 010-1.414L10.586 10 7.293 6.707a1 1 0 011.414-1.414l4 4a1 1 0 010 1.414l-4 4a1 1 0 01-1.414 0z" clip-rule="evenodd" />
+                    </svg>
+                </button>
+            </div>
+        </div>
+    </div>
+</div>

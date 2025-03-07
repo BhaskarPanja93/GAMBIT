@@ -11,6 +11,7 @@ class FileNames:
         Universal = "Universal.css"
     class HTML:
         Dashboard = "Dashboard.html"
+        Flashcard = "Flashcard.html"
         FirstPage = "FirstPage.html"
         UniversalContainer = "UniversalContainer.html"
         BaseNavbar = "BaseNavbar.html"

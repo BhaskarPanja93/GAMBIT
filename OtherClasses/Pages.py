@@ -7,4 +7,5 @@ class Pages:
     QUIZ = "Quiz"
     QUIZ_SCOREBOARD = "Quiz-Scoreboard"
     NOTES = "Notes"
+    FLASHCARD = "Flashcard"
     MARKETPLACE = "Market-Place"

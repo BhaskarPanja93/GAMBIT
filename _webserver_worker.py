@@ -270,6 +270,25 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
     viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.NOTES))
 
 
+
+##############################################################################################################################
+# FLASHCARD PAGES
+
+
+def __renderFlashcardFullPage(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Flashcard)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+
+
+def renderFlashcardFull(viewerObj: DynamicWebsite.Viewer):
+    __renderFlashcardFullPage(viewerObj)
+    updateStatus(viewerObj.privateData.player, PlayerStatus.FLASHCARD)
+    renderBaseNavbar(viewerObj)
+    removeLobbyNavbar(viewerObj)
+    removeQuizNavbar(viewerObj)
+    hideSocials(viewerObj)
+    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.FLASHCARD))
+
+
 ##############################################################################################################################
 # CONTEXTUAL
 
