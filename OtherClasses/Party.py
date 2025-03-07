@@ -78,8 +78,15 @@ class Party:
                         player.viewer.updateHTML(str(self.partyTimer), DivID.startStopQueue, DynamicWebsite.UpdateMethods.update)
                 sleep(1)
                 self.partyTimer += 1
+            print("OUTSIDE LOOP", self.matchStarted, self.readyPlayers, self.players)
             if not self.matchStarted:
                 self.matchMaker.removeFromQueue(self)
+    def reRenderLobby(self, player:Player):
+        for index in range(len(self.players)):
+            if self.players[index].userName == player.userName:
+                self.__notifySelfJoined(index)
+                self.sendPartyCode(player)
+                self.updateReadyStat()
     def addPlayer(self, newPlayer:Player):
         if len(self.players) < self.maxPlayers:
             newPlayer.party = self
@@ -101,7 +108,6 @@ class Party:
                 if len(self.players) == 0 and self.onPartyClosed is not None: self.onPartyClosed(self)
                 else: self.playerUnready(oldPlayer)
                 return index
-
     def sendPartyCode(self, player):
         if player.viewer is not None:
             player.viewer.updateHTML(self.partyCode, DivID.partyCodeShow, DynamicWebsite.UpdateMethods.update)

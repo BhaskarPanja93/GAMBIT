@@ -5,5 +5,6 @@ class Pages:
     NAVGRID = "Navgrid"
     LOBBY = "Lobby"
     QUIZ = "Quiz"
+    QUIZ_SCOREBOARD = "Quiz-Scoreboard"
     NOTES = "Notes"
     MARKETPLACE = "Market-Place"

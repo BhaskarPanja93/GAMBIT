@@ -33,9 +33,9 @@ class Team:
             self.count += len(party.players)
             self.oldestPartyCreatedAt = time()-party.partyTimer if self.oldestPartyCreatedAt is None or self.oldestPartyCreatedAt>time()-party.partyTimer else self.oldestPartyCreatedAt
             for player in party.players:
-                self.sumMMR += player.MMR
-                self.minMMR = player.MMR if self.minMMR is None or self.minMMR>player.MMR else self.minMMR
-                self.maxMMR = max(self.maxMMR, player.MMR)
+                self.sumMMR += player.hiddenMMR
+                self.minMMR = player.hiddenMMR if self.minMMR is None or self.minMMR > player.hiddenMMR else self.minMMR
+                self.maxMMR = max(self.maxMMR, player.hiddenMMR)
         self.averageMMR = self.sumMMR / max(1, self.count)
         if self.oldestPartyCreatedAt is None:
             self.oldestPartyCreatedAt = time()
@@ -53,7 +53,7 @@ class Team:
         botParty = Party()
         for _ in range(botsNeeded):
             botPlayer = Player()
-            botPlayer.MMR = botMMR
+            botPlayer.hiddenMMR = botMMR
             botParty.addPlayer(botPlayer)
         self.parties.append(botParty)
         self.generateDetails()

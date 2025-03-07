@@ -12,7 +12,7 @@
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M15 19l-7-7 7-7"></path>
                             </svg>
                         </button>
-                        <div class="request-count text-xs translate-y-1">0/0</div>
+                        <div id="interaction-index-counter" class="request-count text-xs translate-y-1">0/0</div>
                         <button id="social-interactions-next" class="text-xs text-white px-3 py-1 rounded flex items-center">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4 ml-1" fill="none" viewBox="0 0 24 24" stroke="currentColor" stroke-width="2">
                                 <path stroke-linecap="round" stroke-linejoin="round" d="M9 5l7 7-7 7"></path>
@@ -163,6 +163,9 @@
 
 
     function updateOpenedInteraction() {
+        waitForElementPresence("#interaction-index-counter", (counterElement)=>{
+            counterElement.innerText = `${currentInteractionIndex+1}/${allInteractions.length}`
+        })
         waitForElementPresence("#social-interaction-username", (usernameDiv)=>{
             usernameDiv.innerText = allInteractions[currentInteractionIndex]["USERNAME"]
         })

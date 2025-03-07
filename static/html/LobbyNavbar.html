@@ -1,29 +1,31 @@
 <div class="-translate-y-20 sm:-translate-y-24 md:-translate-y-28 lg:-translate-y-32 xl:-translate-y-36 pointer-events-none">
     <div class="flex justify-center items-center w-full mt-[2vw] md:mt-[1.5vw] lg:mt-[2vw] px-4 lg:px-20">
-        <button id="start-stop-button"
-                class="pointer-events-auto bg-purple-600 text-lg sm:text-xl md:text-2xl hover:bg-purple-700 text-white font-bold py-2 sm:py-3 h-12 sm:h-14 min-w-[120px] sm:min-w-[140px] md:min-w-[180px] md:w-48 rounded-md shadow-lg hover:scale-105 sm:hover:scale-110 transition-transform duration-200">
+        <button id="start-stop-button" onclick="toggleReady(this)"
+                class="pointer-events-auto bg-purple-600 text-lg sm:text-xl md:text-2xl hover:bg-purple-700 text-white font-bold py-2 sm:py-3 h-12 sm:h-14 min-w-[120px] sm:min-w-[140px] md:min-w-[180px] md:w-48 rounded-md shadow-lg hover:scale-105 sm:hover:scale-110 transition-transform duration-200"
+                data-ready="false">
             Start
         </button>
     </div>
 </div>
 
 <script>
-    let isReady = false
+    function toggleReady(button) {
+        let isReady = button.getAttribute("data-ready") === "true";
 
-    function ready() {
-        isReady = true
+        if (isReady) {
+            unReady(button);
+        } else {
+            ready(button);
+        }
+    }
+
+    function ready(button) {
+        button.setAttribute("data-ready", "true");
         sendCustomMessage({PURPOSE: "READY"})
     }
 
-    function unReady() {
-        isReady = false
+    function unReady(button) {
+        button.setAttribute("data-ready", "false");
         sendCustomMessage({PURPOSE: "UN_READY"})
     }
-
-    waitForElementPresence("#start-stop-button", (button) => {
-        button.onclick = () => {
-            if (isReady) unReady()
-            else ready()
-        }
-    })
 </script>

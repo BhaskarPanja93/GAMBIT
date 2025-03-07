@@ -36,6 +36,18 @@ class Player:
             "https://i.pinimg.com/originals/14/98/90/14989073ad9b9c8efddd8dcaff076db5.png",
             "https://i.pinimg.com/236x/b4/6a/98/b46a989d1dfaa3bb5354d63867a58bd3.jpg",
         ]
+        self.rankImages = [
+            "https://static.wikia.nocookie.net/valorant/images/7/79/Iron_3_Rank.png",
+            "https://static.wikia.nocookie.net/valorant/images/a/ae/Bronze_3_Rank.png",
+            "https://static.wikia.nocookie.net/valorant/images/d/d7/Silver_3_Rank.png",
+            "https://static.wikia.nocookie.net/valorant/images/2/27/Gold_3_Rank.png",
+            "https://static.wikia.nocookie.net/valorant/images/1/1b/Platinum_3_Rank.png",
+            "https://static.wikia.nocookie.net/valorant/images/0/01/Diamond_3_Rank.png",
+            "https://static.wikia.nocookie.net/valorant/images/5/53/Ascendant_3_Rank.png",
+            "https://static.wikia.nocookie.net/valorant/images/0/0b/Immortal_3_Rank.png",
+            "https://static.wikia.nocookie.net/valorant/images/1/1a/Radiant_Rank.png"
+
+        ]
         self.party = None
         self.viewer = viewerObj
         self.PFP = self.OFFLINE_PFP
@@ -43,9 +55,11 @@ class Player:
         self.state = PlayerStatus.OFFLINE
         self.level = 1
         self.currentXP = 0
-        self.maxXP = 0
-        self.rank = "https://static.wixstatic.com/media/cb04e9_db781b062c6d4d02b1d5dbaf314ad2ef~mv2.png/v1/fill/w_256,h_256,al_c,q_85,enc_auto/cb04e9_db781b062c6d4d02b1d5dbaf314ad2ef~mv2.png"
-        self.MMR = randrange(400, 500)
+        self.levelXP = 0
+        self.hiddenMMR = 0
+        self.rank = ""
+
+
         self.quizQuestions:dict[str, Question] = {}
         self.score = 0
         self.correct = 0
@@ -63,8 +77,39 @@ class Player:
         self.incomingPartyInvites = {}
         self.outgoingPartyInvites = {}
 
-    def fetchFromDB(self):
-        pass
+    def setXP(self, xp):
+        xp_list = [
+        100, 280, 520, 800, 1120, 1470, 1850, 2260, 2700, 3160,
+        3650, 4160, 4690, 5240, 5810, 6400, 7010, 7640, 8280, 8940,
+        9620, 10320, 11030, 11760, 12500, 13260, 14030, 14820, 15620, 16430,
+        17260, 18100, 18960, 19820, 20710, 21600, 22510, 23420, 24360, 25300,
+        26250, 27220, 28200, 29190, 30190, 31200, 32220, 33260, 34300, 35360,
+        36420, 37500, 38580, 39680, 40790, 41910, 43030, 44170, 45320, 46480,
+        47640, 48820, 50000, 51200, 52400, 53620, 54840, 56070, 57320, 58570,
+        59820, 61090, 62370, 63660, 64950, 66260, 67570, 68890, 70220, 71550,
+        72900, 74250, 75620, 76990, 78370, 79750, 81150, 82550, 83960, 85380,
+        86810, 88240, 89680, 91140, 92590, 94060, 95530, 97020, 98500, 100000
+        ]
+        total_xp = 0
+        for level, xp_needed in enumerate(xp_list, start=1):
+            if xp < total_xp + xp_needed:
+                self.level = level
+                self.currentXP = xp - total_xp
+                self.levelXP = xp_needed
+                return
+            total_xp += xp_needed
+        self.level = len(xp_list)
+        self.currentXP = xp - total_xp
+        self.levelXP = xp_list[-1]
+    def setVisibleMMR(self, visibleMMR):
+        MMRList = [100, 280, 520, 800, 1120, 1470, 1850, 2260, 2700]
+        total_MMR = 0
+        for rankIndex, mmr_needed in enumerate(MMRList, start=1):
+            if visibleMMR < total_MMR + mmr_needed:
+                self.rank = self.rankImages[rankIndex-1]
+                return
+            total_MMR += mmr_needed
+        self.rank = self.rankImages[-1]
     def setStatus(self, status):
         self.state = status
     def getStatus(self):

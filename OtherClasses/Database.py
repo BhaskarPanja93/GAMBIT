@@ -70,6 +70,9 @@ class Database:
         PERSON_NAME = "person_name"
         AGE = "age"
         JOINED = "joined"
+        HIDDEN_MMR = "hidden_mmr"
+        VISIBLE_MMR = "visible_mmr"
+        XP = "xp"
 
 
     class USER_AUTH:

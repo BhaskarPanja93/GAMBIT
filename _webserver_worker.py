@@ -209,6 +209,8 @@ def renderLobby(viewerObj: DynamicWebsite.Viewer):
     showSocials(viewerObj)
     if viewerObj.privateData.player.party is None:
         createParty(viewerObj.privateData.player)
+    else:
+        viewerObj.privateData.player.party.reRenderLobby(viewerObj.privateData.player)
 
 
 ##############################################################################################################################
@@ -236,16 +238,32 @@ def renderMatchFound(viewerObj: DynamicWebsite.Viewer):
 
 
 ##############################################################################################################################
+# NOTES DASHBOARD
+
+
+def renderDashboard(viewerObj):
+    pass
+
+
+
+
+
+##############################################################################################################################
 # NOTES PAGES
 
 
-def renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
-    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.NotesFullPage)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+def __renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.NotesPageFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
 
 
 def renderNotes(viewerObj: DynamicWebsite.Viewer):
+    __renderNotesFullPage(viewerObj)
     updateStatus(viewerObj.privateData.player, PlayerStatus.NOTES)
-    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.HOMEPAGE))
+    renderBaseNavbar(viewerObj)
+    removeLobbyNavbar(viewerObj)
+    removeQuizNavbar(viewerObj)
+    hideSocials(viewerObj)
+    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.NOTES))
 
 
 ##############################################################################################################################
@@ -360,10 +378,10 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
                 question.selectedOption = question.fetchOption(form.get("OPTION"))
                 question.timeTaken = time() - question.startTime
                 return
-    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.HOMEPAGE]:
+    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.HOMEPAGE, Pages.QUIZ]:
         if purpose == "RENDER_HOMEPAGE":
             return renderHomePage(viewerObj)
-    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.NAVGRID]:
+    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.NAVGRID, Pages.QUIZ]:
         if purpose == "RENDER_NAVGRID":
             return renderNavGrid(viewerObj)
     if viewerObj.privateData.currentPage() == Pages.NAVGRID:
@@ -544,7 +562,7 @@ def visitorLeftCallback(viewerObj: DynamicWebsite.Viewer):
     print("Visitor Left: ", viewerObj.viewerID)
     if viewerObj.privateData.player is not None and viewerObj.privateData.player.party is not None:
         viewerObj.privateData.player.party.removePlayer(viewerObj.privateData.player, False)
-    viewerObj.privateData.player.removePFP()
+    if viewerObj.privateData.player is not None: viewerObj.privateData.player.removePFP()
     updateStatus(viewerObj.privateData.player, PlayerStatus.OFFLINE)
     cleanupPartyInvites(viewerObj)
     freeActiveUsername(viewerObj.privateData.userName)
@@ -621,6 +639,11 @@ def setPrivateDetails(viewerObj: DynamicWebsite.Viewer):
 def setPlayerDetails(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.player is None:
         viewerObj.privateData.player = Player(viewerObj)
+        r = DBHolder.useDB().execute(f"""SELECT {Database.USER_INFO.XP}, {Database.USER_INFO.HIDDEN_MMR}, {Database.USER_INFO.VISIBLE_MMR} FROM {Database.USER_INFO.TABLE_NAME} WHERE {Database.USER_INFO.USERNAME}=? LIMIT 1""", [viewerObj.privateData.userName])
+        r= r[0]
+        viewerObj.privateData.player.setXP(r[Database.USER_INFO.XP])
+        viewerObj.privateData.player.setVisibleMMR(r[Database.USER_INFO.VISIBLE_MMR])
+        viewerObj.privateData.player.hiddenMMR = r[Database.USER_INFO.HIDDEN_MMR]
         viewerObj.privateData.player.setPFP()
         for friend in DBHolder.useDB().execute(f"""SELECT CASE
                 WHEN {Database.FRIEND.P1} = ? THEN {Database.FRIEND.P2}
@@ -660,7 +683,7 @@ def createUser(viewerObj: DynamicWebsite.Viewer, username:str, password:str, per
     elif DBHolder.useDB().execute(f"SELECT {Database.USER_AUTH.EMAIL} from {Database.USER_AUTH.TABLE_NAME} where {Database.USER_AUTH.EMAIL}=? LIMIT 1", [email]):
         return False, "Email already registered"
     else:
-        DBHolder.useDB().execute(f"INSERT INTO {Database.USER_INFO.TABLE_NAME} VALUES (?, ?, ?)", [username, personName, viewerObj.privateData.activeSince])
+        DBHolder.useDB().execute(f"INSERT INTO {Database.USER_INFO.TABLE_NAME} VALUES (?, ?, ?, ?, ?, ?)", [username, personName, viewerObj.privateData.activeSince, 1000, 1000, 1000])
         DBHolder.useDB().execute(f"INSERT INTO {Database.USER_AUTH.TABLE_NAME} VALUES (?, ?, ?)", [username, email, passwordHasher.hash(password)])
         allowed, reason = freezeViewerTillUsernameRelease(viewerObj, username)
         if allowed:
@@ -812,6 +835,7 @@ def onQuizEnd(quiz:Quiz):
     sortedPlayers = sorted(quiz.match.teamA.allPlayers()+quiz.match.teamB.allPlayers(), reverse=True)
     for toSend in sortedPlayers:
         if toSend.viewer is not None:
+            toSend.viewer.privateData.newPage(Pages.QUIZ_SCOREBOARD)
             updateStatus(toSend, PlayerStatus.RESULT)
             renderBaseNavbar(toSend.viewer)
             removeQuizNavbar(toSend.viewer)

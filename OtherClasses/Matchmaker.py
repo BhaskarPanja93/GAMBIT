@@ -52,7 +52,7 @@ class Matchmaker:
             print("\nIn Queue:", len(self.inQueue))
             for party in self.inQueue:
                 for player in party.players:
-                    print("--- ", player.userName, player.MMR)
+                    print("--- ", player.userName, player.hiddenMMR)
             smallestDiffMatch = None
             partiesInQueue = self.inQueue
             for team1Size in range(min(3, len(partiesInQueue)), 0, -1):
@@ -91,12 +91,12 @@ class Matchmaker:
                 for party in match.teamA.parties:
                     print(f"\t\t\tParty waited for {party.partyTimer}")
                     for player in party.players:
-                        print("\t\t\t\t", player.userName, player.MMR)
+                        print("\t\t\t\t", player.userName, player.hiddenMMR)
                 print("\t\tTeamB")
                 for party in match.teamB.parties:
                     print(f"\t\t\tParty waited for {party.partyTimer}")
                     for player in party.players:
-                        print("\t\t\t\t", player.userName, player.MMR)
+                        print("\t\t\t\t", player.userName, player.hiddenMMR)
                 Thread(target=self.onMatch, args=(match,)).start()
 
 

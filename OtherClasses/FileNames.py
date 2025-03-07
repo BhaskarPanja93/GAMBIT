@@ -40,4 +40,4 @@ class FileNames:
         MatchFound = "MatchFound.html"
         QuizScoreBoardLoserElement = "QuizScoreBoardLoserElement.html"
         QuizScoreBoardWinnerElement = "QuizScoreBoardWinnerElement.html"
-        NotesFullPage = "NotesFullPage.html"
+        NotesPageFull = "NotesPageFull.html"
