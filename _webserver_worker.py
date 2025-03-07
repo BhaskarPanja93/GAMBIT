@@ -241,11 +241,15 @@ def renderMatchFound(viewerObj: DynamicWebsite.Viewer):
 # NOTES DASHBOARD
 
 
+def __renderDashboardFullPage(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Dashboard)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+
+
 def renderDashboard(viewerObj):
-    pass
-
-
-
+    __renderDashboardFullPage(viewerObj)
+    renderBaseNavbar(viewerObj)
+    removeLobbyNavbar(viewerObj)
+    removeQuizNavbar(viewerObj)
 
 
 ##############################################################################################################################

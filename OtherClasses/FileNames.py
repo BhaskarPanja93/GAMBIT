@@ -10,6 +10,7 @@ class FileNames:
     class CSS:
         Universal = "Universal.css"
     class HTML:
+        Dashboard = "Dashboard.html"
         FirstPage = "FirstPage.html"
         UniversalContainer = "UniversalContainer.html"
         BaseNavbar = "BaseNavbar.html"
