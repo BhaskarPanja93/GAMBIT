@@ -181,6 +181,7 @@ def hideSocials(viewerObj: DynamicWebsite.Viewer):
 def renderNavGrid(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.currentPage() != Pages.NAVGRID:
         viewerObj.privateData.newPage(Pages.NAVGRID)
+        viewerObj.privateData.player.viewer.sendCustomMessage(CustomMessages.pageChanged(Pages.NAVGRID))
         viewerObj.updateHTML(cachedElements.fetchStaticHTML(FileNames.HTML.NavgridStructure), DivID.changingPage, UpdateMethods.update)
         updateStatus(viewerObj.privateData.player, PlayerStatus.ONLINE)
         renderBaseNavbar(viewerObj)
@@ -243,8 +244,11 @@ def renderMatchFound(viewerObj: DynamicWebsite.Viewer):
 
 def renderDashboard(viewerObj):
     viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Dashboard)).render(baseURI=viewerObj.privateData.baseURI, player=viewerObj.privateData.player), DivID.changingPage, UpdateMethods.update)
+    viewerObj.privateData.newPage(Pages.DASHBOARD)
+    viewerObj.privateData.player.viewer.sendCustomMessage(CustomMessages.pageChanged(Pages.DASHBOARD))
     renderBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
+    hideSocials(viewerObj)
     removeQuizNavbar(viewerObj)
 
 
@@ -259,11 +263,12 @@ def __renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
 def renderNotes(viewerObj: DynamicWebsite.Viewer):
     __renderNotesFullPage(viewerObj)
     updateStatus(viewerObj.privateData.player, PlayerStatus.NOTES)
+    viewerObj.privateData.newPage(Pages.NOTES)
+    viewerObj.privateData.player.viewer.sendCustomMessage(CustomMessages.pageChanged(Pages.NOTES))
     renderBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     hideSocials(viewerObj)
-    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.NOTES))
 
 
 
@@ -278,11 +283,12 @@ def __renderFlashcardsFullPage(viewerObj: DynamicWebsite.Viewer):
 def renderFlashcards(viewerObj: DynamicWebsite.Viewer):
     __renderFlashcardsFullPage(viewerObj)
     updateStatus(viewerObj.privateData.player, PlayerStatus.FLASHCARD)
+    viewerObj.privateData.newPage(Pages.FLASHCARD)
+    viewerObj.privateData.player.viewer.sendCustomMessage(CustomMessages.pageChanged(Pages.FLASHCARD))
     renderBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     hideSocials(viewerObj)
-    viewerObj.sendCustomMessage(CustomMessages.pageChanged(Pages.FLASHCARD))
 
 
 ##############################################################################################################################

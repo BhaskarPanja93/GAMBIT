@@ -1,4 +1,24 @@
 <div class="w-full h-full p-6 overflow-auto">
+    <!-- Header -->
+    <div class="flex justify-between items-center mb-8">
+        <div class="flex items-center">
+            <a href="favicon.ico" class="mr-2">
+                <img src="favicon.ico" alt="Logo" class="h-8 w-8">
+            </a>
+            <div class="text-indigo-400 font-bold text-2xl py-3">GAMBIT</div>
+        </div>
+        <div class="flex space-x-4">
+            <button id="create-deck-btn" class="bg-indigo-600 hover:bg-indigo-700 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+                <svg xmlns="http://www.w3.org/2000/svg" class="h-5 w-5 mr-2" viewBox="0 0 20 20" fill="currentColor">
+                    <path fill-rule="evenodd" d="M10 3a1 1 0 011 1v5h5a1 1 0 110 2h-5v5a1 1 0 11-2 0v-5H4a1 1 0 110-2h5V4a1 1 0 011-1z" clip-rule="evenodd" />
+                </svg>
+                New Deck
+            </button>
+            <button id="view-decks-btn" class="bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200">
+                My Decks
+            </button>
+        </div>
+    </div>
 
     <!-- Main Content Area -->
     <div id="app-container" class="flex flex-col h-5/6">
@@ -151,3 +171,324 @@
         </div>
     </div>
 </div>
+
+<script>
+    // DOM elements
+    const createDeckBtn = document.getElementById('create-deck-btn');
+    const viewDecksBtn = document.getElementById('view-decks-btn');
+    const closeCreateViewBtn = document.getElementById('close-create-view');
+    const closePracticeViewBtn = document.getElementById('close-practice-view');
+    const deckListView = document.getElementById('deck-list-view');
+    const createDeckView = document.getElementById('create-deck-view');
+    const practiceView = document.getElementById('practice-view');
+    const addCardBtn = document.getElementById('add-card-btn');
+    const cardsContainer = document.getElementById('cards-container');
+    const saveDeckBtn = document.getElementById('save-deck-btn');
+    const flashcard = document.getElementById('flashcard');
+    const prevCardBtn = document.getElementById('prev-card');
+    const nextCardBtn = document.getElementById('next-card');
+    const practiceDeckTitle = document.getElementById('practice-deck-title');
+
+    // State
+    let currentCardIndex = 0;
+    let currentDeck = null;
+    let decks = [
+        {
+            id: 1,
+            title: 'Mathematics',
+            description: 'Basic algebra, geometry, and calculus concepts',
+            cardCount: 24,
+            lastPracticed: '2 days ago',
+            cards: [
+                {
+                    front: 'What is the Pythagorean theorem?',
+                    back: 'In a right triangle, the square of the length of the hypotenuse equals the sum of the squares of the lengths of the other two sides: a² + b² = c²'
+                },
+                {
+                    front: 'What is the quadratic formula?',
+                    back: 'x = (-b ± √(b² - 4ac)) / 2a'
+                },
+                {
+                    front: 'What is the derivative of sin(x)?',
+                    back: 'cos(x)'
+                }
+            ]
+        },
+        {
+            id: 2,
+            title: 'Spanish Vocabulary',
+            description: 'Common Spanish words and phrases for beginners',
+            cardCount: 42,
+            lastPracticed: 'Today'
+        },
+        {
+            id: 3,
+            title: 'Biology Terms',
+            description: 'Important biological concepts and terminology',
+            cardCount: 18,
+            lastPracticed: '5 days ago'
+        }
+    ];
+
+    // Event Listeners
+    createDeckBtn.addEventListener('click', showCreateDeckView);
+    viewDecksBtn.addEventListener('click', showDeckListView);
+    closeCreateViewBtn.addEventListener('click', showDeckListView);
+    closePracticeViewBtn.addEventListener('click', showDeckListView);
+    addCardBtn.addEventListener('click', addNewCard);
+    saveDeckBtn.addEventListener('click', saveDeck);
+    flashcard.addEventListener('click', flipCard);
+    prevCardBtn.addEventListener('click', showPreviousCard);
+    nextCardBtn.addEventListener('click', showNextCard);
+
+    // Set up practice buttons
+    const practiceButtons = document.querySelectorAll('.practice-btn');
+    practiceButtons.forEach((button, index) => {
+        button.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startPractice(decks[index]);
+        });
+    });
+
+    // Card deletion
+    document.addEventListener('click', function(e) {
+        if (e.target.closest('.delete-card')) {
+            const cardItem = e.target.closest('.card-item');
+            if (cardItem.parentNode.children.length > 1) {
+                cardItem.remove();
+                updateCardNumbers();
+            } else {
+                alert('You need at least one card in the deck!');
+            }
+        }
+    });
+
+
+    // Functions
+    function showCreateDeckView() {
+        deckListView.classList.add('hidden');
+        practiceView.classList.add('hidden');
+        createDeckView.classList.remove('hidden');
+    }
+
+    function showDeckListView() {
+        createDeckView.classList.add('hidden');
+        practiceView.classList.add('hidden');
+        deckListView.classList.remove('hidden');
+    }
+
+    function addNewCard() {
+        const cardCount = cardsContainer.children.length + 1;
+        const newCard = document.createElement('div');
+        newCard.className = 'card-item bg-gray-700 rounded-lg p-4';
+        newCard.innerHTML = `
+                    <div class="flex justify-between mb-2">
+                        <span class="text-sm text-gray-400">Card ${cardCount}</span>
+                        <button class="delete-card text-gray-400 hover:text-red-400">
+                            <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                            </svg>
+                        </button>
+                    </div>
+                    <input type="text" class="w-full bg-gray-600 text-white px-3 py-2 rounded mb-2 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Front (question)">
+                    <textarea class="w-full bg-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500" rows="2" placeholder="Back (answer)"></textarea>
+                `;
+        cardsContainer.appendChild(newCard);
+    }
+
+    function updateCardNumbers() {
+        const cardItems = cardsContainer.querySelectorAll('.card-item');
+        cardItems.forEach((card, index) => {
+            const cardNumberSpan = card.querySelector('span');
+            cardNumberSpan.textContent = `Card ${index + 1}`;
+        });
+    }
+
+    function saveDeck() {
+        const title = document.getElementById('deck-title').value;
+        const description = document.getElementById('deck-description').value;
+
+        if (!title) {
+            alert('Please enter a deck title');
+            return;
+        }
+
+        const cards = [];
+        const cardItems = cardsContainer.querySelectorAll('.card-item');
+        let valid = true;
+
+        cardItems.forEach((card) => {
+            const front = card.querySelector('input').value;
+            const back = card.querySelector('textarea').value;
+
+            if (!front || !back) {
+                valid = false;
+            }
+
+            cards.push({ front, back });
+        });
+
+        if (!valid) {
+            alert('Please fill out both sides of all cards');
+            return;
+        }
+
+        const newDeck = {
+            id: decks.length + 1,
+            title,
+            description,
+            cardCount: cards.length,
+            cards,
+            lastPracticed: 'Never'
+        };
+
+        decks.push(newDeck);
+
+        // Add to UI
+        const deckCard = document.createElement('div');
+        deckCard.className = 'deck-card bg-gradient-to-br from-indigo-900 to-indigo-950 rounded-xl p-6 hover:shadow-lg hover:shadow-indigo-500/20 transition-all duration-300 cursor-pointer';
+        deckCard.innerHTML = `
+                    <div class="flex justify-between items-start mb-4">
+                        <h3 class="text-xl font-bold text-indigo-300">${title}</h3>
+                        <span class="bg-indigo-700 text-xs px-2 py-1 rounded-full text-white">${cards.length} cards</span>
+                    </div>
+                    <p class="text-gray-300 mb-6 text-sm">${description || 'No description'}</p>
+                    <div class="flex justify-between items-center">
+                        <span class="text-xs text-gray-400">Last practiced: Never</span>
+                        <button class="practice-btn bg-indigo-600 hover:bg-indigo-700 text-white text-sm px-3 py-1 rounded-lg transition-colors duration-200">Practice</button>
+                    </div>
+                `;
+
+        deckListView.appendChild(deckCard);
+
+        // Add event listener to new practice button
+        const practiceBtn = deckCard.querySelector('.practice-btn');
+        practiceBtn.addEventListener('click', (e) => {
+            e.stopPropagation();
+            startPractice(newDeck);
+        });
+
+        // Reset form
+        document.getElementById('deck-title').value = '';
+        document.getElementById('deck-description').value = '';
+        cardsContainer.innerHTML = `
+                    <div class="card-item bg-gray-700 rounded-lg p-4">
+                        <div class="flex justify-between mb-2">
+                            <span class="text-sm text-gray-400">Card 1</span>
+                            <button class="delete-card text-gray-400 hover:text-red-400">
+                                <svg xmlns="http://www.w3.org/2000/svg" class="h-4 w-4" fill="none" viewBox="0 0 24 24" stroke="currentColor">
+                                    <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                                </svg>
+                            </button>
+                        </div>
+                        <input type="text" class="w-full bg-gray-600 text-white px-3 py-2 rounded mb-2 focus:outline-none focus:ring-1 focus:ring-indigo-500" placeholder="Front (question)">
+                        <textarea class="w-full bg-gray-600 text-white px-3 py-2 rounded focus:outline-none focus:ring-1 focus:ring-indigo-500" rows="2" placeholder="Back (answer)"></textarea>
+                    </div>
+                `;
+
+        showDeckListView();
+
+        alert('Deck saved successfully!');
+    }
+
+    function startPractice(deck) {
+        currentDeck = deck;
+        currentCardIndex = 0;
+
+        deckListView.classList.add('hidden');
+        createDeckView.classList.add('hidden');
+        practiceView.classList.remove('hidden');
+
+        practiceDeckTitle.textContent = deck.title;
+        updateCardDisplay();
+    }
+
+    function updateCardDisplay() {
+        if (!currentDeck.cards || currentDeck.cards.length === 0) {
+            waitForElementPresence("practice-progress", (element)=>element.textContent = 'No cards in this deck')
+            return;
+        }
+        waitForElementPresence("practice-progress", (element)=>element.textContent = `Card ${currentCardIndex + 1} of ${currentDeck.cards.length}`)
+
+        const frontCard = document.querySelector('.flashcard-front p');
+        const backCard = document.querySelector('.flashcard-back p');
+
+        frontCard.textContent = currentDeck.cards[currentCardIndex].front;
+        backCard.textContent = currentDeck.cards[currentCardIndex].back;
+
+        // Reset flip state
+        const flashcardInner = document.querySelector('.flashcard-inner');
+        flashcardInner.style.transform = 'rotateY(0deg)';
+    }
+
+    function flipCard() {
+        const flashcardInner = document.querySelector('.flashcard-inner');
+        if (flashcardInner.style.transform === 'rotateY(180deg)') {
+            flashcardInner.style.transform = 'rotateY(0deg)';
+        } else {
+            flashcardInner.style.transform = 'rotateY(180deg)';
+        }
+    }
+
+    function showPreviousCard() {
+        if (currentCardIndex > 0) {
+            currentCardIndex--;
+            updateCardDisplay();
+        }
+    }
+
+    function showNextCard() {
+        if (currentDeck.cards && currentCardIndex < currentDeck.cards.length - 1) {
+            currentCardIndex++;
+            updateCardDisplay();
+        } else if (currentDeck.cards && currentCardIndex === currentDeck.cards.length - 1) {
+            // End of deck
+            if (confirm('You reached the end of this deck! Would you like to return to the deck list?')) {
+                showDeckListView();
+            } else {
+                // Restart the deck
+                currentCardIndex = 0;
+                updateCardDisplay();
+            }
+        }
+    }
+
+    // Add necessary CSS for 3D flip effect
+    document.head.insertAdjacentHTML('beforeend', `
+                <style>
+                    .perspective-1000 {
+                        perspective: 1000px;
+                    }
+
+                    .transform-style-3d {
+                        transform-style: preserve-3d;
+                    }
+
+                    .backface-hidden {
+                        backface-visibility: hidden;
+                    }
+
+                    .transform-rotate-y-180 {
+                        transform: rotateY(180deg);
+                    }
+
+                    .flashcard-inner {
+                        transition: transform 0.1s;
+                    }
+                </style>
+            `);
+
+    // Make deck cards clickable to view deck details
+    const deckCards = document.querySelectorAll('.deck-card');
+    deckCards.forEach((card, index) => {
+        card.addEventListener('click', (e) => {
+            if (!e.target.closest('.practice-btn')) {
+                // Show deck details - could expand this feature
+                startPractice(decks[index]);
+            }
+        });
+    });
+
+    // Initialize with deck list view
+    showDeckListView();
+</script>
