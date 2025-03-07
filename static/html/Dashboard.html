@@ -70,7 +70,7 @@
                             <span class="text-xl font-bold text-green-400">{{ player.level }}</span>
                         </div>
                         <div class="w-full bg-gray-700 rounded-full h-2">
-                            <div class="bg-green-600 h-2 rounded-full" style="width: 65%"></div>
+                            <div class="bg-green-600 h-2 rounded-full" style="width: {{ 100 - (player.currentXP*100 / player.levelXP) }}%"></div>
                         </div>
                         <p class="text-xs text-gray-400 mt-1">Next level in {{ 100 - (player.currentXP*100 / player.levelXP) }}%</p>
                     </div>

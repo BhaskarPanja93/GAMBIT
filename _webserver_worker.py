@@ -242,7 +242,7 @@ def renderMatchFound(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderDashboard(viewerObj):
-    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Dashboard)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
+    viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Dashboard)).render(baseURI=viewerObj.privateData.baseURI, player=viewerObj.privateData.player), DivID.changingPage, UpdateMethods.update)
     renderBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
