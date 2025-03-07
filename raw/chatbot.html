@@ -4,68 +4,54 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>lobby</title>
-
     <script src="https://cdn.tailwindcss.com"></script>
     <link rel="stylesheet" href="Overall.css">
-
 </head>
 <body>
-<div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
-    <audio id="music-player" preload="none">
-        <source src="" type="audio/x-wav;codec=pcm">
-    </audio>
+<div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex items-center justify-center gradient-move">
+    <!-- Chatbot Container -->
+    <div class="w-96 bg-gray-800 text-white rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
+        <!-- Header -->
+        <div class="bg-gray-700 p-4 text-center font-bold text-lg border-b border-gray-600">Chatbot</div>
 
-    <!-- Animation div-->
-    <div class="bg-animation-box">
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
-        <div></div>
+        <!-- Chat Messages -->
+        <div id="chat-container" class="h-72 overflow-y-auto p-4 space-y-3">
+            <div class="flex items-start">
+                <div class="bg-gray-700 text-gray-300 p-3 rounded-xl max-w-xs shadow-md">Hello! How can I assist you today?</div>
+            </div>
+            <div class="flex items-start justify-end">
+                <div class="bg-blue-500 text-white p-3 rounded-xl max-w-xs shadow-md">I need help with my order.</div>
+            </div>
+        </div>
+
+        <!-- Input Box -->
+        <div class="bg-gray-700 p-4 flex items-center border-t border-gray-600">
+            <input type="text" id="message-input" placeholder="Type a message..." class="bg-gray-800 text-white w-full py-2 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner">
+            <button id="send-button" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 ml-3 rounded-xl shadow-md">Send</button>
+        </div>
     </div>
-    <div id="particles-animation"></div>
-
-    <!-- Main Div -->
-    <div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden relative">
-
-
-        <!-- Content here for chatbox interface-->
-
-
-        <script src="Music.js"></script>
-        <script src="Trail.js"></script>
-
-
-        <script>
-            const friendList = document.getElementById("friend-list")
-            friendList.onmouseleave = function () {
-                friendList.classList.add("w-17")
-                friendList.classList.remove("w-60")
-                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
-                    e.children[1].classList.add("hidden")
-                })
-                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
-                    e.children[1].classList.add("hidden")
-                })
-            }
-            friendList.onmouseenter = function () {
-                friendList.classList.add("w-60")
-                friendList.classList.remove("w-17")
-                Object.values(friendList.children[0].children[1].children[1].children).forEach((e) => {
-                    e.children[1].classList.remove("hidden")
-                })
-                Object.values(friendList.children[0].children[2].children[1].children).forEach((e) => {
-                    e.children[1].classList.remove("hidden")
-                })
-            }
-        </script>
-    </div>
-
 </div>
+
+<script>
+    document.getElementById("send-button").addEventListener("click", function() {
+        const inputField = document.getElementById("message-input");
+        const message = inputField.value.trim();
+        if (message) {
+            const chatContainer = document.getElementById("chat-container");
+
+            // Create user message bubble
+            const userMessage = document.createElement("div");
+            userMessage.classList.add("flex", "items-start", "justify-end");
+            userMessage.innerHTML = `<div class="bg-blue-500 text-white p-3 rounded-xl max-w-xs shadow-md">${message}</div>`;
+            chatContainer.appendChild(userMessage);
+
+            // Clear input field
+            inputField.value = "";
+
+            // Scroll to bottom
+            chatContainer.scrollTop = chatContainer.scrollHeight;
+        }
+    });
+</script>
 </body>
 </html>
