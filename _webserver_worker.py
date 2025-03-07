@@ -397,9 +397,6 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
                 question.selectedOption = question.fetchOption(form.get("OPTION"))
                 question.timeTaken = time() - question.startTime
                 return
-    if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.HOMEPAGE, Pages.QUIZ]:
-        if purpose == "RENDER_HOMEPAGE":
-            return renderHomePage(viewerObj)
     if viewerObj.privateData.currentPage() not in [Pages.AUTH, Pages.PRE_AUTH, Pages.NAVGRID, Pages.QUIZ]:
         if purpose == "RENDER_NAVGRID":
             return renderNavGrid(viewerObj)

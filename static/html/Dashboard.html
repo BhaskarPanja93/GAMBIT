@@ -1,24 +1,4 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Student Dashboard</title>
-    <script src="https://cdn.tailwindcss.com"></script>
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-</head>
-<body>
-<div class="main-wrapper bg-[#374151] text-gray-50 h-screen overflow-hidden flex flex-col gradient-move">
-    <!-- Background Animation Divs -->
-    <div class="bg-animation-box">
-        <div></div><div></div><div></div><div></div><div></div>
-        <div></div><div></div><div></div><div></div><div></div>
-    </div>
-    <div id="particles-animation"></div>
-
-    <!-- Main Dashboard Container -->
-    <div class="bg-gradient-to-br from-gray-800 via-black to-black mx-4 sm:mx-8 md:mx-12 lg:mx-16 mt-[7vw] sm:mt-[6vw] md:mt-[5vw] lg:mt-[4vw] mb-[7vw] sm:mb-[6vw] md:mb-[5vw] lg:mb-[4vw] rounded-2xl h-screen overflow-hidden relative">
-        <div class="grid grid-cols-12 h-full">
+<div class="grid grid-cols-12 h-full">
             <!-- Sidebar Navigation -->
             <div id="sidebar" class="col-span-2 bg-gray-900 p-4 transition-all duration-300 ease-in-out">
                 <div class="space-y-4">
@@ -201,9 +181,6 @@
                 </div>
             </div>
         </div>
-    </div>
-</div>
-
 <script>
     // Performance Chart
     const ctx = document.getElementById('performanceChart').getContext('2d');
@@ -230,5 +207,3 @@
         }
     });
 </script>
-</body>
-</html>
