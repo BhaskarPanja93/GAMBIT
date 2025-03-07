@@ -275,12 +275,12 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
 # FLASHCARD PAGES
 
 
-def __renderFlashcardFullPage(viewerObj: DynamicWebsite.Viewer):
+def __renderFlashcardsFullPage(viewerObj: DynamicWebsite.Viewer):
     viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Flashcard)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
 
 
-def renderFlashcardFull(viewerObj: DynamicWebsite.Viewer):
-    __renderFlashcardFullPage(viewerObj)
+def renderFlashcards(viewerObj: DynamicWebsite.Viewer):
+    __renderFlashcardsFullPage(viewerObj)
     updateStatus(viewerObj.privateData.player, PlayerStatus.FLASHCARD)
     renderBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
