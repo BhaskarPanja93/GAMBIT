@@ -96,7 +96,7 @@ def renderAuthPre(viewerObj: DynamicWebsite.Viewer):
     removeBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
-    #hideSocials(viewerObj)
+    hideSocials(viewerObj)
     if viewerObj.privateData.currentPage() != Pages.PRE_AUTH:
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.AuthPre)).render(baseURI=viewerObj.privateData.baseURI), DivID.auth, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.PRE_AUTH)
@@ -124,7 +124,7 @@ def renderHomePage(viewerObj: DynamicWebsite.Viewer):
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     renderBaseNavbar(viewerObj)
-    showSocials(viewerObj)
+    hideSocials(viewerObj)
     if viewerObj.privateData.currentPage() != Pages.HOMEPAGE:
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.Homepage)).render(baseURI=viewerObj.privateData.baseURI, player=viewerObj.privateData.player), DivID.auth, UpdateMethods.update)
         viewerObj.privateData.newPage(Pages.HOMEPAGE)
@@ -192,7 +192,7 @@ def renderNavGrid(viewerObj: DynamicWebsite.Viewer):
         renderBaseNavbar(viewerObj)
         removeLobbyNavbar(viewerObj)
         removeQuizNavbar(viewerObj)
-        showSocials(viewerObj)
+        hideSocials(viewerObj)
 
 
 ##############################################################################################################################
@@ -232,6 +232,7 @@ def __renderQuizStructure(viewerObj: DynamicWebsite.Viewer):
 def renderQuiz(viewerObj: DynamicWebsite.Viewer):
     viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.QuizFull)).render(baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
     renderQuizNavbar(viewerObj)
+    hideSocials(viewerObj)
 
 
 def renderMatchFound(viewerObj: DynamicWebsite.Viewer):
@@ -281,7 +282,7 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderMarketplace(viewerObj: DynamicWebsite.Viewer):
-    pass
+    hideSocials(viewerObj)
 
 
 
@@ -316,6 +317,7 @@ def renderChatbot(viewerObj: DynamicWebsite.Viewer):
     renderBaseNavbar(viewerObj)
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
+    hideSocials(viewerObj)
     for message in viewerObj.privateData.chatbotHistory:
         viewerObj.sendCustomMessage(CustomMessages.chatbotMessage(message.sender==ChatbotMessageSenders.user, message.id, message.message))
 
@@ -325,21 +327,20 @@ def processChatbotMessage(viewerObj: DynamicWebsite.Viewer, text: str):
     viewerObj.sendCustomMessage(CustomMessages.chatbotMessage(message.sender==ChatbotMessageSenders.user, message.id, message.message))
     viewerObj.privateData.chatbotHistory.append(message)
 
+    old_msgs = [msg.export() for msg in viewerObj.privateData.chatbotHistory if msg.isComplete]
+    message = ChatbotMessage(ChatbotMessageSenders.assistant, "", False)
+    if viewerObj.privateData.currentPage() == Pages.CHATBOT: viewerObj.sendCustomMessage( CustomMessages.chatbotMessage(message.sender == ChatbotMessageSenders.user, message.id, ""))
+    viewerObj.privateData.chatbotHistory.append(message)
     params = {
         'max_tokens': 2048,
         'stream': True
     }
-    stream = ollamaClient.chat(
+    for chunk in ollamaClient.chat(
         model='deepseek-coder-v2:latest',
-        messages=[msg.export() for msg in viewerObj.privateData.chatbotHistory if msg.isComplete],
+        messages=old_msgs,
         options=params,
         stream=True
-    )
-
-    message = ChatbotMessage(ChatbotMessageSenders.assistant, "", False)
-    viewerObj.privateData.chatbotHistory.append(message)
-
-    for chunk in stream:
+        ):
         sleep(0.01)
         content = chunk['message']['content']
         message.message += content
@@ -483,7 +484,7 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             return renderChatbot(viewerObj)
     if viewerObj.privateData.currentPage() == Pages.CHATBOT:
         if purpose == "CHATBOT_MESSAGE":
-            processChatbotMessage(viewerObj, form["MESSAGE"])
+            return processChatbotMessage(viewerObj, form["MESSAGE"])
     if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
         if purpose == "CHAT":
             form["TEXT"] = Template(form["TEXT"][:100]).render()
