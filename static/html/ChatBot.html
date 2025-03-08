@@ -1,5 +1,4 @@
-<div class="flex flex-col items-center justify-center w-full">
-    <div class="w-96 bg-gray-800 text-white rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
+<div class="w-full min-h-[80vh] sm:min-h-[70vh] md:min-h-[80vh] lg:min-h-[85vh] bg-gray-800 text-white rounded-2xl shadow-2xl overflow-hidden border border-gray-700">
         <!-- Header -->
         <div class="bg-gray-700 p-4 text-center font-bold text-lg border-b border-gray-600">Chatbot</div>
 
@@ -8,89 +7,194 @@
             <div class="flex items-start">
                 <div class="bg-gray-700 text-gray-300 p-3 rounded-xl max-w-xs shadow-md">Hello! How can I assist you today?</div>
             </div>
+            <div class="flex items-start justify-end">
+                <div class="bg-blue-500 text-white p-3 rounded-xl max-w-xs shadow-md">I need help with my order.</div>
+            </div>
         </div>
 
         <!-- Input Box -->
-        <div class="bg-gray-700 p-4 flex items-center border-t border-gray-600">
+        <div class="bg-gray-700 p-4 flex items-center border-t border-gray-600 mt-4 sm:mt-6 md:mt-8 lg:mt-10 transform translate-y-6 sm:translate-y-12 md:translate-y-18 lg:translate-y-26">
             <input type="text" id="message-input" placeholder="Type a message..." class="bg-gray-800 text-white w-full py-2 px-4 rounded-xl focus:outline-none focus:ring-2 focus:ring-blue-500 shadow-inner">
-            <button id="chatbot-send-button" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 ml-3 rounded-xl shadow-md">Send</button>
+            <button id="send-button" class="bg-blue-500 hover:bg-blue-600 text-white px-4 py-2 ml-3 rounded-xl shadow-md">Send</button>
         </div>
-        <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
-        <script id="script-chatbot">
+    </div>
+</div>
+<script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+<script id="script-chatbot">
+    // Store message content for each message ID
+    const messageContents = {};
 
-            waitForElementPresence("#message-input", (input)=>{
-                input.addEventListener("keydown", function(e) {
-                    if (e.key === "Enter") {
-                        e.preventDefault()
-                        sendChatbotMessage()
-                    }
-                })
-                waitForElementPresence("#chatbot-send-button", (button=>{
-                    button.addEventListener("click", ()=>{
-                        sendChatbotMessage()
-                    })
-                }))
+    waitForElementPresence("#message-input", (input) => {
+        input.addEventListener("keydown", function (e) {
+            if (e.key === "Enter") {
+                e.preventDefault()
+                sendChatbotMessage()
+            }
+        })
+        waitForElementPresence("#chatbot-send-button", (button => {
+            button.addEventListener("click", () => {
+                sendChatbotMessage()
             })
+        }))
+    })
 
-            function sendChatbotMessage() {
-                const text = document.getElementById("message-input").value.trim()
-                if (text) {
-                    sendCustomMessage({PURPOSE: "CHATBOT_MESSAGE", MESSAGE: text})
-                    document.getElementById("message-input").value = ""
-                }
+    function sendChatbotMessage() {
+        const text = document.getElementById("message-input").value.trim()
+        if (text) {
+            sendCustomMessage({PURPOSE: "CHATBOT_MESSAGE", MESSAGE: text})
+            document.getElementById("message-input").value = ""
+
+            // Create a user message in the chat
+        }
+    }
+
+    function formatMessageContent(content) {
+        // Configure marked options
+        marked.setOptions({
+            highlight: function (code, language) {
+                return code;
             }
+        });
 
-            function receiveChatbotMessage(data) {
-                let self = data["IS_SELF"];
-                let messageID = data["MESSAGE_ID"];
-                let messageText = data["TEXT"];
-                let messageElement = document.getElementById(`chatbot-message-${messageID}`);
+        // Use marked library to parse the markdown
+        let text = marked.parse(content).trim();
 
-                // Use marked library to parse the markdown
-                let text = marked.parse(messageText).trim();
+        // Clean up the text, removing <p> tags if they are around the message
+        if (text.startsWith("<p>") && text.endsWith("</p>")) {
+            text = text.slice(3, -4);
+        }
 
-                // Clean up the text, removing <p> tags if they are around the message
-                if (text.startsWith("<p>") && text.endsWith("</p>")) {
-                    text = text.slice(3, -4);
-                }
+        // Style inline code
+        text = text.replace(/<code>(.*?)<\/code>/g,
+            '<code class="bg-gray-900 text-green-400 px-2 py-1 rounded font-mono text-sm">$1</code>');
 
-                // Ensure that inline code is styled properly
-                // We replace <code> tags with custom styling for inline code
-                text = text.replace(/<code>(.*?)<\/code>/g, '<code class="bg-gray-800 text-white px-1 rounded">$1</code>');
+        // Style code blocks - target pre > code blocks
+        text = text.replace(/<pre><code>([\s\S]*?)<\/code><\/pre>/g,
+            '<pre class="bg-gray-900 p-3 rounded-md my-2 overflow-x-auto border border-gray-700">' +
+            '<code class="font-mono text-sm text-green-400">$1</code></pre>');
 
-                const chatContainer = document.getElementById("chat-container");
+        return text;
+    }
 
-                if (messageElement === null) {
-                    // Create a new message wrapper div
-                    let messageWrapper = document.createElement("div");
-                    messageWrapper.classList.add("flex", "items-start");
+    function receiveChatbotMessage(data) {
+        let self = data["IS_SELF"];
+        let messageID = data["MESSAGE_ID"];
+        let messageText = data["TEXT"];
 
-                    if (self) messageWrapper.classList.add("justify-end");
+        // Update our stored content for this message
+        if (!messageContents[messageID]) {
+            messageContents[messageID] = '';
+        }
+        messageContents[messageID] += messageText;
 
-                    // Create the message element
-                    messageElement = document.createElement("div");
-                    messageElement.id = `chatbot-message-${messageID}`;
-                    messageElement.classList.add(
-                        "p-3", "rounded-xl", "max-w-xs", "shadow-md",
-                        self ? "bg-blue-500" : "bg-gray-700",
-                        self ? "text-white" : "text-gray-300"
-                    );
+        // Get the formatted content
+        let formattedContent = formatMessageContent(messageContents[messageID]);
 
-                    // Set the inner HTML of the message element to the parsed markdown
-                    messageElement.innerHTML = text;
+        // Update or create the message element
+        let messageElement = document.getElementById(`chatbot-message-${messageID}`);
+        const chatContainer = document.getElementById("chat-container");
 
-                    // Append the message element to the message wrapper
-                    messageWrapper.appendChild(messageElement);
+        if (messageElement === null) {
+            // Create a new message wrapper div
+            let messageWrapper = document.createElement("div");
+            messageWrapper.classList.add("flex", "items-start");
 
-                    // Append the message wrapper to the chat container
-                    chatContainer.appendChild(messageWrapper);
-                } else {
-                    // If the message already exists, append the new parsed content
-                    messageElement.innerHTML += text;
-                }
+            if (self) messageWrapper.classList.add("justify-end");
+
+            // Create the message element
+            messageElement = document.createElement("div");
+            messageElement.id = `chatbot-message-${messageID}`;
+            messageElement.classList.add(
+                "p-3", "rounded-xl", "shadow-md", "max-w-xs",
+                self ? "bg-blue-500" : "bg-gray-700",
+                self ? "text-white" : "text-gray-300"
+            );
+
+            // Default width
+            messageElement.classList.add("max-w-xs");
+
+            // Set the inner HTML
+            messageElement.innerHTML = formattedContent;
+
+            // Append the message element to the message wrapper
+            messageWrapper.appendChild(messageElement);
+
+            // Append the message wrapper to the chat container
+            chatContainer.appendChild(messageWrapper);
+        } else {
+            // Update the existing message
+            messageElement.innerHTML = formattedContent;
+        }
+
+        // Check if we need to increase the width for code blocks
+        if (formattedContent.includes("<pre class=")) {
+            messageElement.classList.remove("max-w-xs");
+            messageElement.classList.add("max-w-lg");
+        }
+
+        if (formattedContent.includes("<pre class=")) {
+            messageElement.classList.remove("max-w-lg");
+            messageElement.classList.add("max-w-full");
+        }
+
+
+
+
+        // Auto-scroll to the bottom
+        chatContainer.scrollTop = chatContainer.scrollHeight;
+    }
+
+    // Helper function to wait for an element to be present in the DOM
+    function waitForElementPresence(selector, callback) {
+        const element = document.querySelector(selector);
+        if (element) {
+            callback(element);
+            return;
+        }
+
+        const observer = new MutationObserver((mutations) => {
+            const element = document.querySelector(selector);
+            if (element) {
+                observer.disconnect();
+                callback(element);
             }
+        });
 
+        observer.observe(document.body, {
+            childList: true,
+            subtree: true
+        });
+    }
+</script>
 
-        </script>
-    </div>
-    </div>
+<style>
+    /* Custom scrollbar */
+    .scrollbar-thin::-webkit-scrollbar {
+        width: 6px;
+    }
+
+    .scrollbar-thumb-gray-700::-webkit-scrollbar-thumb {
+        background-color: #4B5563;
+        border-radius: 3px;
+    }
+
+    .scrollbar-track-gray-900::-webkit-scrollbar-track {
+        background-color: #111827;
+    }
+
+    /* Fade animation for new messages */
+    @keyframes fadeIn {
+        from {
+            opacity: 0;
+            transform: translateY(10px);
+        }
+        to {
+            opacity: 1;
+            transform: translateY(0);
+        }
+    }
+
+    #chat-container > div {
+        animation: fadeIn 0.3s ease-out forwards;
+    }
+</style>
