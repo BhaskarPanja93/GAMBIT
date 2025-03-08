@@ -132,14 +132,14 @@ class Quiz:
             questionInstance:Question = player.quizQuestions.get(lastQuestionID)
             if questionInstance.selectedOption is None:
                 scoreChange = -3
-                healthImpact = -questionInstance.questionNumber * 2
+                healthImpact = -questionInstance.questionNumber
                 player.unattempted += 1
                 player.score += scoreChange
                 player.healthImpact += healthImpact
                 player.party.team.health += healthImpact
             elif questionInstance.selectedOption.isCorrect:
                 scoreChange = 5 * (questionInstance.maxTime - questionInstance.timeTaken)
-                healthImpact = (questionInstance.maxTime - questionInstance.timeTaken) * len(self.questionHistory)
+                healthImpact = (questionInstance.maxTime - questionInstance.timeTaken) * len(self.questionHistory) * 2
                 player.correct += 1
                 player.score += scoreChange
                 player.healthImpact += healthImpact

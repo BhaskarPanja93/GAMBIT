@@ -1,6 +1,6 @@
 from datetime import datetime
 
-from OtherClasses.Pages import Pages
+from OtherClasses.ChatbotMessage import ChatbotMessage
 
 
 class PrivateData:
@@ -13,6 +13,7 @@ class PrivateData:
         self.pagesHistory = []
         self.renderedElements = set()
         self.renderedScripts = set()
+        self.chatbotHistory:list[ChatbotMessage] = []
 
     def isScriptRendered(self, name):
         if name not in self.renderedScripts:

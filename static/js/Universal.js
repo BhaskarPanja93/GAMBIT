@@ -17,11 +17,11 @@ const CUSTOM_MESSAGE_TASKS = {
     TOGGLE_SOCIALS: 'TOGGLE_SOCIALS',
     NEW_INTERACTION: 'NEW_INTERACTION',
     DELETE_INTERACTION: 'DELETE_INTERACTION',
+    CHATBOT_MESSAGE: 'CHATBOT_MESSAGE',
 }
 
 
 function WSListener(data) {
-    console.log(data)
     if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.REFRESH) location.reload()
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_REMOVED) waitForElementPresence("#script-friends", ()=>friendRemoved(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_ADDED) waitForElementPresence("#script-friends", ()=>friendAdded(data))
@@ -35,6 +35,8 @@ function WSListener(data) {
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.NEW_INTERACTION) waitForElementPresence("#script-friends", ()=>newInteraction(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.DELETE_INTERACTION) waitForElementPresence("#script-friends", ()=>deleteInteraction(data))
     else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.FRIEND_STATE_CHANGED) waitForElementPresence("#script-friends", ()=>friendStateChanged(data))
+    else if (data["MESSAGE"] === CUSTOM_MESSAGE_TASKS.CHATBOT_MESSAGE) waitForElementPresence("#script-chatbot", ()=>receiveChatbotMessage(data))
+
 }
 
 

@@ -14,6 +14,7 @@ class CustomMessageTask:
     TOGGLE_SOCIALS = 'TOGGLE_SOCIALS'
     NEW_INTERACTION = 'NEW_INTERACTION'
     DELETE_INTERACTION = 'DELETE_INTERACTION'
+    CHATBOT_MESSAGE = "CHATBOT_MESSAGE"
 
 
 class CustomMessages:
@@ -59,3 +60,6 @@ class CustomMessages:
     @staticmethod
     def deleteInteraction(interactionID):
         return {"MESSAGE": CustomMessageTask.DELETE_INTERACTION, "ID":interactionID}
+    @staticmethod
+    def chatbotMessage(isSelf, messageID, text):
+        return {"MESSAGE": CustomMessageTask.CHATBOT_MESSAGE, "IS_SELF": isSelf, "MESSAGE_ID":messageID, "TEXT": text}

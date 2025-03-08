@@ -4,22 +4,22 @@
     <div class="flex flex-col sm:flex-row h-screen">
         <!-- Main Content Area -->
         <div class="flex-1 flex flex-col h-screen sm:h-[95vh] md:h-[90vh] lg:h-[85vh] overflow-hidden">
-            <div class="relative p-5 sm:p-6 md:p-8 lg:p-10 border-b border-gray-700
-                flex justify-between items-center bg-gray-900 bg-opacity-50">
-                <h1 class="text-xl font-bold">Notes Repository</h1>
-                <div class="flex space-x-2">
-                    <button id="create-note-btn"
-                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center">
-                        <i class="fas fa-plus mr-2"></i>
-                        <span class="hidden sm:inline">Create Note</span>
-                    </button>
-                    <button id="upload-note-btn"
-                            class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm flex items-center">
-                        <i class="fas fa-upload mr-2"></i>
-                        <span class="hidden sm:inline">Upload</span>
-                    </button>
-                </div>
-            </div>
+{#            <div class="relative p-5 sm:p-6 md:p-8 lg:p-10 border-b border-gray-700#}
+{#                flex justify-between items-center bg-gray-900 bg-opacity-50">#}
+{#                <h1 class="text-xl font-bold">Notes Repository</h1>#}
+{#                <div class="flex space-x-2">#}
+{#                    <button id="create-note-btn"#}
+{#                            class="bg-blue-600 hover:bg-blue-700 text-white px-4 py-2 rounded-lg text-sm flex items-center">#}
+{#                        <i class="fas fa-plus mr-2"></i>#}
+{#                        <span class="hidden sm:inline">Create Note</span>#}
+{#                    </button>#}
+{#                    <button id="upload-note-btn"#}
+{#                            class="bg-purple-600 hover:bg-purple-700 text-white px-4 py-2 rounded-lg text-sm flex items-center">#}
+{#                        <i class="fas fa-upload mr-2"></i>#}
+{#                        <span class="hidden sm:inline">Upload</span>#}
+{#                    </button>#}
+{#                </div>#}
+{#            </div>#}
 
             <!-- Filters and Search -->
             <div class="p-4 bg-gray-800 bg-opacity-40 flex flex-col sm:flex-row justify-between items-start sm:items-center space-y-3 sm:space-y-0">
@@ -604,129 +604,103 @@
     <!-- JavaScript [ChatGPT kinda cracked]-->
     <script>
         // Example JavaScript for basic interactions
-        document.addEventListener('DOMContentLoaded', function () {
-            // Modal open/close handlers
-            const createNoteBtn = document.getElementById('create-note-btn');
-            const closeCreateModal = document.getElementById('close-create-modal');
-            const cancelCreate = document.getElementById('cancel-create');
-            const createNoteModal = document.getElementById('create-note-modal');
-
-            const uploadNoteBtn = document.getElementById('upload-note-btn');
-            const closeUploadModal = document.getElementById('close-upload-modal');
-            const cancelUpload = document.getElementById('cancel-upload');
-            const uploadNoteModal = document.getElementById('upload-note-modal');
-
-            // View note handlers
-            const viewNoteBtns = document.querySelectorAll('.view-note-btn');
-            const backToGridBtn = document.getElementById('back-to-grid');
-            const notesGridView = document.getElementById('notes-grid-view');
-            const noteViewer = document.getElementById('note-viewer');
-
-            // Study tools toggle
-            const toggleStudyTools = document.getElementById('toggle-study-tools');
-            const studyTools = document.getElementById('study-tools');
-            const noteContentWrapper = document.getElementById('note-content-wrapper');
-
-            // Filter buttons
-            const filterBtns = document.querySelectorAll('.filter-btn');
-            const searchInput = document.getElementById('search-input');
-            const noteCards = document.querySelectorAll('.note-card');
-
-            // Create Note Modal
-            createNoteBtn.addEventListener('click', function () {
-                createNoteModal.classList.remove('hidden');
+        waitForElementPresence('#create-note-btn', (button) => {
+            button.addEventListener('click', () => {
+                waitForElementPresence('#create-note-modal', (modal) => modal.classList.remove('hidden'));
             });
+        });
 
-            closeCreateModal.addEventListener('click', function () {
-                createNoteModal.classList.add('hidden');
+        waitForElementPresence('#close-create-modal', (button) => {
+            button.addEventListener('click', () => {
+                waitForElementPresence('#create-note-modal', (modal) => modal.classList.add('hidden'));
             });
+        });
 
-            cancelCreate.addEventListener('click', function () {
-                createNoteModal.classList.add('hidden');
+        waitForElementPresence('#cancel-create', (button) => {
+            button.addEventListener('click', () => {
+                waitForElementPresence('#create-note-modal', (modal) => modal.classList.add('hidden'));
             });
+        });
 
-            // Upload Modal
-            uploadNoteBtn.addEventListener('click', function () {
-                uploadNoteModal.classList.remove('hidden');
+        // Upload Note Modal
+        waitForElementPresence('#upload-note-btn', (button) => {
+            button.addEventListener('click', () => {
+                waitForElementPresence('#upload-note-modal', (modal) => modal.classList.remove('hidden'));
             });
+        });
 
-            closeUploadModal.addEventListener('click', function () {
-                uploadNoteModal.classList.add('hidden');
+        waitForElementPresence('#close-upload-modal', (button) => {
+            button.addEventListener('click', () => {
+                waitForElementPresence('#upload-note-modal', (modal) => modal.classList.add('hidden'));
             });
+        });
 
-            cancelUpload.addEventListener('click', function () {
-                uploadNoteModal.classList.add('hidden');
+        waitForElementPresence('#cancel-upload', (button) => {
+            button.addEventListener('click', () => {
+                waitForElementPresence('#upload-note-modal', (modal) => modal.classList.add('hidden'));
             });
+        });
 
-            // View note functionality
-            viewNoteBtns.forEach(btn => {
-                btn.addEventListener('click', function () {
-                    const noteCard = this.closest('.note-card');
-                    const noteId = noteCard.dataset.noteId;
-                    const noteTitle = noteCard.querySelector('h3').textContent;
+        // View note functionality
+        waitForElementPresence('#notes-grid-view', (gridView) => {
+            waitForElementPresence('#note-viewer', (viewer) => {
+                document.querySelectorAll('.view-note-btn').forEach(btn => {
+                    btn.addEventListener('click', function () {
+                        const noteCard = this.closest('.note-card');
+                        const noteId = noteCard.dataset.noteId;
+                        const noteTitle = noteCard.querySelector('h3').textContent;
 
-                    // Set the title in the note viewer
-                    document.getElementById('note-title').textContent = noteTitle;
+                        waitForElementPresence('#note-title', (title) => {
+                            title.textContent = noteTitle;
+                        });
 
-                    // you would fetch the note content from a database here
-                    // Current placeholder content
-                    document.getElementById('note-content').innerHTML = `
-                    <h1 class="text-2xl font-bold mb-4">${noteTitle}</h1>
-                    <p class="mb-4">This is sample content for note #${noteId}. In a real application, this content would be loaded from a database or file system.</p>
-                    <h2 class="text-xl font-bold mb-2">Key Points</h2>
-                    <ul class="list-disc pl-5 mb-4">
-                        <li class="mb-1">Important concept #1 with detailed explanation</li>
-                        <li class="mb-1">Important concept #2 with examples and diagrams</li>
-                        <li class="mb-1">Important concept #3 with practical applications</li>
-                    </ul>
-                    <p class="mb-4">Additional explanations would go here with more detailed content, examples, and diagrams.</p>
-                    <h2 class="text-xl font-bold mb-2">Additional Resources</h2>
-                    <p>Links to related materials and resources would be included here.</p>
-                `;
+                        waitForElementPresence('#note-content', (content) => {
+                            content.innerHTML = `
+                        <h1 class="text-2xl font-bold mb-4">${noteTitle}</h1>
+                        <p class="mb-4">This is sample content for note #${noteId}.</p>
+                    `;
+                        });
 
-                    // Show the note viewer
-                    notesGridView.classList.add('translate-x-full');
-                    noteViewer.classList.remove('translate-x-full');
+                        gridView.classList.add('translate-x-full');
+                        viewer.classList.remove('translate-x-full');
+                    });
                 });
             });
+        });
 
-            // Back to grid view
-            backToGridBtn.addEventListener('click', function () {
-                notesGridView.classList.remove('translate-x-full');
-                noteViewer.classList.add('translate-x-full');
-
-                // Reset study tools if open
-                studyTools.classList.remove('w-72');
-                studyTools.classList.add('w-0');
-                noteContentWrapper.classList.remove('mr-72');
+        waitForElementPresence('#back-to-grid', (button) => {
+            button.addEventListener('click', () => {
+                waitForElementPresence('#notes-grid-view', (gridView) => gridView.classList.remove('translate-x-full'));
+                waitForElementPresence('#note-viewer', (viewer) => viewer.classList.add('translate-x-full'));
             });
+        });
 
-            // Toggle study tools
-            toggleStudyTools.addEventListener('click', function () {
-                if (studyTools.classList.contains('w-0')) {
-                    studyTools.classList.remove('w-0');
-                    studyTools.classList.add('w-72');
-                    noteContentWrapper.classList.add('mr-72');
-                } else {
-                    studyTools.classList.remove('w-72');
-                    studyTools.classList.add('w-0');
-                    noteContentWrapper.classList.remove('mr-72');
-                }
+        // Toggle study tools
+        waitForElementPresence('#toggle-study-tools', (button) => {
+            button.addEventListener('click', () => {
+                waitForElementPresence('#study-tools', (tools) => {
+                    waitForElementPresence('#note-content-wrapper', (wrapper) => {
+                        if (tools.classList.contains('w-0')) {
+                            tools.classList.replace('w-0', 'w-72');
+                            wrapper.classList.add('mr-72');
+                        } else {
+                            tools.classList.replace('w-72', 'w-0');
+                            wrapper.classList.remove('mr-72');
+                        }
+                    });
+                });
             });
+        });
 
-            // Filter functionality
-            filterBtns.forEach(btn => {
+        // Filter functionality
+        waitForElementPresence('.filter-btn', () => {
+            document.querySelectorAll('.filter-btn').forEach(btn => {
                 btn.addEventListener('click', function () {
-                    // Remove active class from all buttons
-                    filterBtns.forEach(b => b.classList.remove('active', 'bg-blue-600'));
-
-                    // Add active class to clicked button
+                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-blue-600'));
                     this.classList.add('active', 'bg-blue-600');
-
                     const filter = this.dataset.filter;
 
-                    // Filter the notes
-                    noteCards.forEach(card => {
+                    document.querySelectorAll('.note-card').forEach(card => {
                         if (filter === 'all' ||
                             (filter === 'my' && card.dataset.owner === 'you') ||
                             (filter === 'public' && card.dataset.visibility === 'public')) {
@@ -737,22 +711,19 @@
                     });
                 });
             });
+        });
 
-            // Search functionality
-            searchInput.addEventListener('input', function () {
+        // Search functionality
+        waitForElementPresence('#search-input', (input) => {
+            input.addEventListener('input', function () {
                 const searchTerm = this.value.toLowerCase();
-
-                noteCards.forEach(card => {
+                document.querySelectorAll('.note-card').forEach(card => {
                     const title = card.querySelector('h3').textContent.toLowerCase();
                     const description = card.querySelector('p.line-clamp-3').textContent.toLowerCase();
-
-                    if (title.includes(searchTerm) || description.includes(searchTerm)) {
-                        card.classList.remove('hidden');
-                    } else {
-                        card.classList.add('hidden');
-                    }
+                    card.classList.toggle('hidden', !(title.includes(searchTerm) || description.includes(searchTerm)));
                 });
             });
         });
+
     </script>
 </div>

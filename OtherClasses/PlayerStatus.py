@@ -6,3 +6,4 @@ class PlayerStatus:
     LOBBY = "Lobby"
     QUIZ = "Quiz"
     RESULT = "Result"
+    CHATBOT = "Chatbot"

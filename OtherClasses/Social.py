@@ -48,10 +48,63 @@ class Player:
             "https://static.wikia.nocookie.net/valorant/images/1/1a/Radiant_Rank.png"
 
         ]
+        self.botUsernames = [
+            "BennyBot",
+            "LexiBot",
+            "MiloBot",
+            "OllieBot",
+            "ZaraBot",
+            "TobyBot",
+            "LumiBot",
+            "EddieBot",
+            "FinnBot",
+            "RoryBot",
+            "LanaBot",
+            "NiaBot",
+            "JunoBot",
+            "TheoBot",
+            "IvyBot",
+            "KaiBot",
+            "TessaBot",
+            "ZekeBot",
+            "MaxiBot",
+            "PennyBot",
+            "NovaBot",
+            "RemyBot",
+            "FelixBot",
+            "SamiBot",
+            "ArloBot",
+            "LucaBot",
+            "EllaBot",
+            "JoeyBot",
+            "NicoBot",
+            "TillyBot",
+            "DaisyBot",
+            "MacyBot",
+            "HugoBot",
+            "SunnyBot",
+            "MiraBot",
+            "OttoBot",
+            "TrixiBot",
+            "ViviBot",
+            "RosieBot",
+            "BasilBot",
+            "LennyBot",
+            "CleoBot",
+            "EmmyBot",
+            "NoahBot",
+            "RubyBot",
+            "GigiBot",
+            "JessBot",
+            "ZionBot",
+            "MonaBot",
+            "TobyBot"
+        ]
+
         self.party = None
         self.viewer = viewerObj
         self.PFP = self.OFFLINE_PFP
-        self.userName = viewerObj.privateData.userName if viewerObj is not None else username if username else "BOT_"+RandomisedString().AlphaNumeric(2, 2)
+        self.userName = viewerObj.privateData.userName if viewerObj is not None else username if username else choice(self.botUsernames)
         self.state = PlayerStatus.OFFLINE
         self.level = 1
         self.currentXP = 0

@@ -1,5 +1,7 @@
 from gevent import monkey
 
+from OtherClasses.ChatbotMessage import ChatbotMessage, ChatbotMessageSenders
+
 monkey.patch_all()
 
 from datetime import datetime
@@ -9,6 +11,8 @@ from typing import Any
 from flask import request, redirect, make_response
 from jinja2 import Template
 from argon2 import PasswordHasher
+from json import dumps
+from ollama import Client
 
 from OtherClasses.PlayerStatus import PlayerStatus
 from OtherClasses.Question import Question
@@ -29,6 +33,8 @@ from OtherClasses.CustomMessages import CustomMessages
 from OtherClasses.WSGIElements import WSGIRunner
 from OtherClasses.DBHolder import DBHolder
 from OtherClasses.Interactions import Interactions
+
+from internal.Credentials import ollamaHosts
 
 
 from customisedLogs import CustomisedLogs
@@ -61,7 +67,6 @@ def removeLobbyNavbar(viewerObj: DynamicWebsite.Viewer):
     if viewerObj.privateData.isElementRendered(FileNames.HTML.LobbyNavbar):
         viewerObj.privateData.removeElement(FileNames.HTML.LobbyNavbar)
         viewerObj.updateHTML("", DivID.navbar2, UpdateMethods.update)
-
 
 
 def renderQuizNavbar(viewerObj: DynamicWebsite.Viewer):
@@ -271,6 +276,14 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
     hideSocials(viewerObj)
 
 
+##############################################################################################################################
+# MARKETPLACE
+
+
+def renderMarketplace(viewerObj: DynamicWebsite.Viewer):
+    pass
+
+
 
 ##############################################################################################################################
 # FLASHCARD PAGES
@@ -289,6 +302,50 @@ def renderFlashcards(viewerObj: DynamicWebsite.Viewer):
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     hideSocials(viewerObj)
+
+
+##############################################################################################################################
+# CHATBOT
+
+
+def renderChatbot(viewerObj: DynamicWebsite.Viewer):
+    viewerObj.updateHTML(cachedElements.fetchStaticHTML(FileNames.HTML.ChatBotFull), DivID.changingPage, UpdateMethods.update)
+    viewerObj.privateData.newPage(Pages.CHATBOT)
+    viewerObj.privateData.player.viewer.sendCustomMessage(CustomMessages.pageChanged(Pages.CHATBOT))
+    updateStatus(viewerObj.privateData.player, PlayerStatus.CHATBOT)
+    renderBaseNavbar(viewerObj)
+    removeLobbyNavbar(viewerObj)
+    removeQuizNavbar(viewerObj)
+    for message in viewerObj.privateData.chatbotHistory:
+        viewerObj.sendCustomMessage(CustomMessages.chatbotMessage(message.sender==ChatbotMessageSenders.user, message.id, message.message))
+
+
+def processChatbotMessage(viewerObj: DynamicWebsite.Viewer, text: str):
+    message = ChatbotMessage(ChatbotMessageSenders.user, text, True)
+    viewerObj.sendCustomMessage(CustomMessages.chatbotMessage(message.sender==ChatbotMessageSenders.user, message.id, message.message))
+    viewerObj.privateData.chatbotHistory.append(message)
+
+    params = {
+        'max_tokens': 2048,
+        'stream': True
+    }
+    stream = ollamaClient.chat(
+        model='deepseek-coder-v2:latest',
+        messages=[msg.export() for msg in viewerObj.privateData.chatbotHistory if msg.isComplete],
+        options=params,
+        stream=True
+    )
+
+    message = ChatbotMessage(ChatbotMessageSenders.assistant, "", False)
+    viewerObj.privateData.chatbotHistory.append(message)
+
+    for chunk in stream:
+        sleep(0.01)
+        content = chunk['message']['content']
+        message.message += content
+        if viewerObj.privateData.currentPage() == Pages.CHATBOT:viewerObj.sendCustomMessage(CustomMessages.chatbotMessage(message.sender==ChatbotMessageSenders.user, message.id, content))
+    message.isComplete = True
+
 
 
 ##############################################################################################################################
@@ -424,7 +481,9 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
     if viewerObj.privateData.currentPage() == Pages.NAVGRID:
         if purpose == "RENDER_CHATBOT":
             return renderChatbot(viewerObj)
-
+    if viewerObj.privateData.currentPage() == Pages.CHATBOT:
+        if purpose == "CHATBOT_MESSAGE":
+            processChatbotMessage(viewerObj, form["MESSAGE"])
     if viewerObj.privateData.currentPage() not in [Pages.PRE_AUTH, Pages.AUTH]:
         if purpose == "CHAT":
             form["TEXT"] = Template(form["TEXT"][:100]).render()
@@ -854,9 +913,25 @@ def registerBiDirectionFriend(username1, username2, flip=False):
 
 
 def onQuizEnd(quiz:Quiz):
+    endAt = datetime.now()
     sortedPlayers = sorted(quiz.match.teamA.allPlayers()+quiz.match.teamB.allPlayers(), reverse=True)
+    teamData = {"score": {"teamA": sum([player.score for player in quiz.match.teamA.allPlayers()]),
+                          "teamB": sum([player.score for player in quiz.match.teamB.allPlayers()])},
+                "health": {"teamA": quiz.match.teamA.health,
+                           "teamB": quiz.match.teamB.health}
+                }
+    playerData = {}
+    for player in quiz.match.teamA.allPlayers():
+        playerData[player.userName] = {"impact": player.healthImpact, "score": player.score, "team": "teamA"}
+    for player in quiz.match.teamB.allPlayers():
+        playerData[player.userName] = {"impact": player.healthImpact, "score": player.score, "team": "teamB"}
+
+    DBHolder.useDB().execute(f"INSERT INTO {Database.QUIZ.TABLE_NAME} VALUES (?, ?, ?, ?)", [quiz.quizID, endAt, dumps(teamData), dumps(playerData)])
+
     for toSend in sortedPlayers:
         if toSend.viewer is not None:
+            DBHolder.useDB().execute(f"INSERT INTO {Database.CAREER.TABLE_NAME} VALUES (?, ?, ?, ?)", [quiz.quizID, toSend.userName, endAt, toSend.healthImpact])
+            DBHolder.useDB().execute(f"UPDATE {Database.USER_INFO.TABLE_NAME} SET {Database.USER_INFO.VISIBLE_MMR}={Database.USER_INFO.VISIBLE_MMR}+?, {Database.USER_INFO.XP}={Database.USER_INFO.XP}+? WHERE {Database.USER_INFO.USERNAME}=?", [toSend.healthImpact, 100, toSend.userName])
             toSend.viewer.privateData.newPage(Pages.QUIZ_SCOREBOARD)
             updateStatus(toSend, PlayerStatus.RESULT)
             renderBaseNavbar(toSend.viewer)
@@ -924,6 +999,12 @@ cachedElements = CachedElements()
 matchmaker = Matchmaker(onMatchFound, cachedElements)
 activeUsernames:dict[str, DynamicWebsite.Viewer] = {}
 dynamicWebsiteApp = DynamicWebsite(firstPageCreator, newVisitorCallback, visitorLeftCallback, formSubmitCallback, customWSMessageCallback, fernetKey, CoreValues.appName, Routes.webHomePage)
+for host in ollamaHosts:
+    try:
+        ollamaClient = Client(host)
+        ollamaClient.list()
+    except:
+        pass
 
 
 @dynamicWebsiteApp.baseApp.get("/debug")

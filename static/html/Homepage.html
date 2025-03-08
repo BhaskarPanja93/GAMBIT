@@ -18,7 +18,7 @@
             <span class="font-medium text-gray-400">{{ player.currentXP*100 / player.levelXP }}%</span>
         </div>
         <div class="w-full bg-gray-700 rounded-full h-2 sm:h-2.5">
-            <div class="bg-indigo-500 h-2 sm:h-2.5 rounded-full" style="width: 80%;"></div>
+            <div class="bg-indigo-500 h-2 sm:h-2.5 rounded-full" style="width: {{ player.currentXP*100 / player.levelXP }}%;"></div>
         </div>
     </div>
 

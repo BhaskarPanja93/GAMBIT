@@ -10,3 +10,4 @@ class Pages:
     NOTES = "Notes"
     FLASHCARD = "Flashcard"
     MARKETPLACE = "Market-Place"
+    CHATBOT = "Chatbot"
