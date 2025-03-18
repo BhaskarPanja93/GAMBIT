@@ -169,13 +169,13 @@
                 </div>
 
                 <!-- Practice View (Hidden by default) -->
-                <div id="practice-view" class="hidden flex flex-col h-full">
+                <div id="flashcard-holder" class="hidden flex flex-col h-full">
                     <div class="flex justify-between items-center mb-6">
                         <div>
                             <h2 id="practice-deck-title" class="text-2xl font-bold text-indigo-300">Mathematics</h2>
                             <p id="practice-progress" class="text-gray-400 text-sm">Card 1 of 24</p>
                         </div>
-                        <button id="close-practice-view" class="text-gray-400 hover:text-white">
+                        <button id="close-flashcard-holder" class="text-gray-400 hover:text-white">
                             <svg xmlns="http://www.w3.org/2000/svg" class="h-6 w-6" fill="none" viewBox="0 0 24 24" stroke="currentColor">
                                 <path stroke-linecap="round" stroke-linejoin="round" stroke-width="2" d="M6 18L18 6M6 6l12 12" />
                             </svg>
@@ -222,10 +222,10 @@
             const createDeckBtn = document.getElementById('create-deck-btn');
             const viewDecksBtn = document.getElementById('view-decks-btn');
             const closeCreateViewBtn = document.getElementById('close-create-view');
-            const closePracticeViewBtn = document.getElementById('close-practice-view');
+            const closePracticeViewBtn = document.getElementById('close-flashcard-holder');
             const deckListView = document.getElementById('deck-list-view');
             const createDeckView = document.getElementById('create-deck-view');
-            const practiceView = document.getElementById('practice-view');
+            const practiceView = document.getElementById('flashcard-holder');
             const addCardBtn = document.getElementById('add-card-btn');
             const cardsContainer = document.getElementById('cards-container');
             const saveDeckBtn = document.getElementById('save-deck-btn');

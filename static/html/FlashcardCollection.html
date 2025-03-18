@@ -1,0 +1,18 @@
+<div id="open-flashcard-collection-{{ collectionID }}" data-collectionID="{{ collectionID }}" class="deck-card bg-gradient-to-br from-blue-900 to-blue-950 rounded-xl p-6 hover:shadow-lg hover:shadow-blue-500/20 transition-all duration-300 cursor-pointer">
+    <div class="flex justify-between items-start mb-4">
+        <h3 class="text-xl font-bold text-blue-300">{{ subject }}</h3>
+        <span class="bg-blue-700 text-xs px-2 py-1 rounded-full text-white">{{ cardCount }} cards</span>
+    </div>
+    <p class="text-gray-300 mb-6 text-sm">{{ title }}</p>
+    <div class="flex justify-between items-center">
+        <span class="text-xs text-gray-400">Created: {{ createdAt }}</span>
+        <button class="practice-btn bg-blue-600 hover:bg-blue-700 text-white text-sm px-3 py-1 rounded-lg transition-colors duration-200">Open</button>
+    </div>
+</div>
+<script>
+    waitForElementPresence("#open-flashcard-collection-{{ collectionID }}", (button) => {
+        button.addEventListener("click", () => {
+            sendCustomMessage({PURPOSE: "OPEN_FLASHCARD_COLLECTION", COLLECTION_ID: button.dataset.collectionid})
+        })
+    })
+</script>

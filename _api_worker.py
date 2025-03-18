@@ -819,11 +819,11 @@ for question in dic:
     options = answers["Correct"]+answers["InCorrect"]
     correct = [options.index(f) for f in answers["Correct"]]
 
-    if SQLconn.execute(f"SELECT {Database.QUESTION.TEXT} from {Database.QUESTION.TABLE_NAME} where {Database.QUESTION.TEXT}=? LIMIT 1", [text]):
+    if SQLconn.execute(f"SELECT {Database.QUIZ_QUESTIONS.TEXT} from {Database.QUIZ_QUESTIONS.TABLE_NAME} where {Database.QUIZ_QUESTIONS.TEXT}=? LIMIT 1", [text]):
         repeatCount += 1
         print(f"repeat[{repeatCount}]: ", text)
         continue
     questionID = RandomisedString().AlphaNumeric(30, 30)
-    SQLconn.execute(f"INSERT INTO {Database.QUESTION.TABLE_NAME} values (?,?,?,?,?,?)", [questionID, text, 1, dumps(options), dumps(correct), "[]"])
+    SQLconn.execute(f"INSERT INTO {Database.QUIZ_QUESTIONS.TABLE_NAME} values (?,?,?,?,?,?)", [questionID, text, 1, dumps(options), dumps(correct), "[]"])
     addCount += 1
     print(f"added[{addCount}]")

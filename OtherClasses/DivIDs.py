@@ -31,3 +31,5 @@ class DivID:
     quizOption = "quiz-option-"
     quizTimer = "quiz-timer"
     quizScoreBoard = "quiz-score-board"
+    flashcardCollection = "flashcard-collection"
+    flashcardHolder = "flashcard-holder"

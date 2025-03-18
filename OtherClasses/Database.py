@@ -2,6 +2,30 @@ class Database:
     DATABASE_NAME ="GAMBIT"
 
 
+    class FLASHCARD_COLLECTIONS:
+        TABLE_NAME = "flashcard_collections"
+
+
+        COLLECTION_ID = "collection_id"
+        USERNAME = "username"
+        SUBJECT = "subject"
+        TITLE = "title"
+        CARD_COUNT = "card_count"
+        CREATED_AT = "created_at"
+        LAST_OPENED = "last_opened"
+
+
+    class FLASHCARD_QUESTIONS:
+        TABLE_NAME = "flashcard_questions"
+
+        QUESTION_ID = "question_id"
+        COLLECTION_ID = "collection_id"
+        QUESTION = "question"
+        ANSWER = "answer"
+        LAST_ANSWERED = "last_answered"
+        NEXT_APPEARANCE = "next_appearance"
+
+
     class CAREER:
         TABLE_NAME ="career"
 
@@ -43,12 +67,11 @@ class Database:
         Y = "y"
         X = "x"
 
-    class QUESTION:
-        TABLE_NAME ="question"
+    class QUIZ_QUESTIONS:
+        TABLE_NAME ="quiz_questions"
 
         QUESTION_ID = "question_id"
         TEXT = "text"
-        QUIZ_ELIGIBLE = "quiz_eligible"
         OPTIONS = "options"
         CORRECT = "correct"
         ATTACHMENTS = "attachments"

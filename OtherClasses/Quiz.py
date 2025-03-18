@@ -46,10 +46,10 @@ class Quiz:
             self.prepareQuestion()
 
     def prepareQuestion(self):
-        QRaw = self.SQLconn.execute(f"SELECT * FROM {Database.QUESTION.TABLE_NAME} ORDER BY RAND() LIMIT 1")[0]
-        QRaw[Database.QUESTION.QUESTION_ID] = QRaw[Database.QUESTION.QUESTION_ID].decode()
-        if QRaw[Database.QUESTION.QUESTION_ID] in self.questionHistory: return self.prepareQuestion()
-        question = Question(len(self.questionHistory)+1, QRaw[Database.QUESTION.QUESTION_ID], QRaw[Database.QUESTION.TEXT], loads(QRaw[Database.QUESTION.OPTIONS]), loads(QRaw[Database.QUESTION.CORRECT]))
+        QRaw = self.SQLconn.execute(f"SELECT * FROM {Database.QUIZ_QUESTIONS.TABLE_NAME} ORDER BY RAND() LIMIT 1")[0]
+        QRaw[Database.QUIZ_QUESTIONS.QUESTION_ID] = QRaw[Database.QUIZ_QUESTIONS.QUESTION_ID]
+        if QRaw[Database.QUIZ_QUESTIONS.QUESTION_ID] in self.questionHistory: return self.prepareQuestion()
+        question = Question(len(self.questionHistory) + 1, QRaw[Database.QUIZ_QUESTIONS.QUESTION_ID], QRaw[Database.QUIZ_QUESTIONS.TEXT], loads(QRaw[Database.QUIZ_QUESTIONS.OPTIONS]), loads(QRaw[Database.QUIZ_QUESTIONS.CORRECT]))
         question.prepare()
         self.questionHistory[question.questionID] = question
         self.currentQuestionID = question.questionID

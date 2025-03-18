@@ -1,0 +1,33 @@
+<div class="flex-grow flex items-center justify-center">
+    <div id="flashcard" class="w-full max-w-2xl perspective-1000">
+        <div class="flashcard-inner relative w-full h-64 transition-transform duration-700 transform-style-3d cursor-pointer" style="transform: rotateY(0deg);">
+            <div class="flashcard-front absolute w-full h-full backface-hidden bg-gradient-to-br from-indigo-900 to-indigo-950 rounded-xl p-8 flex items-center justify-center text-center">
+                <p class="text-2xl text-white">{{ question }}</p>
+            </div>
+            <div class="flashcard-back absolute w-full h-full backface-hidden bg-gradient-to-br from-gray-800 to-gray-900 rounded-xl p-8 flex items-center justify-center text-center transform-rotate-y-180">
+                <p class="text-xl text-white">{{ answer }}</p>
+            </div>
+        </div>
+    </div>
+</div>
+<div class="flex justify-center mt-8 mb-4 space-x-6">
+    <button id="hard-1" data-rate="1" class="flashcard_rating bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+        Easy
+    </button>
+    <button id="hard-2" data-rate="2" class="flashcard_rating bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+        Medium
+    </button>
+    <button id="hard-3" data-rate="3" class="flashcard_rating bg-gray-700 hover:bg-gray-600 text-white px-4 py-2 rounded-lg transition-colors duration-200 flex items-center">
+        Hard
+    </button>
+</div>
+<script>
+    ["#hard-1", "#hard-2", "#hard-3"].forEach(element => {
+        waitForElementPresence(element, (button)=>{
+            button.addEventListener("click", ()=>{
+                sendCustomMessage({PURPOSE: "FLASHCARD_RATING", COLLECTION: {{ collectionID }}, QUESTION: {{ questionID }}, RATE: button.dataset.rate})
+                })
+            })
+        }
+    )
+</script>
