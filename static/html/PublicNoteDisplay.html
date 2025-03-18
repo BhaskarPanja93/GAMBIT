@@ -1,0 +1,38 @@
+<div class="bg-gray-800 rounded-lg overflow-hidden shadow-lg border border-gray-700 flex flex-col note-card"
+     data-note-id="2" data-owner="sarah" data-visibility="public">
+    <div class="p-4 flex-1">
+        <div class="flex justify-between items-start mb-3">
+            <div>
+                <h3 class="font-bold text-white">{{ subject }}</h3>
+                <p class="text-gray-400 text-xs">Created: {{ createdAt }}</p>
+            </div>
+            <div class="flex items-center">
+                <span class="bg-green-900 text-green-300 text-xs px-2 py-1 rounded-full flex items-center">
+                    <i class="fas fa-globe text-xs mr-1"></i> Public
+                </span>
+            </div>
+        </div>
+        <p class="text-gray-300 text-sm mb-3 line-clamp-3">{{ header }}</p>
+        <div class="flex items-center text-xs text-gray-400">
+            <i class="fas fa-file-alt mr-1"></i>
+            <span>Last Opened: {{ lastOpened }}</span>
+        </div>
+    </div>
+    <div class="bg-gray-900 p-3 flex justify-between items-center">
+        <div class="flex items-center">
+            <img src={{ displayPFP }} alt="Other" class="rounded-full"/>
+            <span class="ml-2 text-sm text-gray-300">{{ displayName }}</span>
+        </div>
+        <div class="flex space-x-2">
+            <button class="text-gray-400 hover:text-blue-400 view-note-btn">
+                <i class="fas fa-eye"></i>
+            </button>
+            <button class="text-gray-400 hover:text-blue-400">
+                <i class="fas fa-download"></i>
+            </button>
+            <button class="text-gray-400 hover:text-yellow-400">
+                <i class="fas fa-star"></i>
+            </button>
+        </div>
+    </div>
+</div>

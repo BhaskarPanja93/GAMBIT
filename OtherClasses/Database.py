@@ -50,6 +50,11 @@ class Database:
         SUBJECT = "subject"
         HEADER = "header"
         DESCRIPTION = "description"
+        FLASHCARDS_PREPARED = "flashcards_prepared"
+        VISITS = "visits"
+        PRIVATE = "private"
+        CREATED_AT = "created_at"
+        LAST_OPENED = "last_opened"
 
 
     class PURCHASABLE:

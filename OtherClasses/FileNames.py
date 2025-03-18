@@ -45,4 +45,6 @@ class FileNames:
         QuizScoreBoardLoserElement = "QuizScoreBoardLoserElement.html"
         QuizScoreBoardWinnerElement = "QuizScoreBoardWinnerElement.html"
         NotesPageFull = "NotesPageFull.html"
+        PublicNoteDisplay = "PublicNoteDisplay.html"
+        PrivateNoteDisplay = "PrivateNoteDisplay.html"
         ChatBotFull = "ChatBot.html"

@@ -33,3 +33,4 @@ class DivID:
     quizScoreBoard = "quiz-score-board"
     flashcardCollection = "flashcard-collection"
     flashcardHolder = "flashcard-holder"
+    notesGridViewMain = "notes-grid-view-main"

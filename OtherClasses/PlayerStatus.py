@@ -2,6 +2,7 @@ class PlayerStatus:
     ONLINE = "Online"
     OFFLINE = "Offline"
     NOTES = "Notes"
+    MARKETPLACE = "Marketplace"
     FLASHCARD = "Flashcards"
     LOBBY = "Lobby"
     QUIZ = "Quiz"

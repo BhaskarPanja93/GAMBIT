@@ -11,7 +11,7 @@ from typing import Any
 from flask import request, redirect, make_response
 from jinja2 import Template
 from argon2 import PasswordHasher
-from json import dumps
+from json import dumps, loads
 from ollama import Client
 
 from OtherClasses.ChatbotMessage import ChatbotMessage, ChatbotMessageSenders
@@ -37,8 +37,10 @@ from OtherClasses.Interactions import Interactions
 
 from internal.Credentials import ollamaHosts
 
+from randomisedString import RandomisedString
 from customisedLogs import CustomisedLogs
 from internal.dynamicWebsite import DynamicWebsite
+
 
 
 ##############################################################################################################################
@@ -270,7 +272,7 @@ def renderMatchFound(viewerObj: DynamicWebsite.Viewer):
 
 
 ##############################################################################################################################
-# NOTES DASHBOARD
+# DASHBOARD
 
 
 def renderDashboard(viewerObj):
@@ -290,12 +292,17 @@ def renderDashboard(viewerObj):
 # NOTES PAGES
 
 
+def createNotes(viewerObj: DynamicWebsite.Viewer, subject, header, description, isPrivate):
+    noteID = RandomisedString().AlphaNumeric(30, 30)
+    DBHolder.useDB().execute(f"INSERT INTO {Database.NOTES.TABLE_NAME} VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), null)", [noteID, viewerObj.privateData.userName, subject, header, description, False, 0, isPrivate])
+
+
 def __renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
     viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.NotesPageFull)).render(
         baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
 
 
-def renderNotes(viewerObj: DynamicWebsite.Viewer):
+def renderAllNotes(viewerObj: DynamicWebsite.Viewer):
     __renderNotesFullPage(viewerObj)
     updateStatus(viewerObj.privateData.player, PlayerStatus.NOTES)
     viewerObj.privateData.newPage(Pages.NOTES)
@@ -304,6 +311,15 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     hideSocials(viewerObj)
+    for note in DBHolder.useDB().execute(f"SELECT * FROM {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.USERNAME}=?", [viewerObj.privateData.username]):
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.PrivateNoteDisplay if not note[Database.NOTES.PRIVATE] else FileNames.HTML.PublicNoteDisplay)).render(
+            subject=note[Database.NOTES.SUBJECT],
+            createdAt = note[Database.NOTES.CREATED_AT],
+            header = note[Database.NOTES.HEADER],
+            lastOpened = note[Database.NOTES.LAST_OPENED],
+            displayPFP = viewerObj.privateData.player.displayPFP(),
+            displayName = viewerObj.privateData.player.displayUserName(),
+        ), DivID.notesGridViewMain, UpdateMethods.append)
 
 
 ##############################################################################################################################
@@ -311,11 +327,59 @@ def renderNotes(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderMarketplace(viewerObj: DynamicWebsite.Viewer):
+    __renderNotesFullPage(viewerObj)
+    updateStatus(viewerObj.privateData.player, PlayerStatus.MARKETPLACE)
+    viewerObj.privateData.newPage(Pages.MARKETPLACE)
+    viewerObj.privateData.player.viewer.sendCustomMessage(CustomMessages.pageChanged(Pages.MARKETPLACE))
+    renderBaseNavbar(viewerObj)
+    removeLobbyNavbar(viewerObj)
+    removeQuizNavbar(viewerObj)
     hideSocials(viewerObj)
+    for note in DBHolder.useDB().execute(f"SELECT * FROM {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.USERNAME}!=? AND {Database.NOTES.PRIVATE}=0", [viewerObj.privateData.username]):
+        username = note[Database.NOTES.USERNAME]
+        if username in activeUsernames:
+            player = activeUsernames[username].privateData.player
+        else:
+            player = Player(None, username)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.PublicNoteDisplay)).render(
+            subject=note[Database.NOTES.SUBJECT],
+            createdAt = note[Database.NOTES.CREATED_AT],
+            header = note[Database.NOTES.HEADER],
+            lastOpened = note[Database.NOTES.LAST_OPENED],
+            displayPFP = player.displayPFP(),
+            displayName = player.displayUserName(),
+        ), DivID.notesGridViewMain, UpdateMethods.append)
 
 
 ##############################################################################################################################
 # FLASHCARD PAGES
+
+
+def createFlashCardsFromNotes(viewerObj: DynamicWebsite.Viewer, noteID:str):
+    noteData = DBHolder.useDB().execute(f"SELECT {Database.NOTES.DESCRIPTION}, {Database.NOTES.SUBJECT}, {Database.NOTES.HEADER} from {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.NOTE_ID}=? AND {Database.NOTES.USERNAME}=?", [noteID, viewerObj.privateData.userName])
+    if noteData:
+        message = noteData[0][Database.NOTES.DESCRIPTION]
+        params = {
+            'max_tokens': 2048,
+            'stream': False
+        }
+        result = ollamaClient.chat(
+            model='deepseek-coder-v2:latest',
+            messages=[{"role": "system", "content": "create a json list having maximum number of dictionaries of 1 liner questions and their 1 liner answers from the paragraph given. dont give anything else in the output so i can directly json.loads() your response in the format: {\"question\":\"The Question\", \"answer\":\"The Answer\"}"}, {"role": "user", "content": message}],
+            options=params,
+            stream=False
+        )
+        createFlashCards(viewerObj, noteData[Database.NOTES.SUBJECT], noteData[Database.NOTES.HEADER], loads(result['message']['content']))
+
+
+def createFlashCards(viewerObj: DynamicWebsite.Viewer, subject, title, questionsList):
+    if questionsList:
+        collectionID = RandomisedString().AlphaNumeric(30, 30)
+        DBHolder.useDB().execute(f"INSERT INTO {Database.FLASHCARD_COLLECTIONS.TABLE_NAME} VALUES (?, ?, ?, ?, ?, NOW())", [collectionID, viewerObj.privateData.userName, subject, title, len(questionsList)])
+        for question in questionsList:
+            questionID = RandomisedString().AlphaNumeric(30, 30)
+            DBHolder.useDB().execute(f"INSERT INTO {Database.FLASHCARD_QUESTIONS.TABLE_NAME} VALUES (?, ?, ?, ?, null, NOW())", [questionID, collectionID, question["question"], question["answer"]])
+        return collectionID
 
 
 def renderFlashcardFull(viewerObj: DynamicWebsite.Viewer):
@@ -541,7 +605,7 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
             return renderLobby(viewerObj)
     if viewerObj.privateData.currentPage() == Pages.NAVGRID:
         if purpose == "RENDER_NOTES":
-            return renderNotes(viewerObj)
+            return renderAllNotes(viewerObj)
     if viewerObj.privateData.currentPage() == Pages.NAVGRID:
         if purpose == "RENDER_DASHBOARD":
             return renderDashboard(viewerObj)

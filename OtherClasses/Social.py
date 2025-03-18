@@ -112,7 +112,6 @@ class Player:
         self.hiddenMMR = 0
         self.rank = ""
 
-
         self.quizQuestions:dict[str, Question] = {}
         self.score = 0
         self.correct = 0
