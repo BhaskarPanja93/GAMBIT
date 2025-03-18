@@ -294,11 +294,12 @@ def renderDashboard(viewerObj):
 
 def createNotes(viewerObj: DynamicWebsite.Viewer, subject, header, description, isPrivate):
     noteID = RandomisedString().AlphaNumeric(30, 30)
-    DBHolder.useDB().execute(f"INSERT INTO {Database.NOTES.TABLE_NAME} VALUES (?, ?, ?, ?, ?, ?, ?, ?, NOW(), null)", [noteID, viewerObj.privateData.userName, subject, header, description, False, 0, isPrivate])
+    DBHolder.useDB().execute(f"INSERT INTO {Database.NOTES.TABLE_NAME} VALUES (?, ?, ?, ?, ?, ?, ?, NOW(), null)", [noteID, viewerObj.privateData.userName, subject, header, description, 0, isPrivate])
 
 
 def __renderNotesFullPage(viewerObj: DynamicWebsite.Viewer):
     viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.NotesPageFull)).render(
+        CSRF=viewerObj.createCSRF("CREATE_NOTE"),
         baseURI=viewerObj.privateData.baseURI), DivID.changingPage, UpdateMethods.update)
 
 
@@ -311,15 +312,38 @@ def renderAllNotes(viewerObj: DynamicWebsite.Viewer):
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     hideSocials(viewerObj)
-    for note in DBHolder.useDB().execute(f"SELECT * FROM {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.USERNAME}=?", [viewerObj.privateData.username]):
-        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.PrivateNoteDisplay if not note[Database.NOTES.PRIVATE] else FileNames.HTML.PublicNoteDisplay)).render(
+    for note in DBHolder.useDB().execute(f"SELECT * FROM {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.USERNAME}=?", [viewerObj.privateData.userName]):
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.PrivateNoteDisplay if note[Database.NOTES.PRIVATE]==1 else FileNames.HTML.PublicNoteDisplay)).render(
+            noteID=note[Database.NOTES.NOTE_ID],
             subject=note[Database.NOTES.SUBJECT],
             createdAt = note[Database.NOTES.CREATED_AT],
             header = note[Database.NOTES.HEADER],
-            lastOpened = note[Database.NOTES.LAST_OPENED],
+            lastOpened = note[Database.NOTES.LAST_OPENED] if note[Database.NOTES.LAST_OPENED] is not None else "Never",
             displayPFP = viewerObj.privateData.player.displayPFP(),
             displayName = viewerObj.privateData.player.displayUserName(),
         ), DivID.notesGridViewMain, UpdateMethods.append)
+
+
+def viewNote(viewerObj: DynamicWebsite.Viewer, noteID):
+    note = DBHolder.useDB().execute(f"SELECT * FROM {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.NOTE_ID}=?", [noteID])
+    if note:
+        note = note[0]
+        if note[Database.NOTES.USERNAME] == viewerObj.privateData.userName:
+            DBHolder.useDB().execute(f"UPDATE {Database.NOTES.TABLE_NAME} SET {Database.NOTES.LAST_OPENED}=NOW() WHERE {Database.NOTES.NOTE_ID}=?", [noteID])
+        username = note[Database.NOTES.USERNAME]
+        if username in activeUsernames:
+            player = activeUsernames[username].privateData.player
+        else:
+            player = Player(None, username)
+        viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.SingularNote)).render(
+            noteID=note[Database.NOTES.NOTE_ID],
+            subject=note[Database.NOTES.SUBJECT],
+            createdAt=note[Database.NOTES.CREATED_AT],
+            header=note[Database.NOTES.HEADER],
+            description=note[Database.NOTES.DESCRIPTION],
+            displayPFP=player.displayPFP(),
+            displayName=player.displayUserName(),
+        ), DivID.notesGridViewMain, UpdateMethods.replace)
 
 
 ##############################################################################################################################
@@ -335,17 +359,18 @@ def renderMarketplace(viewerObj: DynamicWebsite.Viewer):
     removeLobbyNavbar(viewerObj)
     removeQuizNavbar(viewerObj)
     hideSocials(viewerObj)
-    for note in DBHolder.useDB().execute(f"SELECT * FROM {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.USERNAME}!=? AND {Database.NOTES.PRIVATE}=0", [viewerObj.privateData.username]):
+    for note in DBHolder.useDB().execute(f"SELECT * FROM {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.PRIVATE}=0 AND {Database.NOTES.USERNAME}!=?", [viewerObj.privateData.userName]):
         username = note[Database.NOTES.USERNAME]
         if username in activeUsernames:
             player = activeUsernames[username].privateData.player
         else:
             player = Player(None, username)
         viewerObj.updateHTML(Template(cachedElements.fetchStaticHTML(FileNames.HTML.PublicNoteDisplay)).render(
+            noteID=note[Database.NOTES.NOTE_ID],
             subject=note[Database.NOTES.SUBJECT],
             createdAt = note[Database.NOTES.CREATED_AT],
             header = note[Database.NOTES.HEADER],
-            lastOpened = note[Database.NOTES.LAST_OPENED],
+            lastOpened = note[Database.NOTES.LAST_OPENED] if note[Database.NOTES.LAST_OPENED] is not None else "Never",
             displayPFP = player.displayPFP(),
             displayName = player.displayUserName(),
         ), DivID.notesGridViewMain, UpdateMethods.append)
@@ -356,26 +381,28 @@ def renderMarketplace(viewerObj: DynamicWebsite.Viewer):
 
 
 def createFlashCardsFromNotes(viewerObj: DynamicWebsite.Viewer, noteID:str):
-    noteData = DBHolder.useDB().execute(f"SELECT {Database.NOTES.DESCRIPTION}, {Database.NOTES.SUBJECT}, {Database.NOTES.HEADER} from {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.NOTE_ID}=? AND {Database.NOTES.USERNAME}=?", [noteID, viewerObj.privateData.userName])
-    if noteData:
-        message = noteData[0][Database.NOTES.DESCRIPTION]
-        params = {
-            'max_tokens': 2048,
-            'stream': False
-        }
-        result = ollamaClient.chat(
-            model='deepseek-coder-v2:latest',
-            messages=[{"role": "system", "content": "create a json list having maximum number of dictionaries of 1 liner questions and their 1 liner answers from the paragraph given. dont give anything else in the output so i can directly json.loads() your response in the format: {\"question\":\"The Question\", \"answer\":\"The Answer\"}"}, {"role": "user", "content": message}],
-            options=params,
-            stream=False
-        )
-        createFlashCards(viewerObj, noteData[Database.NOTES.SUBJECT], noteData[Database.NOTES.HEADER], loads(result['message']['content']))
+    if not DBHolder.useDB().execute(f"SELECT {Database.FLASHCARD_COLLECTIONS.COLLECTION_ID} FROM {Database.FLASHCARD_COLLECTIONS.TABLE_NAME} WHERE {Database.FLASHCARD_COLLECTIONS.NOTE_ID}=? AND {Database.FLASHCARD_COLLECTIONS.USERNAME}=?", [noteID, viewerObj.privateData.userName]):
+        noteData = DBHolder.useDB().execute(f"SELECT {Database.NOTES.DESCRIPTION}, {Database.NOTES.SUBJECT}, {Database.NOTES.HEADER} from {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.NOTE_ID}=?", [noteID])
+        if noteData:
+            noteData = noteData[0]
+            message = noteData[Database.NOTES.DESCRIPTION]
+            params = {
+                'max_tokens': 2048,
+                'stream': False
+            }
+            result = ollamaClient.chat(
+                model='deepseek-coder-v2:latest',
+                messages=[{"role": "system", "content": "create a json list having maximum number of dictionaries of 1 liner questions and their 1 liner answers from the paragraph given. dont give anything else in the output so i can directly json.loads() your response in the format: {\"question\":\"The Question\", \"answer\":\"The Answer\"}"}, {"role": "user", "content": message}],
+                options=params,
+                stream=False
+            )
+            createFlashCards(viewerObj, noteID, noteData[Database.NOTES.SUBJECT], noteData[Database.NOTES.HEADER], loads(result['message']['content']))
 
 
-def createFlashCards(viewerObj: DynamicWebsite.Viewer, subject, title, questionsList):
+def createFlashCards(viewerObj: DynamicWebsite.Viewer, noteID, subject, title, questionsList):
     if questionsList:
         collectionID = RandomisedString().AlphaNumeric(30, 30)
-        DBHolder.useDB().execute(f"INSERT INTO {Database.FLASHCARD_COLLECTIONS.TABLE_NAME} VALUES (?, ?, ?, ?, ?, NOW())", [collectionID, viewerObj.privateData.userName, subject, title, len(questionsList)])
+        DBHolder.useDB().execute(f"INSERT INTO {Database.FLASHCARD_COLLECTIONS.TABLE_NAME} VALUES (?, ?, ?, ?, ?, ?, NOW(), null)", [collectionID, viewerObj.privateData.userName, subject, title, len(questionsList), noteID])
         for question in questionsList:
             questionID = RandomisedString().AlphaNumeric(30, 30)
             DBHolder.useDB().execute(f"INSERT INTO {Database.FLASHCARD_QUESTIONS.TABLE_NAME} VALUES (?, ?, ?, ?, null, NOW())", [questionID, collectionID, question["question"], question["answer"]])
@@ -425,7 +452,7 @@ def renderFlashcardCollection(viewerObj: DynamicWebsite.Viewer, collectionID: st
                                                                                               answer=answer),
             DivID.changingPage, UpdateMethods.update)
     else:
-        viewerObj.updateHTML("No flashcards for you!!", DivID.changingPage, UpdateMethods.update)
+        viewerObj.updateHTML("You have no pending flashcards!!", DivID.changingPage, UpdateMethods.update)
 
 
 ##############################################################################################################################
@@ -829,6 +856,19 @@ def performActionPostSecurity(viewerObj: DynamicWebsite.Viewer, form: dict, isSe
                     activeUsernames[username].sendCustomMessage(
                         CustomMessages.friendRemoved(viewerObj.privateData.userName))
                     return
+
+        if purpose == "CREATE_NOTE":
+            if viewerObj.privateData.currentPage() in [Pages.NOTES]:
+                createNotes(viewerObj, form["subject"], form["title"], form["description"], form["visibility"]=="private")
+                return renderAllNotes(viewerObj)
+
+        if purpose == "VIEW_NOTE":
+            if viewerObj.privateData.currentPage() in [Pages.NOTES, Pages.MARKETPLACE]:
+                return viewNote(viewerObj, form["NOTE_ID"])
+
+        if purpose == "GENERATE_FLASHCARDS_FROM_NOTE":
+            if viewerObj.privateData.currentPage() in [Pages.NOTES, Pages.MARKETPLACE]:
+                return createFlashCardsFromNotes(viewerObj, form["NOTE_ID"])
 
     if viewerObj.privateData.currentPage() in [Pages.LOBBY, Pages.HOMEPAGE, Pages.NOTES, Pages.MARKETPLACE]:
         if purpose == "LOGOUT":

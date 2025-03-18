@@ -22,12 +22,53 @@
     </button>
 </div>
 <script>
-    ["#hard-1", "#hard-2", "#hard-3"].forEach(element => {
-        waitForElementPresence(element, (button)=>{
-            button.addEventListener("click", ()=>{
-                sendCustomMessage({PURPOSE: "FLASHCARD_RATING", COLLECTION: {{ collectionID }}, QUESTION: {{ questionID }}, RATE: button.dataset.rate})
-                })
-            })
+    document.head.insertAdjacentHTML('beforeend', `
+                <style>
+                    .perspective-1000 {
+                        perspective: 1000px;
+                    }
+
+                    .transform-style-3d {
+                        transform-style: preserve-3d;
+                    }
+
+                    .backface-hidden {
+                        backface-visibility: hidden;
+                    }
+
+                    .transform-rotate-y-180 {
+                        transform: rotateY(180deg);
+                    }
+
+                    .flashcard-inner {
+                        transition: transform 0.1s;
+                    }
+                </style>
+            `);
+    function flipCard() {
+        const flashcardInner = document.querySelector('.flashcard-inner');
+        if (flashcardInner.style.transform === 'rotateY(180deg)') {
+            flashcardInner.style.transform = 'rotateY(0deg)';
+        } else {
+            flashcardInner.style.transform = 'rotateY(180deg)';
         }
-    )
+    }
+    waitForElementPresence("#flashcard", (element)=>{
+        element.addEventListener('click', flipCard)
+    })
+    waitForElementPresence("#hard-1", (button)=>{
+        button.addEventListener("click", ()=>{
+            sendCustomMessage({PURPOSE: "FLASHCARD_RATING", COLLECTION: "{{ collectionID }}", QUESTION: "{{ questionID }}", RATE: button.dataset.rate})
+        })
+    })
+    waitForElementPresence("#hard-2", (button)=>{
+        button.addEventListener("click", ()=>{
+            sendCustomMessage({PURPOSE: "FLASHCARD_RATING", COLLECTION: "{{ collectionID }}", QUESTION: "{{ questionID }}", RATE: button.dataset.rate})
+        })
+    })
+    waitForElementPresence("#hard-3", (button)=>{
+        button.addEventListener("click", ()=>{
+            sendCustomMessage({PURPOSE: "FLASHCARD_RATING", COLLECTION: "{{ collectionID }}", QUESTION: "{{ questionID }}", RATE: button.dataset.rate})
+        })
+    })
 </script>

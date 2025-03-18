@@ -399,7 +399,7 @@ class DynamicWebsite:
             self.isActive = None
             self.rawWS = rawWS
             self.purpose = None
-            self.queue = Imports.RateLimitedQueues(0.01)
+            self.queue = Imports.RateLimitedQueues(0.001)
 
             self.key = None
             self.salt = salt

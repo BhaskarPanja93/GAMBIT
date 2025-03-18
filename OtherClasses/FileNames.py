@@ -47,4 +47,5 @@ class FileNames:
         NotesPageFull = "NotesPageFull.html"
         PublicNoteDisplay = "PublicNoteDisplay.html"
         PrivateNoteDisplay = "PrivateNoteDisplay.html"
+        SingularNote = "SingularNote.html"
         ChatBotFull = "ChatBot.html"

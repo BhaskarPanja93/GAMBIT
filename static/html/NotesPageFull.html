@@ -39,66 +39,15 @@
                 </div>
 
                 <!-- Note View (Hidden by default) -->
-                <div id="note-viewer"
-                     class="absolute inset-0 bg-gray-900 overflow-hidden transform translate-x-full transition-transform duration-300">
+                <div id="note-viewer" class="absolute inset-0 bg-gray-900 overflow-hidden transform translate-x-full transition-transform duration-300">
                     <!-- Note Viewer Header -->
-                    <div class="p-4 border-b border-gray-700 flex justify-between items-center bg-gray-800">
-                        <div class="flex items-center">
-                            <button id="back-to-grid" class="mr-3 text-gray-400 hover:text-white">
-                                <i class="fas fa-arrow-left"></i>
-                            </button>
-                            <h2 id="note-title" class="text-lg font-bold">Note Title</h2>
-                        </div>
-                        <div class="flex space-x-3">
-                            <button id="toggle-study-tools"
-                                    class="bg-indigo-600 hover:bg-indigo-700 text-white px-3 py-1 rounded-lg text-sm flex items-center">
-                                <i class="fas fa-tools mr-2"></i>
-                                <span class="hidden sm:inline">Study Tools</span>
-                            </button>
-                        </div>
-                    </div>
-
-                    <!-- Note Content Area with Study Tools Sidebar -->
-                    <div class="flex h-full overflow-hidden" style="height: calc(100% - 69px);">
-                        <!-- Note Content -->
-                        <div id="note-content-wrapper" class="flex-1 overflow-y-auto transition-all duration-300">
-                            <div id="note-content" class="p-6 bg-gray-900">
-                                <!-- Content will be loaded dynamically -->
-                            </div>
-                        </div>
-
-                        <!-- Study Tools Sidebar (Hidden by default) -->
-                        <div id="study-tools"
-                             class="w-0 bg-gray-800 border-l border-gray-700 overflow-y-auto transition-all duration-300">
-                            <div class="p-4">
-                                <h3 class="text-lg font-bold mb-4">Study Tools</h3>
-
-                                <!-- Flashcards [Can apply GPT models here to create flashcards] -->
-                                <div class="mb-6">
-                                    <h4 class="text-md font-semibold mb-2 flex items-center">
-                                        <i class="fas fa-clone mr-2 text-indigo-400"></i>Flashcards
-                                    </h4>
-                                    <div class="space-y-2">
-                                        <button class="w-full bg-gray-700 hover:bg-gray-600 text-white text-left px-3 py-2 rounded-lg text-sm">
-                                            Generate Flashcards
-                                        </button>
-                                        <div class="text-xs text-gray-400">Auto-creates flashcards from your note
-                                            content
-                                        </div>
-                                    </div>
-                                </div>
-
-                            </div>
-                        </div>
-                    </div>
                 </div>
             </div>
         </div>
     </div>
 
     <!-- Create Note Modal (Hidden by default) -->
-    <div id="create-note-modal"
-         class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50">
+    <div id="create-note-modal" class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50">
         <div class="bg-gray-800 rounded-xl w-full max-w-2xl mx-4 overflow-hidden">
             <div class="p-4 bg-gray-900 flex justify-between items-center">
                 <h2 class="text-lg font-bold">Create New Note</h2>
@@ -107,22 +56,22 @@
                 </button>
             </div>
             <div class="p-4">
-                <div class="space-y-4">
+                <form class="space-y-4" >
+                    {{ CSRF }}
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-1">Title</label>
-                        <input type="text" placeholder="Enter note title"
+                        <input type="text" placeholder="Enter note title" name="title"
                                class="w-full bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
                     </div>
 
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-1">Subject</label>
-                        <select class="w-full bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
-                            <option>Computer Science</option>
+                        <select name="subject" class="w-full bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500">
                             <option>Computer Science</option>
                             <option>Mathematics</option>
                             <option>Physics</option>
-                            <option>Engineering</option>
-                            <option>Other</option>
+                            <option>Chemistry</option>
+                            <option>Biology</option>
                         </select>
                     </div>
 
@@ -130,11 +79,11 @@
                         <label class="block text-sm font-medium text-gray-400 mb-1">Visibility</label>
                         <div class="flex space-x-4">
                             <div class="flex items-center">
-                                <input type="radio" id="private-visibility" name="visibility" class="mr-2" checked/>
+                                <input type="radio" id="private-visibility" name="visibility" value="private" class="mr-2" checked/>
                                 <label for="private-visibility" class="text-sm text-gray-300">Private</label>
                             </div>
                             <div class="flex items-center">
-                                <input type="radio" id="public-visibility" name="visibility" class="mr-2"/>
+                                <input type="radio" id="public-visibility" name="visibility" value="public" class="mr-2"/>
                                 <label for="public-visibility" class="text-sm text-gray-300">Public</label>
                             </div>
                         </div>
@@ -143,120 +92,26 @@
                     <div>
                         <label class="block text-sm font-medium text-gray-400 mb-1">Content</label>
                         <div class="border border-gray-700 rounded-lg overflow-hidden">
-                            <div class="bg-gray-900 p-2 flex space-x-2 border-b border-gray-700">
-                                <button class="text-gray-400 hover:text-white p-1">
-                                    <i class="fas fa-bold"></i>
-                                </button>
-                                <button class="text-gray-400 hover:text-white p-1">
-                                    <i class="fas fa-italic"></i>
-                                </button>
-                                <button class="text-gray-400 hover:text-white p-1">
-                                    <i class="fas fa-underline"></i>
-                                </button>
-                                <div class="border-r border-gray-700 h-6 mx-1"></div>
-                                <button class="text-gray-400 hover:text-white p-1">
-                                    <i class="fas fa-list-ul"></i>
-                                </button>
-                                <button class="text-gray-400 hover:text-white p-1">
-                                    <i class="fas fa-list-ol"></i>
-                                </button>
-                                <div class="border-r border-gray-700 h-6 mx-1"></div>
-                                <button class="text-gray-400 hover:text-white p-1">
-                                    <i class="fas fa-link"></i>
-                                </button>
-                                <button class="text-gray-400 hover:text-white p-1">
-                                    <i class="fas fa-image"></i>
-                                </button>
-                                <button class="text-gray-400 hover:text-white p-1">
-                                    <i class="fas fa-code"></i>
-                                </button>
-                            </div>
-                            <textarea
+                            <textarea name="description"
                                     class="w-full bg-gray-800 text-white p-3 h-64 focus:outline-none focus:ring-2 focus:ring-blue-500"
                                     placeholder="Write your note content here..."></textarea>
                         </div>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-1">Tags</label>
-                        <input type="text" placeholder="Add tags separated by commas"
-                               class="w-full bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-                    </div>
-                </div>
-
-                <div class="mt-6 flex justify-end space-x-3">
-                    <button class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-                            id="cancel-create">
-                        Cancel
-                    </button>
-                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                        Create Note
-                    </button>
-                </div>
-            </div>
-        </div>
-    </div>
-
-    <!-- Upload Note Modal (Hidden by default) [Can remove if no need PDFs] -->
-    <div id="upload-note-modal"
-         class="fixed inset-0 bg-black bg-opacity-70 flex items-center justify-center hidden z-50">
-        <div class="bg-gray-800 rounded-xl w-full max-w-md mx-4 overflow-hidden">
-            <div class="p-4 bg-gray-900 flex justify-between items-center">
-                <h2 class="text-lg font-bold">Upload Notes</h2>
-                <button class="text-gray-400 hover:text-white" id="close-upload-modal">
-                    <i class="fas fa-times"></i>
-                </button>
-            </div>
-            <div class="p-4">
-                <div class="space-y-4">
-                    <div class="border-2 border-dashed border-gray-600 rounded-lg p-8 text-center">
-                        <i class="fas fa-cloud-upload-alt text-4xl text-gray-500 mb-2"></i>
-                        <p class="text-gray-400 mb-4">Drag and drop files here<br>or click to browse</p>
+                    <div class="mt-6 flex justify-end space-x-3">
                         <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                            Select Files
+                            Create Note
                         </button>
-                        <input type="file" class="hidden"/>
-                        <p class="text-xs text-gray-500 mt-2">Supports PDF, DOCX, TXT, MD (Max 10MB)</p>
                     </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-1">Visibility</label>
-                        <div class="flex space-x-4">
-                            <div class="flex items-center">
-                                <input type="radio" id="private-upload" name="upload-visibility" class="mr-2"
-                                       checked/>
-                                <label for="private-upload" class="text-sm text-gray-300">Private</label>
-                            </div>
-                            <div class="flex items-center">
-                                <input type="radio" id="public-upload" name="upload-visibility" class="mr-2"/>
-                                <label for="public-upload" class="text-sm text-gray-300">Public</label>
-                            </div>
-                        </div>
-                    </div>
-
-                    <div>
-                        <label class="block text-sm font-medium text-gray-400 mb-1">Tags</label>
-                        <input type="text" placeholder="Add tags separated by commas"
-                               class="w-full bg-gray-700 text-white p-2 rounded-lg focus:outline-none focus:ring-2 focus:ring-blue-500"/>
-                    </div>
-                </div>
-
-                <div class="mt-6 flex justify-end space-x-3">
-                    <button class="px-4 py-2 bg-gray-700 text-white rounded-lg hover:bg-gray-600"
-                            id="cancel-upload">
-                        Cancel
-                    </button>
-                    <button class="px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700">
-                        Upload
-                    </button>
-                </div>
+                </form>
             </div>
         </div>
     </div>
 
-    <!-- JavaScript [ChatGPT kinda cracked]-->
     <script>
-        // Example JavaScript for basic interactions
+        function viewNote(noteID){
+            sendCustomMessage({PURPOSE: "VIEW_NOTE", NOTE_ID: noteID})
+        }
+
         waitForElementPresence('#create-note-btn', (button) => {
             button.addEventListener('click', () => {
                 waitForElementPresence('#create-note-modal', (modal) => modal.classList.remove('hidden'));
@@ -269,104 +124,6 @@
             });
         });
 
-        waitForElementPresence('#cancel-create', (button) => {
-            button.addEventListener('click', () => {
-                waitForElementPresence('#create-note-modal', (modal) => modal.classList.add('hidden'));
-            });
-        });
-
-        // Upload Note Modal
-        waitForElementPresence('#upload-note-btn', (button) => {
-            button.addEventListener('click', () => {
-                waitForElementPresence('#upload-note-modal', (modal) => modal.classList.remove('hidden'));
-            });
-        });
-
-        waitForElementPresence('#close-upload-modal', (button) => {
-            button.addEventListener('click', () => {
-                waitForElementPresence('#upload-note-modal', (modal) => modal.classList.add('hidden'));
-            });
-        });
-
-        waitForElementPresence('#cancel-upload', (button) => {
-            button.addEventListener('click', () => {
-                waitForElementPresence('#upload-note-modal', (modal) => modal.classList.add('hidden'));
-            });
-        });
-
-        // View note functionality
-        waitForElementPresence('#notes-grid-view', (gridView) => {
-            waitForElementPresence('#note-viewer', (viewer) => {
-                document.querySelectorAll('.view-note-btn').forEach(btn => {
-                    btn.addEventListener('click', function () {
-                        const noteCard = this.closest('.note-card');
-                        const noteId = noteCard.dataset.noteId;
-                        const noteTitle = noteCard.querySelector('h3').textContent;
-
-                        waitForElementPresence('#note-title', (title) => {
-                            title.textContent = noteTitle;
-                        });
-
-                        waitForElementPresence('#note-content', (content) => {
-                            content.innerHTML = `
-                        <h1 class="text-2xl font-bold mb-4">${noteTitle}</h1>
-                        <p class="mb-4">This is sample content for note #${noteId}.</p>
-                    `;
-                        });
-
-                        gridView.classList.add('translate-x-full');
-                        viewer.classList.remove('translate-x-full');
-                    });
-                });
-            });
-        });
-
-        waitForElementPresence('#back-to-grid', (button) => {
-            button.addEventListener('click', () => {
-                waitForElementPresence('#notes-grid-view', (gridView) => gridView.classList.remove('translate-x-full'));
-                waitForElementPresence('#note-viewer', (viewer) => viewer.classList.add('translate-x-full'));
-            });
-        });
-
-        // Toggle study tools
-        waitForElementPresence('#toggle-study-tools', (button) => {
-            button.addEventListener('click', () => {
-                waitForElementPresence('#study-tools', (tools) => {
-                    waitForElementPresence('#note-content-wrapper', (wrapper) => {
-                        if (tools.classList.contains('w-0')) {
-                            tools.classList.replace('w-0', 'w-72');
-                            wrapper.classList.add('mr-72');
-                        } else {
-                            tools.classList.replace('w-72', 'w-0');
-                            wrapper.classList.remove('mr-72');
-                        }
-                    });
-                });
-            });
-        });
-
-        // Filter functionality
-        waitForElementPresence('.filter-btn', () => {
-            document.querySelectorAll('.filter-btn').forEach(btn => {
-                btn.addEventListener('click', function () {
-                    document.querySelectorAll('.filter-btn').forEach(b => b.classList.remove('active', 'bg-blue-600'));
-                    this.classList.add('active', 'bg-blue-600');
-                    const filter = this.dataset.filter;
-
-                    document.querySelectorAll('.note-card').forEach(card => {
-                        if (filter === 'all' ||
-                            (filter === 'my' && card.dataset.owner === 'you') ||
-                            (filter === 'public' && card.dataset.visibility === 'public')) {
-                            card.classList.remove('hidden');
-                        } else {
-                            card.classList.add('hidden');
-                        }
-                    });
-                });
-            });
-        });
-
-        // Search functionality
         waitForElementPresence('#search-input', (input) => {
             input.addEventListener('input', function () {
                 const searchTerm = this.value.toLowerCase();
@@ -377,6 +134,5 @@
                 });
             });
         });
-
     </script>
 </div>

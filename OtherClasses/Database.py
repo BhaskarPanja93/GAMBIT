@@ -11,6 +11,7 @@ class Database:
         SUBJECT = "subject"
         TITLE = "title"
         CARD_COUNT = "card_count"
+        NOTE_ID = "note_id"
         CREATED_AT = "created_at"
         LAST_OPENED = "last_opened"
 
@@ -43,7 +44,7 @@ class Database:
 
 
     class NOTES:
-        TABLE_NAME ="note"
+        TABLE_NAME ="notes"
 
         NOTE_ID = "note_id"
         USERNAME = "username"
