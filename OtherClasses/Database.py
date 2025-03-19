@@ -51,7 +51,6 @@ class Database:
         SUBJECT = "subject"
         HEADER = "header"
         DESCRIPTION = "description"
-        FLASHCARDS_PREPARED = "flashcards_prepared"
         VISITS = "visits"
         PRIVATE = "private"
         CREATED_AT = "created_at"
@@ -148,3 +147,11 @@ class Database:
 
         RECEIVER = "receiver"
         SENDER = "sender"
+
+
+    class SESSION_DURATION:
+        TABLE_NAME = "session_duration"
+
+        USERNAME = "username"
+        START = "start"
+        END = "end"

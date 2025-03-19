@@ -276,8 +276,27 @@ def renderMatchFound(viewerObj: DynamicWebsite.Viewer):
 
 
 def renderDashboard(viewerObj):
+    totalTime = timedelta(seconds=0)
+    for sessionData in DBHolder.useDB().execute(f"SELECT * FROM {Database.SESSION_DURATION.TABLE_NAME} WHERE {Database.SESSION_DURATION.USERNAME}=? AND {Database.SESSION_DURATION.START}>DATE(NOW() - INTERVAL 7 DAY)", [viewerObj.privateData.userName]):
+        totalTime += sessionData[Database.SESSION_DURATION.END]-sessionData[Database.SESSION_DURATION.START]
+    totalNotes = DBHolder.useDB().execute(f"SELECT {Database.NOTES.LAST_OPENED} FROM {Database.NOTES.TABLE_NAME} WHERE {Database.NOTES.USERNAME}=?", [viewerObj.privateData.userName])
+    completeNotes=[]
+    for _ in totalNotes:
+        if _[Database.NOTES.LAST_OPENED] is not None:
+            completeNotes.append(_)
+    totalFlashcards = DBHolder.useDB().execute(f"SELECT {Database.FLASHCARD_COLLECTIONS.LAST_OPENED} FROM {Database.FLASHCARD_COLLECTIONS.TABLE_NAME} WHERE {Database.FLASHCARD_COLLECTIONS.USERNAME}=?", [viewerObj.privateData.userName])
+    completeFlashcards = []
+    for _ in totalFlashcards:
+        if _[Database.FLASHCARD_COLLECTIONS.LAST_OPENED] is not None:
+            completeFlashcards.append(_)
     viewerObj.updateHTML(
         Template(cachedElements.fetchStaticHTML(FileNames.HTML.Dashboard)).render(baseURI=viewerObj.privateData.baseURI,
+                                                                                  timeThisWeek=totalTime,
+                                                                                  allNotes=max(1,len(totalNotes)),
+                                                                                  notesComplete=len(completeNotes),
+                                                                                  completedFlashcards=len(completeFlashcards),
+                                                                                  allFlashcards=max(1,len(totalFlashcards)),
+                                                                                  remainingFlashcards=len(totalFlashcards)-len(completeFlashcards),
                                                                                   player=viewerObj.privateData.player),
         DivID.changingPage, UpdateMethods.update)
     viewerObj.privateData.newPage(Pages.DASHBOARD)
@@ -1212,7 +1231,6 @@ def registerBiDirectionFriend(username1, username2, flip=False):
 
 
 def onQuizEnd(quiz: Quiz):
-    endAt = datetime.now()
     sortedPlayers = sorted(quiz.match.teamA.allPlayers() + quiz.match.teamB.allPlayers(), reverse=True)
     teamData = {"score": {"teamA": sum([player.score for player in quiz.match.teamA.allPlayers()]),
                           "teamB": sum([player.score for player in quiz.match.teamB.allPlayers()])},
@@ -1226,12 +1244,15 @@ def onQuizEnd(quiz: Quiz):
         playerData[player.userName] = {"impact": player.healthImpact, "score": player.score, "team": "teamB"}
 
     DBHolder.useDB().execute(f"INSERT INTO {Database.QUIZ.TABLE_NAME} VALUES (?, ?, ?, ?)",
-                             [quiz.quizID, endAt, dumps(teamData), dumps(playerData)])
+                             [quiz.quizID, quiz.endAt, dumps(teamData), dumps(playerData)])
 
     for toSend in sortedPlayers:
         if toSend.viewer is not None:
+            DBHolder.useDB().execute(f"INSERT INTO {Database.SESSION_DURATION.TABLE_NAME} VALUES (?, ?, ?)",
+                                     [toSend.userName, quiz.createdAt, quiz.endAt])
+
             DBHolder.useDB().execute(f"INSERT INTO {Database.CAREER.TABLE_NAME} VALUES (?, ?, ?, ?)",
-                                     [quiz.quizID, toSend.userName, endAt, toSend.healthImpact])
+                                     [quiz.quizID, toSend.userName, quiz.endAt, toSend.healthImpact])
             DBHolder.useDB().execute(
                 f"UPDATE {Database.USER_INFO.TABLE_NAME} SET {Database.USER_INFO.VISIBLE_MMR}={Database.USER_INFO.VISIBLE_MMR}+?, {Database.USER_INFO.XP}={Database.USER_INFO.XP}+? WHERE {Database.USER_INFO.USERNAME}=?",
                 [toSend.healthImpact, 100, toSend.userName])
